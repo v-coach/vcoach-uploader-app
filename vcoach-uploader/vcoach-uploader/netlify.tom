@@ -1,9 +1,3 @@
 [build]
-  functions = "netlify/functions" # Directory for your Netlify Functions
-  publish = "build"              # Your React app's build output directory
-  command = "npm run build"      # Your React app's build command
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  command = "npm run build"
+  publish = "build"

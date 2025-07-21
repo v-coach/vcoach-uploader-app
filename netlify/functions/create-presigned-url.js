@@ -9,7 +9,7 @@ exports.handler = async (event, context) => {
     CLOUDFLARE_R2_BUCKET_NAME,
     CLOUDFLARE_R2_ENDPOINT,
     CLOUDFLARE_R2_ACCESS_KEY_ID,
-    CLOUDFLARE_R2_SECRET_ACCESS_KEY // Using standard name
+    CLOUDFLARE_R2_SECRET_ACCESS_KEY
   } = process.env;
 
   if (!CLOUDFLARE_R2_BUCKET_NAME || !CLOUDFLARE_R2_ENDPOINT || !CLOUDFLARE_R2_ACCESS_KEY_ID || !CLOUDFLARE_R2_SECRET_ACCESS_KEY) {
@@ -24,13 +24,19 @@ exports.handler = async (event, context) => {
   const s3 = new AWS.S3({
     endpoint: CLOUDFLARE_R2_ENDPOINT,
     accessKeyId: CLOUDFLARE_R2_ACCESS_KEY_ID,
-    secretAccessKey: CLOUDFLARE_R2_SECRET_ACCESS_KEY, // Using standard name
+    secretAccessKey: CLOUDFLARE_R2_SECRET_ACCESS_KEY,
     signatureVersion: 'v4',
     region: 'auto',
   });
 
   try {
+    // Add a check to ensure the request body is not empty
+    if (!event.body) {
+        throw new Error("Request body is missing. Cannot get file details.");
+    }
+
     const { fileName, fileType } = JSON.parse(event.body);
+    
     const params = {
       Bucket: CLOUDFLARE_R2_BUCKET_NAME,
       Key: fileName,

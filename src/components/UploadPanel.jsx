@@ -6,14 +6,16 @@ function UploadPanel() {
   const [isUploading, setIsUploading] = useState(false);
   const [upload, setUpload] = useState(null);
   const [message, setMessage] = useState('');
+  const [fileName, setFileName] = useState('');
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    setFileName(file.name);
     setIsUploading(true);
     setUploadProgress(0);
-    setMessage('');
+    setMessage(`Uploading ${file.name}...`);
 
     fetch('/.netlify/functions/get-upload-url', {
       method: 'POST',
@@ -38,6 +40,7 @@ function UploadPanel() {
         onSuccess: () => {
           setIsUploading(false);
           setMessage('Upload complete!');
+          setFileName(''); // Clear file name on success
         },
       });
       setUpload(tusUpload);
@@ -55,38 +58,45 @@ function UploadPanel() {
       upload.abort();
       setIsUploading(false);
       setMessage('Upload canceled.');
+      setFileName('');
     }
   };
 
   return (
-    <div className="rounded-xl border bg-card text-card-foreground shadow">
-      <div className="p-6">
-        <h3 className="font-semibold tracking-tight text-lg mb-4">Upload VoD</h3>
-        <input 
-          type="file" 
-          accept="video/mp4,video/mkv" 
-          onChange={handleFileChange} 
-          disabled={isUploading} 
-          className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        />
+    <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl">
+      <div className="p-8 space-y-6">
+        <div>
+            <label htmlFor="file-upload" className="cursor-pointer w-full h-12 px-6 bg-white text-gray-900 hover:bg-gray-200 inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-bold">
+                {isUploading ? 'Uploading...' : 'Choose File'}
+            </label>
+            <input 
+              id="file-upload"
+              name="file-upload"
+              type="file" 
+              className="hidden"
+              accept="video/mp4,video/mkv" 
+              onChange={handleFileChange} 
+              disabled={isUploading} 
+            />
+            {fileName && !isUploading && <p className="text-center text-sm text-white/80 mt-3">Selected: {fileName}</p>}
+        </div>
         
         {isUploading && (
-          <div className="mt-4">
-            <div className="w-full bg-secondary rounded-full h-2">
-              <div className="bg-primary h-2 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
+          <div>
+            <div className="w-full bg-white/20 rounded-full h-2.5">
+              <div className="bg-white h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
             </div>
-            <p className="text-center text-sm text-muted-foreground mt-2">{uploadProgress}%</p>
-            <button onClick={handleCancel} className="mt-4 w-full h-10 px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium">
+            <p className="text-center text-sm text-white/80 mt-2">{uploadProgress}%</p>
+            <button onClick={handleCancel} className="mt-4 w-full h-11 px-4 py-2 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium">
               Cancel Upload
             </button>
           </div>
         )}
 
-        {message && <p className="mt-4 text-sm text-center text-muted-foreground">{message}</p>}
+        {message && <p className="text-sm text-center text-white/80">{message}</p>}
       </div>
     </div>
   );
 }
 
-// The duplicate export has been removed from the end of the file.
 export default UploadPanel;

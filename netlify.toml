@@ -2,14 +2,12 @@
 # This file tells Netlify how to build and deploy your site.
 
 [build]
-  # This command tells Netlify to install the dependencies from package.json
-  command = "npm install"
-  
-  # This is the directory that contains your deployed website files.
-  # Since your index.html is in the root, we set this to the current directory.
+  # The 'publish' directory points to the folder with your site's static files.
+  # Since index.html is in the root, we set this to the current directory.
   publish = "."
   
-  # This is the directory where Netlify will find your serverless functions.
+  # The 'functions' directory is where Netlify will find your serverless functions.
+  # Dependencies from the root package.json will be installed automatically for these.
   functions = "netlify/functions"
 
 # This rule is helpful for single-page applications. It ensures that any

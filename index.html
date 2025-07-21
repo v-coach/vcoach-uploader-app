@@ -17,7 +17,7 @@
         }
         /* Updated for better visibility */
         .content-panel {
-             background-color: rgba(17, 24, 39, 0.6); /* Darker, less transparent background */
+             background-color: rgba(17, 24, 39, 0.75); /* Darker, less transparent background */
              backdrop-filter: blur(12px);
              border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -161,7 +161,6 @@
     </div>
 
     <script>
-    // It's best practice to wait for the DOM to be fully loaded before running scripts
     document.addEventListener('DOMContentLoaded', () => {
 
         // --- DOM Elements ---
@@ -203,7 +202,7 @@
         ];
 
         // --- State ---
-        let userRole = null; // can be 'coach' or 'admin'
+        let userRole = null;
 
         // --- Functions ---
         
@@ -211,13 +210,11 @@
             try {
                 const response = await fetch('/.netlify/functions/get-r2-storage');
                 const data = await response.json();
-
                 if (response.ok) {
                     const totalStorageGB = 200; 
                     const usedBytes = data.totalStorageBytes;
                     const usedGB = (usedBytes / (1024**3));
                     const percentageUsed = (usedGB / totalStorageGB) * 100;
-
                     storageUsedLabel.textContent = `${usedGB.toFixed(2)} GB`;
                     storageProgressBar.style.width = `${percentageUsed.toFixed(2)}%`;
                     storageTotalLabel.textContent = `${totalStorageGB} GB`;
@@ -232,6 +229,7 @@
         }
 
         function showPage(pageName) {
+            console.log(`Switching to page: ${pageName}`);
             Object.values(pages).forEach(page => page.classList.add('hidden'));
             if (pages[pageName]) {
                 pages[pageName].classList.remove('hidden');
@@ -285,33 +283,76 @@
             });
         }
 
-        function handleFileUpload(file) {
+        async function handleFileUpload(file) {
             if (!file) return;
+
             uploadPrompt.classList.add('hidden');
             progressContainer.classList.remove('hidden');
             fileNameDisplay.textContent = file.name;
-            uploadStatus.textContent = 'Uploading... 0%';
+            uploadStatus.textContent = 'Getting upload link...';
             progressBar.style.width = '0%';
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 10;
-                progressBar.style.width = progress + '%';
-                uploadStatus.textContent = `Uploading... ${progress}%`;
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    uploadStatus.textContent = 'Upload Complete!';
-                    progressBar.classList.remove('bg-blue-500');
-                    progressBar.classList.add('bg-green-500');
-                    const newVideo = { id: Date.now(), name: file.name, date: new Date().toISOString().split('T')[0], url: '#' };
-                    mockVideos.unshift(newVideo);
-                    setTimeout(() => {
-                        uploadPrompt.classList.remove('hidden');
-                        progressContainer.classList.add('hidden');
-                        progressBar.classList.remove('bg-green-500');
-                        progressBar.classList.add('bg-blue-500');
-                    }, 2000);
+
+            try {
+                // 1. Get a presigned URL from our serverless function
+                const presignedUrlResponse = await fetch('/.netlify/functions/create-presigned-url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+                });
+
+                if (!presignedUrlResponse.ok) {
+                    throw new Error('Could not get an upload link.');
                 }
-            }, 200);
+
+                const { uploadUrl } = await presignedUrlResponse.json();
+
+                // 2. Upload the file directly to R2 using the presigned URL
+                uploadStatus.textContent = 'Uploading... 0%';
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', uploadUrl, true);
+                xhr.setRequestHeader('Content-Type', file.type);
+
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const percentComplete = Math.round((event.loaded / event.total) * 100);
+                        progressBar.style.width = `${percentComplete}%`;
+                        uploadStatus.textContent = `Uploading... ${percentComplete}%`;
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        uploadStatus.textContent = 'Upload Complete!';
+                        progressBar.classList.remove('bg-blue-500');
+                        progressBar.classList.add('bg-green-500');
+                        
+                        // Add to mock data and re-render list
+                        const newVideo = { id: Date.now(), name: file.name, date: new Date().toISOString().split('T')[0], url: '#' };
+                        mockVideos.unshift(newVideo);
+                        if(userRole) renderVideoList();
+
+                        setTimeout(() => {
+                            uploadPrompt.classList.remove('hidden');
+                            progressContainer.classList.add('hidden');
+                            progressBar.classList.remove('bg-green-500');
+                            progressBar.classList.add('bg-blue-500');
+                        }, 2000);
+                    } else {
+                        throw new Error(`Upload failed with status: ${xhr.status}`);
+                    }
+                };
+                
+                xhr.onerror = () => {
+                     throw new Error('An error occurred during the upload.');
+                };
+
+                xhr.send(file);
+
+            } catch (error) {
+                console.error('Upload process failed:', error);
+                uploadStatus.textContent = `Error: ${error.message}`;
+                progressBar.classList.add('bg-red-500');
+            }
         }
 
         // --- Event Listeners ---
@@ -337,7 +378,9 @@
         
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            userRole = e.currentTarget.dataset.role || 'coach';
+            console.log('Login form submitted');
+            userRole = loginForm.dataset.role || 'coach';
+            console.log(`User role set to: ${userRole}`);
             updateNav();
             renderVideoList();
             showPage('dashboard');

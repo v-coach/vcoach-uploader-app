@@ -1,20 +1,20 @@
 // --- Netlify Serverless Function: create-presigned-url.js ---
 // This file should be placed in your project's `netlify/functions` directory.
 
-// The AWS SDK is required to interact with R2's S3-compatible API
 const AWS = require('aws-sdk');
 
 exports.handler = async (event, context) => {
   // Check for environment variables needed to connect to R2
+  // Using the variable names you have set in Netlify
   const {
     CLOUDFLARE_R2_BUCKET_NAME,
     CLOUDFLARE_R2_ENDPOINT,
     CLOUDFLARE_R2_ACCESS_KEY_ID,
-    CLOUDFLARE_R2_SECRET_ACCESS_KEY
+    CLOUDFLARE_R2_SECRET_ACCESS // Corrected variable name
   } = process.env;
 
-  if (!CLOUDFLARE_R2_BUCKET_NAME || !CLOUDFLARE_R2_ENDPOINT || !CLOUDFLARE_R2_ACCESS_KEY_ID || !CLOUDFLARE_R2_SECRET_ACCESS_KEY) {
-    const errorMessage = "R2 connection details are not configured in Netlify environment variables.";
+  if (!CLOUDFLARE_R2_BUCKET_NAME || !CLOUDFLARE_R2_ENDPOINT || !CLOUDFLARE_R2_ACCESS_KEY_ID || !CLOUDFLARE_R2_SECRET_ACCESS) {
+    const errorMessage = "R2 connection details are not fully configured in Netlify environment variables.";
     console.error(errorMessage);
     return {
       statusCode: 500,
@@ -26,7 +26,7 @@ exports.handler = async (event, context) => {
   const s3 = new AWS.S3({
     endpoint: CLOUDFLARE_R2_ENDPOINT,
     accessKeyId: CLOUDFLARE_R2_ACCESS_KEY_ID,
-    secretAccessKey: CLOUDFLARE_R2_SECRET_ACCESS_KEY,
+    secretAccessKey: CLOUDFLARE_R2_SECRET_ACCESS, // Corrected variable name
     signatureVersion: 'v4',
     region: 'auto', // This is a specific requirement for Cloudflare R2
   });

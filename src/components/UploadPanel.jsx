@@ -88,6 +88,5 @@ function UploadPanel() {
   );
 }
 
-export default UploadPanel;
-
+// The duplicate export has been removed from the end of the file.
 export default UploadPanel;

@@ -79,7 +79,7 @@
                                 </div>
                                 <!-- Improved Cancel Button -->
                                 <button id="cancel-upload-btn" class="p-1 rounded-full hover:bg-gray-700 transition-colors" title="Cancel upload">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
@@ -340,10 +340,22 @@
                     body: JSON.stringify({ fileName: file.name, fileType: file.type }),
                 });
                 
-                const presignedUrlData = await presignedUrlResponse.json();
-                if (!presignedUrlResponse.ok) throw new Error(presignedUrlData.error || 'Could not get an upload link.');
+                // More robust error handling
+                if (!presignedUrlResponse.ok) {
+                    let errorMsg = 'Could not get an upload link.';
+                    try {
+                        const errorData = await presignedUrlResponse.json();
+                        if (errorData.error) {
+                            errorMsg = errorData.error;
+                        }
+                    } catch (e) {
+                        // If the response is not JSON, use the raw text
+                        errorMsg = await presignedUrlResponse.text();
+                    }
+                    throw new Error(errorMsg);
+                }
 
-                const { uploadUrl } = presignedUrlData;
+                const { uploadUrl } = await presignedUrlResponse.json();
                 
                 currentUploadXhr = new XMLHttpRequest();
                 currentUploadXhr.open('PUT', uploadUrl, true);
@@ -422,7 +434,8 @@
         uploadArea.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => e.target.files.length && handleFileUpload(e.target.files[0]));
         
-        cancelUploadBtn.addEventListener('click', () => {
+        cancelUploadBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // This is the fix for the cancel button
             if (currentUploadXhr) {
                 currentUploadXhr.abort();
             }

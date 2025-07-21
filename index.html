@@ -64,10 +64,13 @@
                         </div>
                         <div id="upload-progress-container" class="hidden w-full">
                             <p id="file-name" class="text-sm font-medium mb-2"></p>
-                            <div class="w-full bg-gray-700 rounded-full h-2.5">
-                                <div id="upload-progress-bar" class="bg-blue-500 h-2.5 rounded-full" style="width: 0%"></div>
+                            <div class="flex items-center space-x-4">
+                                <div class="w-full bg-gray-700 rounded-full h-2.5">
+                                    <div id="upload-progress-bar" class="bg-blue-500 h-2.5 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <button id="cancel-upload-btn" class="text-gray-400 hover:text-white transition-colors">&times;</button>
                             </div>
-                            <p id="upload-status" class="text-xs mt-1"></p>
+                            <p id="upload-status" class="text-xs mt-1 text-left"></p>
                         </div>
                     </div>
                 </div>
@@ -185,6 +188,7 @@
         const fileNameDisplay = document.getElementById('file-name');
         const progressBar = document.getElementById('upload-progress-bar');
         const uploadStatus = document.getElementById('upload-status');
+        const cancelUploadBtn = document.getElementById('cancel-upload-btn');
         const videoList = document.getElementById('video-list');
         const videoModal = document.getElementById('video-modal');
         const videoPlayer = document.getElementById('video-player');
@@ -194,6 +198,7 @@
         const storageTotalLabel = document.getElementById('storage-total-label');
 
         let userRole = null;
+        let currentUploadXhr = null; // To hold the active upload request
 
         async function fetchStorageData() {
             try {
@@ -201,7 +206,7 @@
                 const data = await response.json();
                 if (response.ok) {
                     const totalStorageGB = 200; 
-                    const usedBytes = data.totalStorageBytes;
+                    const usedBytes = data.totalStorageBytes || 0;
                     const usedGB = (usedBytes / (1024**3));
                     const percentageUsed = (usedGB / totalStorageGB) * 100;
                     storageUsedLabel.textContent = `${usedGB.toFixed(2)} GB`;
@@ -284,6 +289,16 @@
             }
         }
 
+        function resetUploadUI() {
+            uploadPrompt.classList.remove('hidden');
+            progressContainer.classList.add('hidden');
+            progressBar.style.width = '0%';
+            progressBar.classList.remove('bg-green-500', 'bg-red-500');
+            progressBar.classList.add('bg-blue-500');
+            fileInput.value = ''; // Clear the file input
+            currentUploadXhr = null;
+        }
+
         async function handleFileUpload(file) {
             if (!file) return;
 
@@ -303,13 +318,12 @@
                 if (!presignedUrlResponse.ok) throw new Error('Could not get an upload link.');
 
                 const { uploadUrl } = await presignedUrlResponse.json();
-                uploadStatus.textContent = 'Uploading... 0%';
+                
+                currentUploadXhr = new XMLHttpRequest();
+                currentUploadXhr.open('PUT', uploadUrl, true);
+                currentUploadXhr.setRequestHeader('Content-Type', file.type);
 
-                const xhr = new XMLHttpRequest();
-                xhr.open('PUT', uploadUrl, true);
-                xhr.setRequestHeader('Content-Type', file.type);
-
-                xhr.upload.onprogress = (event) => {
+                currentUploadXhr.upload.onprogress = (event) => {
                     if (event.lengthComputable) {
                         const percentComplete = Math.round((event.loaded / event.total) * 100);
                         progressBar.style.width = `${percentComplete}%`;
@@ -317,23 +331,24 @@
                     }
                 };
 
-                xhr.onload = () => {
-                    if (xhr.status === 200) {
+                currentUploadXhr.onload = () => {
+                    if (currentUploadXhr.status === 200) {
                         uploadStatus.textContent = 'Upload Complete!';
                         progressBar.classList.replace('bg-blue-500', 'bg-green-500');
-                        if (userRole === 'coach' || userRole === 'admin') renderVideoList();
-                        setTimeout(() => {
-                            uploadPrompt.classList.remove('hidden');
-                            progressContainer.classList.add('hidden');
-                            progressBar.classList.replace('bg-green-500', 'bg-blue-500');
-                        }, 2000);
+                        if (userRole) renderVideoList();
+                        setTimeout(resetUploadUI, 2000);
                     } else {
-                        throw new Error(`Upload failed with status: ${xhr.status}`);
+                        throw new Error(`Upload failed with status: ${currentUploadXhr.status}`);
                     }
                 };
                 
-                xhr.onerror = () => { throw new Error('An error occurred during the upload.'); };
-                xhr.send(file);
+                currentUploadXhr.onerror = () => { throw new Error('A network error occurred during the upload.'); };
+                currentUploadXhr.onabort = () => {
+                    uploadStatus.textContent = 'Upload cancelled.';
+                    setTimeout(resetUploadUI, 1500);
+                };
+
+                currentUploadXhr.send(file);
 
             } catch (error) {
                 console.error('Upload process failed:', error);
@@ -341,42 +356,6 @@
                 progressBar.classList.replace('bg-blue-500', 'bg-red-500');
             }
         }
-        
-        async function handleInviteSubmit(e) {
-            e.preventDefault();
-            const form = e.target;
-            const coachName = form.querySelector('#coach-name').value;
-            const coachEmail = form.querySelector('#coach-email').value;
-            const submitButton = form.querySelector('button');
-            const originalButtonText = submitButton.innerHTML;
-            
-            submitButton.disabled = true;
-            submitButton.innerHTML = 'Sending...';
-
-            try {
-                const response = await fetch('/.netlify/functions/send-invite', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ coachName, coachEmail }),
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to send invite.');
-                }
-                
-                alert('Invite sent successfully!');
-                form.reset();
-
-            } catch (error) {
-                console.error('Invite failed:', error);
-                alert(`Error: ${error.message}`);
-            } finally {
-                submitButton.disabled = false;
-                submitButton.innerHTML = originalButtonText;
-            }
-        }
-
 
         logoHomeBtn.addEventListener('click', () => showPage('client'));
         
@@ -408,11 +387,20 @@
         switchToAdminBtn.addEventListener('click', () => showPage('admin'));
         switchToCoachBtn.addEventListener('click', () => showPage('dashboard'));
         
-        inviteForm.addEventListener('submit', handleInviteSubmit);
+        inviteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert(`Email invites are not yet configured.`);
+        });
 
         uploadArea.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => e.target.files.length && handleFileUpload(e.target.files[0]));
         
+        cancelUploadBtn.addEventListener('click', () => {
+            if (currentUploadXhr) {
+                currentUploadXhr.abort();
+            }
+        });
+
         ['dragover', 'dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, (e) => {
                 e.preventDefault();

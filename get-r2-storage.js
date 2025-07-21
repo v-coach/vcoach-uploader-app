@@ -4,11 +4,11 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
-  // Using the new, specific environment variable for reading stats
+  // Using the specific environment variable for reading stats
   const { CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_R2_BUCKET_NAME, CLOUDFLARE_API_TOKEN_READ } = process.env;
 
   if (!CLOUDFLARE_ACCOUNT_ID || !CLOUDFLARE_R2_BUCKET_NAME || !CLOUDFLARE_API_TOKEN_READ) {
-    const errorMessage = "Cloudflare API credentials for reading stats (CLOUDFLARE_API_TOKEN_READ) are not configured in the Netlify environment variables.";
+    const errorMessage = "Cloudflare API credentials for reading stats are not configured correctly.";
     console.error(errorMessage);
     return {
       statusCode: 500,
@@ -22,7 +22,6 @@ exports.handler = async (event, context) => {
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
-        // Using the new token for authorization
         'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN_READ}`,
         'Content-Type': 'application/json',
       },
@@ -40,12 +39,10 @@ exports.handler = async (event, context) => {
     }
 
     const data = JSON.parse(responseBody);
-    console.log("Successfully received data from Cloudflare:", JSON.stringify(data, null, 2));
-
     const storageBytes = data?.result?.overview?.storage?.current;
 
     if (storageBytes === undefined) {
-        const structureError = "Could not find 'totalStorageBytes' in the expected API response structure.";
+        const structureError = "Could not find 'totalStorageBytes' in the API response.";
         console.error(structureError, "Received data:", data);
         return {
             statusCode: 500,
@@ -53,13 +50,9 @@ exports.handler = async (event, context) => {
         }
     }
 
-    const storageData = {
-      totalStorageBytes: storageBytes,
-    };
-
     return {
       statusCode: 200,
-      body: JSON.stringify(storageData),
+      body: JSON.stringify({ totalStorageBytes: storageBytes }),
     };
 
   } catch (error) {

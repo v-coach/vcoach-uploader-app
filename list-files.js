@@ -1,4 +1,4 @@
-// --- Netlify Serverless Function: create-presigned-url.js ---
+// --- Netlify Serverless Function: list-files.js ---
 // This file should be placed in your project's `netlify/functions` directory.
 
 const AWS = require('aws-sdk');
@@ -13,7 +13,7 @@ exports.handler = async (event, context) => {
   } = process.env;
 
   if (!CLOUDFLARE_R2_BUCKET_NAME || !CLOUDFLARE_R2_ENDPOINT || !CLOUDFLARE_R2_ACCESS_KEY_ID || !CLOUDFLARE_R2_SECRET_ACCESS_KEY) {
-    const errorMessage = "R2 connection details are not fully configured.";
+    const errorMessage = "R2 connection details are not configured for listing files.";
     console.error(errorMessage);
     return {
       statusCode: 500,
@@ -30,20 +30,20 @@ exports.handler = async (event, context) => {
   });
 
   try {
-    const { fileName, fileType } = JSON.parse(event.body);
     const params = {
       Bucket: CLOUDFLARE_R2_BUCKET_NAME,
-      Key: fileName,
-      ContentType: fileType,
-      Expires: 600, // 10 minutes
     };
-    const uploadUrl = await s3.getSignedUrlPromise('putObject', params);
+    const data = await s3.listObjectsV2(params).promise();
+    const files = data.Contents.map(file => ({
+      name: file.Key,
+      date: file.LastModified.toISOString().split('T')[0],
+    }));
     return {
       statusCode: 200,
-      body: JSON.stringify({ uploadUrl }),
+      body: JSON.stringify({ files }),
     };
   } catch (error) {
-    console.error("Error creating presigned URL:", error);
+    console.error("Error listing files from R2:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: error.message }),

@@ -1,0 +1,18 @@
+# Netlify Configuration File
+# This file tells Netlify how to build and deploy your site.
+
+[build]
+  # The 'publish' directory points to the folder with your site's static files.
+  # Since index.html is in the root, we set this to the current directory.
+  publish = "."
+  
+  # The 'functions' directory is where Netlify will find your serverless functions.
+  # Dependencies from the root package.json will be installed automatically for these.
+  functions = "netlify/functions"
+
+# This rule is helpful for single-page applications. It ensures that any
+# direct navigation to a path on your site still loads the main index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

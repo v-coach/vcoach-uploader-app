@@ -12,6 +12,15 @@ function UploadPanel() {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Enforce the 4GB file size limit
+    const MAX_FILE_SIZE = 4 * 1024 * 1024 * 1024; // 4 GB in bytes
+    if (file.size > MAX_FILE_SIZE) {
+      setMessage('File is too large. The maximum upload size is 4GB.');
+      setFileName('');
+      e.target.value = null; // Reset the file input
+      return;
+    }
+
     setFileName(file.name);
     setIsUploading(true);
     setUploadProgress(0);
@@ -66,7 +75,7 @@ function UploadPanel() {
     <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl">
       <div className="p-8 space-y-6">
         <div>
-            <label htmlFor="file-upload" className="cursor-pointer w-full h-12 px-6 bg-white text-gray-900 hover:bg-gray-200 inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-bold">
+            <label htmlFor="file-upload" className="cursor-pointer w-full h-12 px-6 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-bold">
                 {isUploading ? 'Uploading...' : 'Choose File'}
             </label>
             <input 
@@ -78,7 +87,10 @@ function UploadPanel() {
               onChange={handleFileChange} 
               disabled={isUploading} 
             />
-            {fileName && !isUploading && <p className="text-center text-sm text-white/80 mt-3">Selected: {fileName}</p>}
+            <p className="text-center text-xs text-white/60 mt-3">
+                Supported formats: MP4, MKV. Max size: 4GB.
+            </p>
+            {fileName && !isUploading && <p className="text-center text-sm text-white/80 mt-2">Selected: {fileName}</p>}
         </div>
         
         {isUploading && (

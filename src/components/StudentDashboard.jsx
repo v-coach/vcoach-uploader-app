@@ -5,8 +5,8 @@ function StudentDashboard() {
   return (
     <div className="flex flex-col items-center">
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">Student Upload</h1>
-        <p className="text-muted-foreground">Select a VoD file from your computer to upload for review.</p>
+        <h1 className="text-5xl font-bold tracking-tight text-white drop-shadow-lg">Student VoD Upload</h1>
+        <p className="text-white/80 mt-2">Select a video file from your computer to upload for review.</p>
       </div>
       <div className="w-full max-w-2xl">
         <UploadPanel />

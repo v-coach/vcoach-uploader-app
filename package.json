@@ -12,7 +12,7 @@
     "react-router-dom": "^6.15.0",
     "tus-js-client": "^3.1.0",
     "jwt-decode": "^3.1.2",
-    "@aws-sdk/client-s3": "^3.398.0", // For R2
+    "@aws-sdk/client-s3": "^3.398.0",
     "@aws-sdk/s3-request-presigner": "^3.398.0"
   },
   "devDependencies": {

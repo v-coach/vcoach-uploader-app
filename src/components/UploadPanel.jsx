@@ -63,9 +63,9 @@ function UploadPanel() {
   };
 
   return (
-    <div className="p-4 bg-gray-800 text-white rounded-lg">
+    <div className="p-6 bg-gray-800 bg-opacity-70 backdrop-blur-md rounded-lg border border-gray-700">
       <h2 className="text-xl font-bold mb-4">Upload Your VoD</h2>
-      <input type="file" accept="video/mp4,video/mkv" onChange={handleFileChange} disabled={isUploading} />
+      <input type="file" accept="video/mp4,video/mkv" onChange={handleFileChange} disabled={isUploading} className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
       
       {isUploading && (
         <div className="mt-4">

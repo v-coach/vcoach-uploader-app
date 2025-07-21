@@ -28,43 +28,35 @@ function AdminDashboard() {
   return (
     <div className="flex flex-col">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight">Admin Overview</h1>
-        <p className="text-muted-foreground">View storage metrics and manage all site data.</p>
+        <h1 className="text-5xl font-bold tracking-tight text-white drop-shadow-lg">Admin Overview</h1>
+        <p className="text-white/80 mt-2">View storage metrics and manage all site data.</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2 mb-8">
-        <div className="rounded-xl border bg-card text-card-foreground shadow">
-          <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Total Storage Used</h3>
-          </div>
-          <div className="p-6 pt-0">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 mb-8">
+        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg p-6">
+          <h3 className="tracking-tight text-sm font-medium text-white/80">Total Storage Used</h3>
+          <div className="mt-2">
             {loading ? (
-              <div className="h-8 w-24 bg-muted rounded-md animate-pulse"></div>
+              <div className="h-8 w-24 bg-white/20 rounded-md animate-pulse"></div>
             ) : (
-              <div className="text-2xl font-bold">{(metrics.totalSize / 1024 / 1024 / 1024).toFixed(3)} GB</div>
+              <div className="text-3xl font-bold text-white">{(metrics.totalSize / 1024 / 1024 / 1024).toFixed(3)} GB</div>
             )}
-            <p className="text-xs text-muted-foreground">Total size of all VoDs in R2</p>
           </div>
         </div>
-        <div className="rounded-xl border bg-card text-card-foreground shadow">
-          <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Total Files</h3>
-          </div>
-          <div className="p-6 pt-0">
+        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg p-6">
+          <h3 className="tracking-tight text-sm font-medium text-white/80">Total Files</h3>
+          <div className="mt-2">
             {loading ? (
-              <div className="h-8 w-16 bg-muted rounded-md animate-pulse"></div>
+              <div className="h-8 w-16 bg-white/20 rounded-md animate-pulse"></div>
             ) : (
-              <div className="text-2xl font-bold">{metrics.fileCount}</div>
+              <div className="text-3xl font-bold text-white">{metrics.fileCount}</div>
             )}
-            <p className="text-xs text-muted-foreground">Total number of VoDs uploaded</p>
           </div>
         </div>
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold tracking-tight mb-4">File Management</h2>
-        <p className="text-muted-foreground mb-4">Admins have the same file management capabilities as coaches.</p>
-        {/* For simplicity, the Admin dashboard re-uses the CoachDashboard component for file management */}
+        <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">File Management</h2>
         <CoachDashboard />
       </div>
     </div>

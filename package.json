@@ -1,0 +1,26 @@
+{
+  "name": "v-coach-central",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.15.0",
+    "tus-js-client": "^3.1.0",
+    "jwt-decode": "^3.1.2",
+    "@aws-sdk/client-s3": "^3.398.0", // For R2
+    "@aws-sdk/s3-request-presigner": "^3.398.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.4",
+    "vite": "^4.4.9",
+    "tailwindcss": "^3.3.3",
+    "autoprefixer": "^10.4.15",
+    "postcss": "^8.4.29",
+    "netlify-cli": "^16.0.2"
+  }
+}

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Coach Central - File Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Fallback background color */
+            background-color: #0d1a2e;
+            /* Corrected background image URL */
+            background-image: url('http://googleusercontent.com/file_content/3');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .backdrop-blur-md {
+             background-color: rgba(255, 255, 255, 0.1);
+             backdrop-filter: blur(10px);
+        }
+        /* Simple fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <!-- Corrected logo image URL with an onerror fallback -->
+            <img src="http://googleusercontent.com/file_content/2" 
+                 alt="V-Coach Central Logo" 
+                 class="h-24 w-auto cursor-pointer" 
+                 id="logo-home-btn"
+                 onerror="this.onerror=null;this.src='https://placehold.co/250x100/0d1a2e/FFFFFF?text=V-Coach+Logo';">
+            <nav class="flex items-center space-x-4">
+                <button id="coach-login-nav-btn" class="font-semibold text-white hover:text-blue-400 transition-colors">Coach Login</button>
+                <button id="admin-login-nav-btn" class="font-semibold text-white hover:text-purple-400 transition-colors">Admin</button>
+                <button id="logout-btn" class="hidden font-semibold text-white hover:text-red-400 transition-colors">Logout</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Page: Client Upload -->
+            <div id="client-page" class="animate-fade-in">
+                 <div class="max-w-xl mx-auto backdrop-blur-md bg-white/10 p-6 rounded-2xl shadow-lg border border-white/20">
+                    <h2 class="text-2xl font-bold mb-4 text-center">Upload Your VOD</h2>
+                    <p class="text-center text-gray-300 mb-6">Select your video file to upload for review.</p>
+                    <div id="upload-area" class="border-2 border-dashed border-gray-400 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-white/5 transition-colors">
+                        <input type="file" id="file-input" class="hidden" accept="video/*">
+                        <div id="upload-prompt">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <p class="mt-2 text-sm text-gray-300">
+                                <span class="font-semibold text-blue-400">Click to upload</span> or drag and drop
+                            </p>
+                            <p class="text-xs text-gray-400 mt-1">MP4, MOV, AVI, etc. up to 4GB</p>
+                        </div>
+                        <div id="upload-progress-container" class="hidden w-full">
+                            <p id="file-name" class="text-sm font-medium mb-2"></p>
+                            <div class="w-full bg-gray-700 rounded-full h-2.5">
+                                <div id="upload-progress-bar" class="bg-blue-500 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <p id="upload-status" class="text-xs mt-1"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Login -->
+            <div id="login-page" class="hidden animate-fade-in">
+                <div class="max-w-md mx-auto backdrop-blur-md bg-white/10 p-8 rounded-2xl shadow-lg border border-white/20">
+                    <h2 id="login-title" class="text-2xl font-bold mb-6 text-center">Login</h2>
+                    <form id="login-form">
+                        <div class="mb-4">
+                            <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                            <input type="email" id="email" name="email" class="w-full bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="user@v-coach.gg" required>
+                        </div>
+                        <div class="mb-6">
+                            <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                            <input type="password" id="password" name="password" class="w-full bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                            Sign In
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Page: Coach's Dashboard -->
+            <div id="coach-dashboard-page" class="hidden animate-fade-in">
+                <div class="backdrop-blur-md bg-white/10 p-6 rounded-2xl shadow-lg border border-white/20">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-center">Coach's Dashboard</h2>
+                        <button id="switch-to-admin-btn" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Admin Panel</button>
+                    </div>
+                    <div id="video-list" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                        <!-- Videos will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Page: Admin Panel -->
+            <div id="admin-panel-page" class="hidden animate-fade-in">
+                <div class="backdrop-blur-md bg-white/10 p-6 rounded-2xl shadow-lg border border-white/20">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-center">Admin Panel</h2>
+                        <button id="switch-to-coach-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Coach View</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Invite Coach Section -->
+                        <div>
+                            <h3 class="text-xl font-bold mb-4">Invite New Coach</h3>
+                            <form id="invite-form" class="space-y-4">
+                                <div>
+                                    <label for="coach-name" class="block text-sm font-medium text-gray-300">Coach Name</label>
+                                    <input type="text" id="coach-name" class="mt-1 w-full bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                                </div>
+                                <div>
+                                    <label for="coach-email" class="block text-sm font-medium text-gray-300">Coach Email</label>
+                                    <input type="email" id="coach-email" class="mt-1 w-full bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                                </div>
+                                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Send Invite</button>
+                            </form>
+                        </div>
+                        <!-- R2 Storage Section -->
+                        <div>
+                            <h3 class="text-xl font-bold mb-4">R2 Storage Overview</h3>
+                            <div id="storage-overview" class="bg-white/10 p-4 rounded-lg space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">Total Storage Used:</span>
+                                    <span id="storage-used-label" class="font-bold">Loading...</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-4">
+                                    <div id="storage-progress-bar" class="bg-purple-500 h-4 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span>0 GB</span>
+                                    <span id="storage-total-label">...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div id="video-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 rounded-lg shadow-2xl w-11/12 max-w-4xl relative">
+            <button id="close-modal" class="absolute -top-4 -right-4 bg-red-500 text-white h-10 w-10 rounded-full text-2xl font-bold">&times;</button>
+            <div class="p-4">
+                <video id="video-player" class="w-full rounded" controls></video>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const pages = {
+            client: document.getElementById('client-page'),
+            login: document.getElementById('login-page'),
+            dashboard: document.getElementById('coach-dashboard-page'),
+            admin: document.getElementById('admin-panel-page')
+        };
+        const coachLoginNavBtn = document.getElementById('coach-login-nav-btn');
+        const adminLoginNavBtn = document.getElementById('admin-login-nav-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const logoHomeBtn = document.getElementById('logo-home-btn');
+        const loginForm = document.getElementById('login-form');
+        const loginTitle = document.getElementById('login-title');
+        const switchToAdminBtn = document.getElementById('switch-to-admin-btn');
+        const switchToCoachBtn = document.getElementById('switch-to-coach-btn');
+        const inviteForm = document.getElementById('invite-form');
+
+        // Upload elements
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const uploadPrompt = document.getElementById('upload-prompt');
+        const progressContainer = document.getElementById('upload-progress-container');
+        const fileNameDisplay = document.getElementById('file-name');
+        const progressBar = document.getElementById('upload-progress-bar');
+        const uploadStatus = document.getElementById('upload-status');
+
+        // Dashboard elements
+        const videoList = document.getElementById('video-list');
+        const videoModal = document.getElementById('video-modal');
+        const videoPlayer = document.getElementById('video-player');
+        const closeModalBtn = document.getElementById('close-modal');
+        
+        // Admin Panel Elements
+        const storageUsedLabel = document.getElementById('storage-used-label');
+        const storageProgressBar = document.getElementById('storage-progress-bar');
+        const storageTotalLabel = document.getElementById('storage-total-label');
+
+
+        // --- Mock Data ---
+        let mockVideos = [
+            { id: 1, name: 'sykko_fan - Icebox Clutch.mp4', date: '2025-07-20', url: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+            { id: 2, name: 'valorant_player2 - Bind Highlights.mp4', date: '2025-07-19', url: '#' },
+            { id: 3, name: 'pro_gamer_x - Split Strategy.mp4', date: '2025-07-18', url: '#' }
+        ];
+
+        // --- State ---
+        let userRole = null; // can be 'coach' or 'admin'
+
+        // --- Functions ---
+        
+        async function fetchStorageData() {
+            try {
+                const response = await fetch('/.netlify/functions/get-r2-storage');
+                const data = await response.json();
+
+                if (response.ok) {
+                    const totalStorageGB = 200; // Assuming a 200GB plan for percentage calculation
+                    const usedBytes = data.totalStorageBytes;
+                    const usedGB = (usedBytes / (1024**3));
+                    const percentageUsed = (usedGB / totalStorageGB) * 100;
+
+                    storageUsedLabel.textContent = `${usedGB.toFixed(2)} GB`;
+                    storageProgressBar.style.width = `${percentageUsed.toFixed(2)}%`;
+                    storageTotalLabel.textContent = `${totalStorageGB} GB`;
+                } else {
+                    console.error('Error fetching storage data:', data.error);
+                    storageUsedLabel.textContent = 'Error';
+                }
+            } catch (error) {
+                console.error('Failed to call the storage function:', error);
+                storageUsedLabel.textContent = 'Error';
+            }
+        }
+
+
+        function showPage(pageName) {
+            Object.values(pages).forEach(page => page.classList.add('hidden'));
+            if (pages[pageName]) {
+                pages[pageName].classList.remove('hidden');
+                if (pageName === 'admin') {
+                    fetchStorageData();
+                }
+            }
+        }
+
+        function updateNav() {
+            if (userRole) {
+                coachLoginNavBtn.classList.add('hidden');
+                adminLoginNavBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                if (userRole === 'admin') {
+                    switchToAdminBtn.classList.remove('hidden');
+                } else {
+                    switchToAdminBtn.classList.add('hidden');
+                }
+            } else {
+                coachLoginNavBtn.classList.remove('hidden');
+                adminLoginNavBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                switchToAdminBtn.classList.add('hidden');
+            }
+        }
+
+        function renderVideoList() {
+            videoList.innerHTML = '';
+            mockVideos.forEach(video => {
+                const videoElementHTML = `
+                    <div class="bg-white/10 p-4 rounded-lg flex items-center justify-between animate-fade-in">
+                        <div>
+                            <p class="font-semibold">${video.name}</p>
+                            <p class="text-sm text-gray-400">Uploaded: ${video.date}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="view-btn bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition-colors" title="View Video" data-url="${video.url}">
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <button class="download-btn bg-green-500 hover:bg-green-600 text-white p-2 rounded-full transition-colors" title="Download" data-url="${video.url}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <button class="delete-btn bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors" title="Delete" data-id="${video.id}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                videoList.insertAdjacentHTML('beforeend', videoElementHTML);
+            });
+        }
+
+        function handleFileUpload(file) {
+            if (!file) return;
+            uploadPrompt.classList.add('hidden');
+            progressContainer.classList.remove('hidden');
+            fileNameDisplay.textContent = file.name;
+            uploadStatus.textContent = 'Uploading... 0%';
+            progressBar.style.width = '0%';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                uploadStatus.textContent = `Uploading... ${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    uploadStatus.textContent = 'Upload Complete!';
+                    progressBar.classList.remove('bg-blue-500');
+                    progressBar.classList.add('bg-green-500');
+                    const newVideo = { id: Date.now(), name: file.name, date: new Date().toISOString().split('T')[0], url: '#' };
+                    mockVideos.unshift(newVideo);
+                    setTimeout(() => {
+                        uploadPrompt.classList.remove('hidden');
+                        progressContainer.classList.add('hidden');
+                        progressBar.classList.remove('bg-green-500');
+                        progressBar.classList.add('bg-blue-500');
+                    }, 2000);
+                }
+            }, 200);
+        }
+
+        // --- Event Listeners ---
+        logoHomeBtn.addEventListener('click', () => showPage('client'));
+        coachLoginNavBtn.addEventListener('click', () => {
+            loginTitle.textContent = "Coach Login";
+            loginForm.dataset.role = 'coach';
+            showPage('login');
+        });
+        adminLoginNavBtn.addEventListener('click', () => {
+            loginTitle.textContent = "Admin Login";
+            loginForm.dataset.role = 'admin';
+            showPage('login');
+        });
+        logoutBtn.addEventListener('click', () => {
+            userRole = null;
+            updateNav();
+            showPage('client');
+        });
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            userRole = e.target.dataset.role || 'coach';
+            updateNav();
+            renderVideoList();
+            showPage('dashboard');
+        });
+        switchToAdminBtn.addEventListener('click', () => showPage('admin'));
+        switchToCoachBtn.addEventListener('click', () => showPage('dashboard'));
+        inviteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const coachName = document.getElementById('coach-name').value;
+            // In a real app, you'd show a success/error toast message.
+            console.log(`Invite sent to ${coachName}`);
+            alert(`Invite for ${coachName} has been sent (simulated).`);
+            inviteForm.reset();
+        });
+
+        // File Upload
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => e.target.files.length && handleFileUpload(e.target.files[0]));
+        ['dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (eventName === 'dragover') uploadArea.classList.add('border-blue-400', 'bg-white/5');
+                if (eventName === 'dragleave' || eventName === 'drop') uploadArea.classList.remove('border-blue-400', 'bg-white/5');
+                if (eventName === 'drop' && e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload(e.dataTransfer.files[0]);
+                }
+            });
+        });
+
+        // Dashboard actions
+        videoList.addEventListener('click', (e) => {
+            const button = e.target.closest('button');
+            if (!button) return;
+            const videoContainer = button.closest('.flex.items-center.justify-between');
+            const url = button.dataset.url;
+            if (button.classList.contains('delete-btn')) {
+                const videoId = parseInt(button.dataset.id, 10);
+                mockVideos = mockVideos.filter(v => v.id !== videoId);
+                videoContainer.style.transition = 'opacity 0.5s';
+                videoContainer.style.opacity = '0';
+                setTimeout(() => videoContainer.remove(), 500);
+            } else if (button.classList.contains('download-btn')) {
+                if (url && url !== '#') {
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = videoContainer.querySelector('.font-semibold').textContent;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } else {
+                    console.log("Download not available for this item.");
+                }
+            } else if (button.classList.contains('view-btn')) {
+                if (url && url !== '#') {
+                    videoPlayer.src = url;
+                    videoModal.classList.remove('hidden');
+                } else {
+                    console.log("Preview not available for this item.");
+                }
+            }
+        });
+
+        // Modal controls
+        closeModalBtn.addEventListener('click', () => {
+            videoModal.classList.add('hidden');
+            videoPlayer.pause();
+            videoPlayer.src = '';
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && !videoModal.classList.contains('hidden')) {
+                closeModalBtn.click();
+            }
+        });
+
+        // --- Initial Load ---
+        showPage('client');
+        updateNav();
+    </script>
+</body>
+</html>

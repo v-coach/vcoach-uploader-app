@@ -340,7 +340,6 @@
                     body: JSON.stringify({ fileName: file.name, fileType: file.type }),
                 });
                 
-                // More robust error handling
                 if (!presignedUrlResponse.ok) {
                     let errorMsg = 'Could not get an upload link.';
                     try {
@@ -349,7 +348,6 @@
                             errorMsg = errorData.error;
                         }
                     } catch (e) {
-                        // If the response is not JSON, use the raw text
                         errorMsg = await presignedUrlResponse.text();
                     }
                     throw new Error(errorMsg);

@@ -2,6 +2,9 @@
 # This file tells Netlify how to build and deploy your site.
 
 [build]
+  # This command tells Netlify to install the dependencies from package.json
+  command = "npm install"
+  
   # This is the directory that contains your deployed website files.
   # Since your index.html is in the root, we set this to the current directory.
   publish = "."

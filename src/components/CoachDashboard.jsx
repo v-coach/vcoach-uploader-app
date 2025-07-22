@@ -73,7 +73,7 @@ function CoachDashboard() {
                       <td className="p-4 align-middle text-white/80">{(file.size / 1024 / 1024).toFixed(2)} MB</td>
                       <td className="p-4 align-middle text-white/80">{new Date(file.lastModified).toLocaleDateString()}</td>
                       <td className="p-4 align-middle text-right space-x-2">
-                        <a href={file.url} target="_blank" rel="noopener noreferrer" className="h-9 px-3 bg-white text-gray-900 hover:bg-gray-200 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold">
+                        <a href={file.url} target="_blank" rel="noopener noreferrer" className="h-9 px-3 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold">
                           View
                         </a>
                         <button onClick={() => handleDelete(file.key)} className="h-9 px-3 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium">

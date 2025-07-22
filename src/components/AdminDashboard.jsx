@@ -166,34 +166,26 @@ const LogViewer = () => {
 
   return (
     <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl h-full flex flex-col">
-      <div className="p-6"><h2 className="text-3xl font-bold tracking-tight text-white">Action Logs</h2></div>
-      <div className="overflow-y-auto flex-grow">
-        <table className="w-full caption-bottom text-sm">
-          <thead className="[&_tr]:border-b border-white/20">
-            <tr>
-              <th className="h-12 px-4 text-left align-middle font-medium text-white/60">Timestamp</th>
-              <th className="h-12 px-4 text-left align-middle font-medium text-white/60">User</th>
-              <th className="h-12 px-4 text-left align-middle font-medium text-white/60">Action</th>
-              <th className="h-12 px-4 text-left align-middle font-medium text-white/60">Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan="4" className="p-4 text-center text-white/60">Loading logs...</td></tr>
-            ) : logs.length > 0 ? (
-              logs.slice(0, visibleCount).map(log => (
-                <tr key={log.id} className="border-b border-white/20 last:border-b-0">
-                  <td className="p-4 text-white/80 whitespace-nowrap">{new Date(log.timestamp).toLocaleString()}</td>
-                  <td className="p-4 text-white">{log.user}</td>
-                  <td className="p-4 text-white/80">{log.action}</td>
-                  <td className="p-4 text-white/80">{log.details}</td>
-                </tr>
-              ))
-            ) : (
-              <tr><td colSpan="4" className="p-4 text-center text-white/60">No logs found.</td></tr>
-            )}
-          </tbody>
-        </table>
+      <div className="p-6 border-b border-white/20"><h2 className="text-3xl font-bold tracking-tight text-white">Action Logs</h2></div>
+      <div className="flex-grow overflow-y-auto p-4 space-y-3">
+        {loading ? (
+          <p className="p-4 text-center text-white/60">Loading logs...</p>
+        ) : logs.length > 0 ? (
+          logs.slice(0, visibleCount).map(log => (
+            <div key={log.id} className="p-3 rounded-md bg-white/5 flex items-start space-x-4">
+              <div className="flex-shrink-0 w-40">
+                <p className="text-white/80 text-xs">{new Date(log.timestamp).toLocaleString()}</p>
+                <p className="text-white font-semibold">{log.user}</p>
+              </div>
+              <div className="flex-grow">
+                <p className="text-sky-400 font-semibold">{log.action}</p>
+                <p className="text-white/80 text-sm break-words">{log.details}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="p-4 text-center text-white/60">No logs found.</p>
+        )}
       </div>
       {logs.length > visibleCount && (
         <div className="p-4 text-center border-t border-white/20"><button onClick={showMoreLogs} className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium">Show More</button></div>

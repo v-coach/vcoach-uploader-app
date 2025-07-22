@@ -54,10 +54,10 @@ const RenameModal = ({ onConfirm, onCancel, initialName }) => {
 };
 
 // --- Updated Video Player Modal ---
-const VideoPlayerModal = ({ videoUrl, onClose }) => {
+const VideoPlayerModal = ({ videoFile, initialNotes, onSave, onClose }) => {
   const videoRef = useRef(null);
   const modalRef = useRef(null);
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState(initialNotes || []);
   const [newNoteText, setNewNoteText] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -133,7 +133,7 @@ const VideoPlayerModal = ({ videoUrl, onClose }) => {
       <div className={`rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl w-full flex ${isFullscreen ? 'max-w-none h-full rounded-none' : 'max-w-6xl h-[90vh]'}`} onClick={(e) => e.stopPropagation()}>
         {/* Video Player Section */}
         <div className="flex-grow flex flex-col">
-          <video ref={videoRef} src={videoUrl} controls className={`w-full h-full object-contain bg-black ${isFullscreen ? 'rounded-none' : 'rounded-tl-lg'}`} />
+          <video ref={videoRef} src={videoFile.url} controls className={`w-full h-full object-contain bg-black ${isFullscreen ? 'rounded-none' : 'rounded-tl-lg'}`} />
           <div className={`p-4 bg-gray-900/80 backdrop-blur-sm flex items-center justify-between space-x-4 text-white ${isFullscreen ? 'rounded-none' : 'rounded-bl-lg'}`}>
             <div className="flex items-center space-x-2">
               <button onClick={() => handleSeek(-5)} className="px-3 py-1 bg-sky-500 hover:bg-sky-600 rounded text-sm font-semibold">-5s</button>
@@ -156,7 +156,7 @@ const VideoPlayerModal = ({ videoUrl, onClose }) => {
 
         {/* Notes Sidebar Section */}
         <div className={`w-96 bg-transparent border-l border-white/20 flex flex-col ${isFullscreen ? 'rounded-none' : 'rounded-r-lg'}`}>
-          <h3 className="text-lg font-bold p-4 border-b border-white/20">Review Notes</h3>
+          <h3 className="text-lg font-bold p-4 border-b border-white/20">VoD Review Notes</h3>
           <div className="flex-grow overflow-y-auto p-4 space-y-3">
             {notes.map((note, index) => (
               <div key={index} onClick={() => handleNoteClick(note.timestamp)} className="p-2 rounded-md bg-white/5 hover:bg-white/10 cursor-pointer">
@@ -165,14 +165,15 @@ const VideoPlayerModal = ({ videoUrl, onClose }) => {
               </div>
             ))}
           </div>
-          <div className="p-4 border-t border-white/20">
+          <div className="p-4 border-t border-white/20 space-y-2">
             <textarea 
               value={newNoteText}
               onChange={(e) => setNewNoteText(e.target.value)}
               placeholder="Add a note at the current timestamp..."
               className="w-full h-24 p-2 rounded-md border border-white/20 bg-transparent text-white text-sm"
             />
-            <button onClick={handleAddNote} className="w-full mt-2 h-10 bg-sky-500 hover:bg-sky-600 rounded-md text-sm font-bold">Add Note</button>
+            <button onClick={handleAddNote} className="w-full h-10 bg-sky-500 hover:bg-sky-600 rounded-md text-sm font-bold">Add Note</button>
+            <button onClick={() => onSave(videoFile.key, notes)} className="w-full h-10 bg-green-600 hover:bg-green-700 rounded-md text-sm font-bold">Save Notes</button>
           </div>
         </div>
       </div>
@@ -187,6 +188,7 @@ function CoachDashboard() {
   const [error, setError] = useState('');
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [modalState, setModalState] = useState({ type: null, fileKey: null });
+  const [notesByFile, setNotesByFile] = useState({});
   const { token } = useAuth();
 
   const fetchFiles = async () => {
@@ -205,6 +207,28 @@ function CoachDashboard() {
   useEffect(() => {
     fetchFiles();
   }, [token]);
+
+  const handleSaveNotes = (fileKey, notes) => {
+    setNotesByFile(prev => ({ ...prev, [fileKey]: notes }));
+    alert('Notes saved for this session!');
+    setSelectedVideo(null); // Close the modal after saving
+  };
+
+  const handleDownloadNotes = (fileKey) => {
+    const notes = notesByFile[fileKey];
+    if (!notes || notes.length === 0) return;
+
+    const fileContent = notes.map(note => `[${note.timeFormatted}] - ${note.text}`).join('\n');
+    const blob = new Blob([fileContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileKey}-notes.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleDelete = async () => {
     try {
@@ -232,7 +256,7 @@ function CoachDashboard() {
 
   return (
     <>
-      {selectedVideo && <VideoPlayerModal videoUrl={selectedVideo} onClose={() => setSelectedVideo(null)} />}
+      {selectedVideo && <VideoPlayerModal videoFile={selectedVideo} initialNotes={notesByFile[selectedVideo.key]} onSave={handleSaveNotes} onClose={() => setSelectedVideo(null)} />}
       {modalState.type === 'delete' && (
         <ConfirmationModal 
           fileName={modalState.fileKey}
@@ -278,9 +302,14 @@ function CoachDashboard() {
                         <td className="p-4 align-middle text-white/80">{(file.size / 1024 / 1024).toFixed(2)} MB</td>
                         <td className="p-4 align-middle text-white/80">{new Date(file.lastModified).toLocaleDateString()}</td>
                         <td className="p-4 align-middle text-right space-x-2">
-                          <button onClick={() => setSelectedVideo(file.url)} className="h-9 px-3 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold">
+                          <button onClick={() => setSelectedVideo(file)} className="h-9 px-3 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold">
                             View
                           </button>
+                          {notesByFile[file.key] && notesByFile[file.key].length > 0 && (
+                            <button onClick={() => handleDownloadNotes(file.key)} className="h-9 px-3 bg-green-600 text-white hover:bg-green-700 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold">
+                                Notes
+                            </button>
+                          )}
                           <button onClick={() => setModalState({ type: 'rename', fileKey: file.key })} className="h-9 px-3 bg-gray-500 text-white hover:bg-gray-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium">
                             Rename
                           </button>

@@ -131,12 +131,14 @@ function AdminDashboard() {
         </div>
       </div>
 
-      <div>
+      {/* --- Log Viewer moved here --- */}
+      <LogViewer />
+
+      <div className="mt-12">
         <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">File Management</h2>
         <CoachDashboard />
       </div>
 
-      <LogViewer />
     </div>
   );
 }

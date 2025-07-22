@@ -221,7 +221,6 @@ function AdminDashboard() {
         </div>
       </div>
       
-      {/* --- User Management Section Added --- */}
       <UserManagement />
 
       <div className="mt-12">

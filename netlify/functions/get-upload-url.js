@@ -17,24 +17,25 @@ exports.handler = async (event) => {
   
   try {
     const { fileName, contentType } = JSON.parse(event.body);
-    // Sanitize file name to remove special characters for safety
     const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, ''); 
 
     const command = new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME,
-      Key: `${Date.now()}-${sanitizedFileName}`, // Add timestamp to prevent overwrites
+      Key: `${Date.now()}-${sanitizedFileName}`,
       ContentType: contentType,
     });
 
-    // Generate a secure, temporary URL for the client to upload the file to
-    const uploadURL = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // URL is valid for 1 hour
+    const uploadURL = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
 
     return {
       statusCode: 200,
       body: JSON.stringify({ uploadURL }),
     };
   } catch (error) {
-    console.error("Error generating pre-signed URL:", error);
-    return { statusCode: 500, body: "Internal Server Error" };
+    console.error("Error generating pre-signed URL:", error.message);
+    return { 
+      statusCode: 500, 
+      body: JSON.stringify({ error: "Internal Server Error", message: error.message }) 
+    };
   }
 };

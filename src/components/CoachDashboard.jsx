@@ -237,8 +237,27 @@ function CoachDashboard() {
   };
 
   const handleDownloadNotes = async (fileKey) => {
-    // This function would now fetch the notes from R2 before downloading
-    alert("Download functionality would be implemented here.");
+    try {
+      const res = await axios.get(`/.netlify/functions/get-notes?fileKey=${fileKey}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const notes = res.data;
+      if (!notes || notes.length === 0) return;
+
+      const fileContent = notes.map(note => `[${note.timeFormatted}] - ${note.text}`).join('\n');
+      const blob = new Blob([fileContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${fileKey}-notes.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Could not download notes.');
+      console.error(err);
+    }
   };
 
   const handleDelete = async () => {

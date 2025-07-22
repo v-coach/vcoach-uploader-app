@@ -2,15 +2,11 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 exports.handler = async (event) => {
-  console.log("--- RAW EVENT RECEIVED ---");
-  console.log(JSON.stringify(event, null, 2));
-
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
   
   try {
-    // Moved S3 Client initialization inside the try block to catch any errors
     const s3Client = new S3Client({
       region: "auto",
       endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
@@ -19,9 +15,6 @@ exports.handler = async (event) => {
         secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
       },
     });
-
-    console.log("--- EVENT BODY ---");
-    console.log(event.body);
 
     const { fileName, contentType } = JSON.parse(event.body);
     const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, ''); 
@@ -39,7 +32,6 @@ exports.handler = async (event) => {
       body: JSON.stringify({ uploadURL }),
     };
   } catch (error) {
-    // --- Enhanced Error Logging ---
     console.error("--- DETAILED UPLOAD URL ERROR ---");
     console.error("Error Name:", error.name);
     console.error("Error Message:", error.message);

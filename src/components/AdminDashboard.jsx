@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useAuth } from '../AuthContext';
 import CoachDashboard from './CoachDashboard';
 
-// --- NEW User Management Component ---
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,24 +62,24 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl mt-8">
+    <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl h-full flex flex-col">
       <div className="p-6">
         <h2 className="text-3xl font-bold tracking-tight text-white">User Management</h2>
       </div>
       {/* Create User Form */}
-      <form onSubmit={handleCreateUser} className="p-6 border-b border-white/20 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+      <form onSubmit={handleCreateUser} className="p-6 border-b border-white/20 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
         <input type="text" placeholder="Username" value={newUser.username} onChange={e => setNewUser({...newUser, username: e.target.value})} className="h-12 rounded-md border border-white/20 bg-transparent px-3 text-base text-white" />
         <input type="password" placeholder="Password" value={newUser.password} onChange={e => setNewUser({...newUser, password: e.target.value})} className="h-12 rounded-md border border-white/20 bg-transparent px-3 text-base text-white" />
-        <select value={newUser.roles.join(',')} onChange={e => setNewUser({...newUser, roles: e.target.value.split(',')})} className="h-12 rounded-md border border-white/20 bg-transparent px-3 text-base text-white">
+        <select value={newUser.roles.join(',')} onChange={e => setNewUser({...newUser, roles: e.target.value.split(',')})} className="h-12 rounded-md border border-white/20 bg-transparent px-3 text-base text-white col-span-1 md:col-span-2">
           <option value="Coach">Coach</option>
           <option value="Head Coach">Head Coach</option>
           <option value="Coach,Head Coach">Coach & Head Coach</option>
           <option value="Founders">Admin (Founders)</option>
         </select>
-        <button type="submit" className="h-12 px-6 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-base font-bold">Create User</button>
+        <button type="submit" className="h-12 px-6 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-base font-bold col-span-1 md:col-span-2">Create User</button>
       </form>
       {/* User List */}
-      <div className="overflow-x-auto">
+      <div className="overflow-y-auto flex-grow">
         <table className="w-full text-sm">
           <thead className="[&_tr]:border-b border-white/20">
             <tr>
@@ -93,7 +92,7 @@ const UserManagement = () => {
             {loading ? (
               <tr><td colSpan="3" className="p-4 text-center text-white/60">Loading users...</td></tr>
             ) : users.map(user => (
-              <tr key={user.username} className="border-b border-white/20">
+              <tr key={user.username} className="border-b border-white/20 last:border-b-0">
                 <td className="p-4 text-white">{user.username}</td>
                 <td className="p-4 text-white/80">{user.roles.join(', ')}</td>
                 <td className="p-4 text-right">
@@ -138,9 +137,9 @@ const LogViewer = () => {
   };
 
   return (
-    <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl mt-8">
+    <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl h-full flex flex-col">
       <div className="p-6"><h2 className="text-3xl font-bold tracking-tight text-white">Action Logs</h2></div>
-      <div className="overflow-x-auto">
+      <div className="overflow-y-auto flex-grow">
         <table className="w-full caption-bottom text-sm">
           <thead className="[&_tr]:border-b border-white/20">
             <tr>
@@ -155,7 +154,7 @@ const LogViewer = () => {
               <tr><td colSpan="4" className="p-4 text-center text-white/60">Loading logs...</td></tr>
             ) : logs.length > 0 ? (
               logs.slice(0, visibleCount).map(log => (
-                <tr key={log.id} className="border-b border-white/20">
+                <tr key={log.id} className="border-b border-white/20 last:border-b-0">
                   <td className="p-4 text-white/80 whitespace-nowrap">{new Date(log.timestamp).toLocaleString()}</td>
                   <td className="p-4 text-white">{log.user}</td>
                   <td className="p-4 text-white/80">{log.action}</td>
@@ -169,7 +168,7 @@ const LogViewer = () => {
         </table>
       </div>
       {logs.length > visibleCount && (
-        <div className="p-4 text-center"><button onClick={showMoreLogs} className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium">Show More</button></div>
+        <div className="p-4 text-center border-t border-white/20"><button onClick={showMoreLogs} className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium">Show More</button></div>
       )}
     </div>
   );
@@ -200,13 +199,13 @@ function AdminDashboard() {
   }, [token]);
 
   return (
-    <div className="flex flex-col">
-      <div className="mb-8">
+    <div className="flex flex-col space-y-8">
+      <div>
         <h1 className="text-5xl font-bold tracking-tight text-white drop-shadow-lg">Admin Overview</h1>
         <p className="text-white/80 mt-2">View storage metrics and manage all site data.</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 mb-8">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
         <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg p-6">
           <h3 className="tracking-tight text-sm font-medium text-white/80">Total Storage Used</h3>
           <div className="mt-2">
@@ -221,14 +220,16 @@ function AdminDashboard() {
         </div>
       </div>
       
-      <UserManagement />
+      {/* --- New Grid for User Management and Logs --- */}
+      <div className="grid gap-8 lg:grid-cols-2">
+        <UserManagement />
+        <LogViewer />
+      </div>
 
-      <div className="mt-12">
+      <div className="mt-4">
         <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">File Management</h2>
         <CoachDashboard />
       </div>
-
-      <LogViewer />
     </div>
   );
 }

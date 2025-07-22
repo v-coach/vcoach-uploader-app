@@ -4,6 +4,17 @@ import { useAuth } from '../AuthContext';
 
 // --- Reusable Modal Components ---
 
+const NotificationModal = ({ message, onClose }) => (
+  <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div className="rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl p-8 max-w-md w-full text-center">
+      <p className="text-white text-lg mb-6">{message}</p>
+      <button onClick={onClose} className="h-10 px-6 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold">
+        OK
+      </button>
+    </div>
+  </div>
+);
+
 const ConfirmationModal = ({ onConfirm, onCancel, fileName }) => (
   <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
     <div className="rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl p-8 max-w-md w-full">
@@ -187,7 +198,7 @@ function CoachDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const [modalState, setModalState] = useState({ type: null, fileKey: null });
+  const [modalState, setModalState] = useState({ type: null, fileKey: null, message: '' });
   const [notesByFile, setNotesByFile] = useState({});
   const { token } = useAuth();
 
@@ -210,8 +221,8 @@ function CoachDashboard() {
 
   const handleSaveNotes = (fileKey, notes) => {
     setNotesByFile(prev => ({ ...prev, [fileKey]: notes }));
-    alert('Notes saved for this session!');
-    setSelectedVideo(null); // Close the modal after saving
+    setModalState({ type: 'notification', message: 'Notes saved for this session!' });
+    setSelectedVideo(null); // Close the video player
   };
 
   const handleDownloadNotes = (fileKey) => {
@@ -236,7 +247,7 @@ function CoachDashboard() {
         setFiles(files.filter(f => f.key !== modalState.fileKey));
         setModalState({ type: null, fileKey: null });
     } catch (err) {
-        alert('Failed to delete file.');
+        setModalState({ type: 'notification', message: 'Failed to delete file.' });
     }
   };
 
@@ -247,7 +258,7 @@ function CoachDashboard() {
             setModalState({ type: null, fileKey: null });
             fetchFiles();
         } catch (err) {
-            alert('Failed to rename file.');
+            setModalState({ type: 'notification', message: 'Failed to rename file.' });
         }
     } else {
       setModalState({ type: null, fileKey: null });
@@ -257,6 +268,12 @@ function CoachDashboard() {
   return (
     <>
       {selectedVideo && <VideoPlayerModal videoFile={selectedVideo} initialNotes={notesByFile[selectedVideo.key]} onSave={handleSaveNotes} onClose={() => setSelectedVideo(null)} />}
+      {modalState.type === 'notification' && (
+        <NotificationModal 
+          message={modalState.message}
+          onClose={() => setModalState({ type: null, fileKey: null, message: '' })}
+        />
+      )}
       {modalState.type === 'delete' && (
         <ConfirmationModal 
           fileName={modalState.fileKey}

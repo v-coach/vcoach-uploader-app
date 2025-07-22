@@ -12,33 +12,38 @@ function UploadPanel() {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Enforce the 4GB file size limit
     const MAX_FILE_SIZE = 4 * 1024 * 1024 * 1024; // 4 GB in bytes
     if (file.size > MAX_FILE_SIZE) {
       setMessage('File is too large. The maximum upload size is 4GB.');
       setFileName('');
-      e.target.value = null; // Reset the file input
+      e.target.value = null;
       return;
     }
 
     setFileName(file.name);
     setIsUploading(true);
     setUploadProgress(0);
-    setMessage(`Uploading ${file.name}...`);
+    setMessage(`Preparing upload for ${file.name}...`);
 
     fetch('/.netlify/functions/get-upload-url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fileName: file.name, contentType: file.type }),
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`Server responded with ${res.status}`);
+        }
+        return res.json();
+    })
     .then(({ uploadURL }) => {
+      setMessage(`Uploading ${file.name}...`);
       const tusUpload = new tus.Upload(file, {
         endpoint: uploadURL,
         retryDelays: [0, 3000, 5000, 10000],
         metadata: { filename: file.name, filetype: file.type },
         onError: (error) => {
-          console.error("Failed because: ", error);
+          console.error("Upload failed:", error);
           setIsUploading(false);
           setMessage('Upload failed. Please try again.');
         },
@@ -49,16 +54,16 @@ function UploadPanel() {
         onSuccess: () => {
           setIsUploading(false);
           setMessage('Upload complete!');
-          setFileName(''); // Clear file name on success
+          setFileName('');
         },
       });
       setUpload(tusUpload);
       tusUpload.start();
     })
     .catch(err => {
-        console.error("Error getting upload URL:", err);
+        console.error("Error preparing upload:", err);
         setIsUploading(false);
-        setMessage('Could not prepare upload. Please try again.');
+        setMessage('Could not prepare upload. Check function logs.');
     });
   };
 

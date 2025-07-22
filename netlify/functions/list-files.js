@@ -22,9 +22,8 @@ exports.handler = async (event) => {
         key: file.Key,
         size: file.Size,
         lastModified: file.LastModified,
-        // IMPORTANT: Replace <YOUR_R2_PUBLIC_URL> with your actual public R2 bucket URL.
-        // It should look something like: pub-xxxxxxxx.r2.dev
-        url: `https://<YOUR_R2_PUBLIC_URL>/${file.Key}` 
+        // The placeholder has been replaced with your public R2 URL.
+        url: `https://pub-be91dda7d39a4f069cc9be2f9c867baa.r2.dev/${file.Key}` 
     }));
 
     return {

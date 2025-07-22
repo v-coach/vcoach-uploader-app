@@ -1,17 +1,7 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
-const s3Client = new S3Client({
-  region: "auto",
-  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-  },
-});
-
 exports.handler = async (event) => {
-  // Log the raw event to see what is being received
   console.log("--- RAW EVENT RECEIVED ---");
   console.log(JSON.stringify(event, null, 2));
 
@@ -20,7 +10,16 @@ exports.handler = async (event) => {
   }
   
   try {
-    // Log the event body before parsing
+    // Moved S3 Client initialization inside the try block to catch any errors
+    const s3Client = new S3Client({
+      region: "auto",
+      endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+      },
+    });
+
     console.log("--- EVENT BODY ---");
     console.log(event.body);
 

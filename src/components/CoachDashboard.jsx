@@ -98,6 +98,10 @@ const VideoPlayerModal = ({ videoFile, initialNotes, onSave, onClose }) => {
     setNewNoteText('');
   };
 
+  const handleDeleteNote = (timestamp) => {
+    setNotes(notes.filter(note => note.timestamp !== timestamp));
+  };
+
   const handleNoteClick = (timestamp) => {
     videoRef.current.currentTime = timestamp;
     videoRef.current.play();
@@ -170,9 +174,12 @@ const VideoPlayerModal = ({ videoFile, initialNotes, onSave, onClose }) => {
           <h3 className="text-lg font-bold p-4 border-b border-white/20">VoD Review Notes</h3>
           <div className="flex-grow overflow-y-auto p-4 space-y-3">
             {notes.map((note, index) => (
-              <div key={index} onClick={() => handleNoteClick(note.timestamp)} className="p-2 rounded-md bg-white/5 hover:bg-white/10 cursor-pointer">
-                <span className="font-bold text-sky-400">{note.timeFormatted}</span>
-                <p className="text-sm text-white/90">{note.text}</p>
+              <div key={index} className="p-2 rounded-md bg-white/5 group">
+                <div onClick={() => handleNoteClick(note.timestamp)} className="cursor-pointer">
+                  <span className="font-bold text-sky-400">{note.timeFormatted}</span>
+                  <p className="text-sm text-white/90">{note.text}</p>
+                </div>
+                <button onClick={() => handleDeleteNote(note.timestamp)} className="text-red-500 text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Delete</button>
               </div>
             ))}
           </div>
@@ -231,7 +238,6 @@ function CoachDashboard() {
 
   const handleDownloadNotes = async (fileKey) => {
     // This function would now fetch the notes from R2 before downloading
-    // For simplicity, we will assume the notes are already fetched or we can add a new function
     alert("Download functionality would be implemented here.");
   };
 

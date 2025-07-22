@@ -1,4 +1,5 @@
 const { S3Client, ListObjectsV2Command } = require("@aws-sdk/client-s3");
+const jwt = require('jsonwebtoken');
 
 const s3Client = new S3Client({
   region: "auto",
@@ -10,17 +11,28 @@ const s3Client = new S3Client({
 });
 
 exports.handler = async (event) => {
-  // --- AUTHENTICATION DISABLED FOR TESTING ---
+  const token = event.headers.authorization?.split(' ')[1];
+  if (!token) return { statusCode: 401 };
 
   try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded.isAdmin) {
+      return { statusCode: 403 };
+    }
+
     const command = new ListObjectsV2Command({
       Bucket: process.env.R2_BUCKET_NAME,
     });
 
     const { Contents } = await s3Client.send(command);
     
-    const fileCount = Contents ? Contents.length : 0;
-    const totalSize = Contents ? Contents.reduce((acc, file) => acc + file.Size, 0) : 0;
+    // Filter out system files before counting
+    const filteredContents = Contents ? Contents.filter(file => 
+        file.Key !== 'users.json' && file.Key !== 'logs.json'
+    ) : [];
+
+    const fileCount = filteredContents.length;
+    const totalSize = filteredContents.reduce((acc, file) => acc + file.Size, 0);
 
     return {
       statusCode: 200,

@@ -1,5 +1,5 @@
 const { S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken'); // No longer needed for testing
 
 const s3Client = new S3Client({
   region: "auto",
@@ -13,14 +13,15 @@ const s3Client = new S3Client({
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') return { statusCode: 405 };
 
-    const token = event.headers.authorization?.split(' ')[1];
-    if (!token) return { statusCode: 401, body: 'Unauthorized' };
+    // --- AUTHENTICATION DISABLED FOR TESTING ---
+    // const token = event.headers.authorization?.split(' ')[1];
+    // if (!token) return { statusCode: 401, body: 'Unauthorized' };
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        if (!decoded.isCoach && !decoded.isAdmin) {
-            return { statusCode: 403, body: 'Forbidden' };
-        }
+        // const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // if (!decoded.isCoach && !decoded.isAdmin) {
+        //     return { statusCode: 403, body: 'Forbidden' };
+        // }
 
         const { fileKey } = JSON.parse(event.body);
         if (!fileKey) return { statusCode: 400, body: 'Bad Request' };

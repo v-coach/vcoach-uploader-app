@@ -5,7 +5,8 @@ import StudentDashboard from './components/StudentDashboard';
 import CoachDashboard from './components/CoachDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import AuthButton from './components/AuthButton';
-import ProtectedRoute from './components/ProtectedRoute';
+// ProtectedRoute is no longer used in this testing version
+// import ProtectedRoute from './components/ProtectedRoute'; 
 import vcoachlg from '../public/vcoachlg.jpg';
 
 function App() {
@@ -24,12 +25,9 @@ function App() {
               </Link>
               <nav className="flex items-center gap-6 text-sm">
                 <NavLink to="/" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Student</NavLink>
-                <ProtectedRoute roles={['Coach', 'Head Coach']}>
-                  <NavLink to="/coach" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Coach</NavLink>
-                </ProtectedRoute>
-                 <ProtectedRoute roles={['Founders']}>
-                  <NavLink to="/admin" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Admin</NavLink>
-                </ProtectedRoute>
+                {/* Links are now always visible for testing */}
+                <NavLink to="/coach" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Coach</NavLink>
+                <NavLink to="/admin" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Admin</NavLink>
               </nav>
               <div className="flex flex-1 items-center justify-end">
                 <AuthButton />
@@ -40,8 +38,9 @@ function App() {
           <main className="container max-w-screen-xl p-8 mx-auto">
             <Routes>
               <Route path="/" element={<StudentDashboard />} />
-              <Route path="/coach" element={<ProtectedRoute roles={['Coach', 'Head Coach']}><CoachDashboard /></ProtectedRoute>} />
-              <Route path="/admin" element={<ProtectedRoute roles={['Founders']}><AdminDashboard /></ProtectedRoute>} />
+              {/* Routes are now always accessible for testing */}
+              <Route path="/coach" element={<CoachDashboard />} />
+              <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
           </main>
         </div>

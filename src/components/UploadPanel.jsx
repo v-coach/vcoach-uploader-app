@@ -12,38 +12,33 @@ function UploadPanel() {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Enforce the 4GB file size limit
     const MAX_FILE_SIZE = 4 * 1024 * 1024 * 1024; // 4 GB in bytes
     if (file.size > MAX_FILE_SIZE) {
       setMessage('File is too large. The maximum upload size is 4GB.');
       setFileName('');
-      e.target.value = null;
+      e.target.value = null; // Reset the file input
       return;
     }
 
     setFileName(file.name);
     setIsUploading(true);
     setUploadProgress(0);
-    setMessage(`Preparing upload for ${file.name}...`);
+    setMessage(`Uploading ${file.name}...`);
 
     fetch('/.netlify/functions/get-upload-url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fileName: file.name, contentType: file.type }),
     })
-    .then(res => {
-        if (!res.ok) {
-            throw new Error(`Server responded with ${res.status}`);
-        }
-        return res.json();
-    })
+    .then(res => res.json())
     .then(({ uploadURL }) => {
-      setMessage(`Uploading ${file.name}...`);
       const tusUpload = new tus.Upload(file, {
         endpoint: uploadURL,
         retryDelays: [0, 3000, 5000, 10000],
         metadata: { filename: file.name, filetype: file.type },
         onError: (error) => {
-          console.error("Upload failed:", error);
+          console.error("Failed because: ", error);
           setIsUploading(false);
           setMessage('Upload failed. Please try again.');
         },
@@ -54,16 +49,16 @@ function UploadPanel() {
         onSuccess: () => {
           setIsUploading(false);
           setMessage('Upload complete!');
-          setFileName('');
+          setFileName(''); // Clear file name on success
         },
       });
       setUpload(tusUpload);
       tusUpload.start();
     })
     .catch(err => {
-        console.error("Error preparing upload:", err);
+        console.error("Error getting upload URL:", err);
         setIsUploading(false);
-        setMessage('Could not prepare upload. Check function logs.');
+        setMessage('Could not prepare upload. Please try again.');
     });
   };
 
@@ -104,9 +99,11 @@ function UploadPanel() {
               <div className="bg-white h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
             </div>
             <p className="text-center text-sm text-white/80 mt-2">{uploadProgress}%</p>
-            <button onClick={handleCancel} className="mt-4 w-full h-11 px-4 py-2 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium">
-              Cancel Upload
-            </button>
+            <div className="mt-4 flex justify-center">
+                <button onClick={handleCancel} className="h-10 px-6 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium">
+                  Cancel Upload
+                </button>
+            </div>
           </div>
         )}
 

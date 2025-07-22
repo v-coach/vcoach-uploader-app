@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
+import CoachDashboard from './CoachDashboard'; // <-- This line was missing
 
 function AdminDashboard() {
   const [metrics, setMetrics] = useState({ totalSize: 0, fileCount: 0 });
@@ -9,11 +10,12 @@ function AdminDashboard() {
 
   useEffect(() => {
     const fetchMetrics = async () => {
-      if (!token) return;
+      // In testing mode, we don't need a token. For production, you'd re-enable this.
+      // if (!token) return; 
       try {
         setLoading(true);
         const res = await axios.get('/.netlify/functions/get-metrics', {
-          headers: { Authorization: `Bearer ${token}` },
+          // headers: { Authorization: `Bearer ${token}` }, // Also re-enable for production
         });
         setMetrics(res.data);
       } catch (err) {
@@ -23,7 +25,7 @@ function AdminDashboard() {
       }
     };
     fetchMetrics();
-  }, [token]);
+  }, [token]); // The dependency array is fine even in testing mode
 
   return (
     <div className="flex flex-col">

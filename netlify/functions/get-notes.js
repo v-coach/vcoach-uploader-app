@@ -1,4 +1,4 @@
-const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, GetObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
 const jwt = require('jsonwebtoken');
 
 const s3Client = new S3Client({
@@ -9,6 +9,45 @@ const s3Client = new S3Client({
     secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
   },
 });
+
+// Helper function to manage logging to an R2 JSON file
+const logActionToR2 = async (user, action, details) => {
+    const logFileKey = 'logs.json';
+    let logs = [];
+
+    try {
+        const getCommand = new GetObjectCommand({ Bucket: process.env.R2_BUCKET_NAME, Key: logFileKey });
+        const response = await s3Client.send(getCommand);
+        const logData = await response.Body.transformToString();
+        logs = JSON.parse(logData);
+    } catch (error) {
+        if (error.name !== 'NoSuchKey') {
+            console.error("Error fetching logs for update:", error);
+            return; 
+        }
+    }
+
+    logs.unshift({
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        user,
+        action,
+        details,
+    });
+
+    try {
+        const putCommand = new PutObjectCommand({
+            Bucket: process.env.R2_BUCKET_NAME,
+            Key: logFileKey,
+            Body: JSON.stringify(logs, null, 2),
+            ContentType: 'application/json',
+        });
+        await s3Client.send(putCommand);
+    } catch (error) {
+        console.error("Error writing logs:", error);
+    }
+};
+
 
 exports.handler = async (event) => {
     const token = event.headers.authorization?.split(' ')[1];
@@ -30,6 +69,9 @@ exports.handler = async (event) => {
         const response = await s3Client.send(getCommand);
         const notesData = await response.Body.transformToString();
         
+        // Log the download action
+        await logActionToR2(decoded.username, 'NOTES_DOWNLOADED', `Downloaded notes for: ${fileKey}`);
+
         return {
             statusCode: 200,
             headers: { 'Content-Type': 'application/json' },

@@ -21,9 +21,8 @@ function UploadPanel() {
     }
 
     setFileName(file.name);
-    setIsUploading(true);
-    setUploadProgress(0);
-    setMessage(`Preparing upload for ${file.name}...`);
+    setIsUploading(false); // We won't start the upload for this test
+    setMessage(`Testing connection for ${file.name}...`);
 
     fetch('/.netlify/functions/get-upload-url', {
       method: 'POST',
@@ -36,34 +35,14 @@ function UploadPanel() {
         }
         return res.json();
     })
-    .then(({ uploadURL }) => {
-      setMessage(`Uploading ${file.name}...`);
-      const tusUpload = new tus.Upload(file, {
-        endpoint: uploadURL,
-        retryDelays: [0, 3000, 5000, 10000],
-        metadata: { filename: file.name, filetype: file.type },
-        onError: (error) => {
-          console.error("Upload failed:", error);
-          setIsUploading(false);
-          setMessage('Upload failed. Please try again.');
-        },
-        onProgress: (bytesUploaded, bytesTotal) => {
-          const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
-          setUploadProgress(percentage);
-        },
-        onSuccess: () => {
-          setIsUploading(false);
-          setMessage('Upload complete!');
-          setFileName('');
-        },
-      });
-      setUpload(tusUpload);
-      tusUpload.start();
+    .then((data) => {
+      // If this message appears in your browser console, the connection is working.
+      console.log("SUCCESSFULLY RECEIVED RESPONSE FROM FUNCTION:", data);
+      setMessage("Debug successful! Check the browser console (F12) for details.");
     })
     .catch(err => {
-        console.error("Error preparing upload:", err);
-        setIsUploading(false);
-        setMessage('Could not prepare upload. Check function logs.');
+        console.error("Error during debug fetch:", err);
+        setMessage('Debug test failed. The frontend cannot reach the backend function.');
     });
   };
 
@@ -81,7 +60,7 @@ function UploadPanel() {
       <div className="p-8 space-y-6">
         <div>
             <label htmlFor="file-upload" className="cursor-pointer w-full h-12 px-6 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-bold">
-                {isUploading ? 'Uploading...' : 'Choose File'}
+                Choose File for Debug Test
             </label>
             <input 
               id="file-upload"
@@ -98,20 +77,6 @@ function UploadPanel() {
             {fileName && !isUploading && <p className="text-center text-sm text-white/80 mt-2">Selected: {fileName}</p>}
         </div>
         
-        {isUploading && (
-          <div>
-            <div className="w-full bg-white/20 rounded-full h-2.5">
-              <div className="bg-white h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
-            </div>
-            <p className="text-center text-sm text-white/80 mt-2">{uploadProgress}%</p>
-            <div className="mt-4 flex justify-center">
-                <button onClick={handleCancel} className="h-10 px-6 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium">
-                  Cancel Upload
-                </button>
-            </div>
-          </div>
-        )}
-
         {message && <p className="text-sm text-center text-white/80">{message}</p>}
       </div>
     </div>

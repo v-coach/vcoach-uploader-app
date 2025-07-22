@@ -22,13 +22,10 @@ exports.handler = async (event) => {
         key: file.Key,
         size: file.Size,
         lastModified: file.LastModified,
-        // This URL structure assumes you have connected a custom domain or are using the public R2.dev URL
-        // If not, you might need to construct a pre-signed URL for viewing.
+        // IMPORTANT: Replace <YOUR_R2_PUBLIC_URL> with your actual public R2 bucket URL.
+        // It should look something like: pub-xxxxxxxx.r2.dev
         url: `https://<YOUR_R2_PUBLIC_URL>/${file.Key}` 
     }));
-
-    // IMPORTANT: Replace <YOUR_R2_PUBLIC_URL> with your actual public R2 bucket URL.
-    // Example: pub-xxxxxxxx.r2.dev
 
     return {
       statusCode: 200,

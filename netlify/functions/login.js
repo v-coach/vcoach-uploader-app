@@ -51,16 +51,17 @@ exports.handler = async (event) => {
     } catch (error) {
         // If users.json doesn't exist, this is the first run. Create the default admin.
         if (error.name === 'NoSuchKey') {
+            const defaultAdminPassword = 'Pr0m3thius@9911';
             const defaultAdmin = {
                 username: 'matthew.langton@csoesports.com',
-                passwordHash: bcrypt.hashSync('Pr0m3thius@9911', 10),
+                passwordHash: bcrypt.hashSync(defaultAdminPassword, 10),
                 roles: ['Founders']
             };
             
             await saveUsers([defaultAdmin]);
 
-            // Check if the provided credentials match the new default admin
-            if (username === defaultAdmin.username && bcrypt.compareSync(password, 'Pr0m3thius@9911')) {
+            // Correctly check if the provided credentials match the new default admin's plain text password
+            if (username === defaultAdmin.username && password === defaultAdminPassword) {
                 const token = generateToken(defaultAdmin);
                 return { statusCode: 200, body: JSON.stringify({ token }) };
             } else {

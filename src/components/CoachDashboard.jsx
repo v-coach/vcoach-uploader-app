@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
-// --- Reusable Modal Components (Defined at the top level) ---
+// --- Reusable Modal Components ---
 
 const ConfirmationModal = ({ onConfirm, onCancel, fileName }) => (
   <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
@@ -113,11 +113,15 @@ function CoachDashboard() {
   const [error, setError] = useState('');
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [modalState, setModalState] = useState({ type: null, fileKey: null });
+  const { token } = useAuth();
 
   const fetchFiles = async () => {
+    if (!token) return; // Don't fetch if not logged in
     try {
       setLoading(true);
-      const res = await axios.get('/.netlify/functions/list-files');
+      const res = await axios.get('/.netlify/functions/list-files', {
+        headers: { Authorization: `Bearer ${token}` }, // <-- This line was missing the headers
+      });
       setFiles(res.data.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified)));
     } catch (err) {
       setError('Failed to fetch files. Please check the function logs.');
@@ -129,13 +133,15 @@ function CoachDashboard() {
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+  }, [token]); // Re-fetch when the token changes (i.e., on login)
 
   const handleDelete = async () => {
     try {
-        await axios.post('/.netlify/functions/delete-file', { fileKey: modalState.fileKey });
+        await axios.post('/.netlify/functions/delete-file', { fileKey: modalState.fileKey }, {
+            headers: { Authorization: `Bearer ${token}` }, // <-- Added headers here
+        });
         setFiles(files.filter(f => f.key !== modalState.fileKey));
-        setModalState({ type: null, fileKey: null }); // Close modal
+        setModalState({ type: null, fileKey: null });
     } catch (err) {
         alert('Failed to delete file.');
     }
@@ -144,14 +150,16 @@ function CoachDashboard() {
   const handleRename = async (newName) => {
     if (newName && newName !== modalState.fileKey) {
         try {
-            await axios.post('/.netlify/functions/rename-file', { oldKey: modalState.fileKey, newKey: newName });
-            setModalState({ type: null, fileKey: null }); // Close modal
-            fetchFiles(); // Refetch files to update the list
+            await axios.post('/.netlify/functions/rename-file', { oldKey: modalState.fileKey, newKey: newName }, {
+                headers: { Authorization: `Bearer ${token}` }, // <-- Added headers here
+            });
+            setModalState({ type: null, fileKey: null });
+            fetchFiles();
         } catch (err) {
             alert('Failed to rename file.');
         }
     } else {
-      setModalState({ type: null, fileKey: null }); // Close if name is unchanged
+      setModalState({ type: null, fileKey: null });
     }
   };
 

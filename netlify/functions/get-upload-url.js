@@ -32,10 +32,18 @@ exports.handler = async (event) => {
       body: JSON.stringify({ uploadURL }),
     };
   } catch (error) {
-    console.error("Error generating pre-signed URL:", error.message);
+    // --- Enhanced Error Logging ---
+    console.error("--- DETAILED UPLOAD URL ERROR ---");
+    console.error("Error Name:", error.name);
+    console.error("Error Message:", error.message);
+    console.error("Full Error Object:", JSON.stringify(error, null, 2));
+    
     return { 
       statusCode: 500, 
-      body: JSON.stringify({ error: "Internal Server Error", message: error.message }) 
+      body: JSON.stringify({ 
+        error: "Internal Server Error", 
+        message: "Failed to generate pre-signed URL. Check function logs for details." 
+      }) 
     };
   }
 };

@@ -1,4 +1,4 @@
-const { S3Client, GetObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
@@ -10,26 +10,6 @@ const s3Client = new S3Client({
     secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
   },
 });
-
-const saveUsers = async (users) => {
-    const putCommand = new PutObjectCommand({
-        Bucket: process.env.R2_BUCKET_NAME,
-        Key: 'users.json',
-        Body: JSON.stringify(users, null, 2),
-        ContentType: 'application/json',
-    });
-    await s3Client.send(putCommand);
-};
-
-const generateToken = (user) => {
-    const isCoach = user.roles.includes('Coach') || user.roles.includes('Head Coach');
-    const isAdmin = user.roles.includes('Founders');
-    return jwt.sign(
-        { username: user.username, roles: user.roles, isCoach, isAdmin },
-        process.env.JWT_SECRET,
-        { expiresIn: '1d' }
-    );
-};
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
@@ -45,28 +25,20 @@ exports.handler = async (event) => {
             return { statusCode: 401, body: JSON.stringify({ message: 'Invalid username or password' }) };
         }
 
-        const token = generateToken(user);
+        const isCoach = user.roles.includes('Coach') || user.roles.includes('Head Coach');
+        const isAdmin = user.roles.includes('Founders');
+
+        const token = jwt.sign(
+            { username: user.username, roles: user.roles, isCoach, isAdmin },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
+
         return { statusCode: 200, body: JSON.stringify({ token }) };
 
     } catch (error) {
-        // If users.json doesn't exist, this is the first run. Create the default admin.
         if (error.name === 'NoSuchKey') {
-            const defaultAdminPassword = 'Pr0m3thius@9911';
-            const defaultAdmin = {
-                username: 'matthew.langton@csoesports.com',
-                passwordHash: bcrypt.hashSync(defaultAdminPassword, 10),
-                roles: ['Founders']
-            };
-            
-            await saveUsers([defaultAdmin]);
-
-            // Correctly check if the provided credentials match the new default admin's plain text password
-            if (username === defaultAdmin.username && password === defaultAdminPassword) {
-                const token = generateToken(defaultAdmin);
-                return { statusCode: 200, body: JSON.stringify({ token }) };
-            } else {
-                return { statusCode: 401, body: JSON.stringify({ message: 'Invalid username or password' }) };
-            }
+            return { statusCode: 401, body: JSON.stringify({ message: 'No users have been created yet. Please contact an administrator.' }) };
         }
         console.error("Login error:", error);
         return { statusCode: 500, body: 'Internal Server Error' };

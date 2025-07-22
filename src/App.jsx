@@ -1,18 +1,45 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
-import { AuthProvider } from './AuthContext';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink, Navigate, Outlet } from 'react-router-dom';
+import { AuthProvider, useAuth } from './AuthContext';
 import StudentDashboard from './components/StudentDashboard';
 import CoachDashboard from './components/CoachDashboard';
 import AdminDashboard from './components/AdminDashboard';
-import AuthButton from './components/AuthButton';
-// ProtectedRoute is no longer used in this testing version
-// import ProtectedRoute from './components/ProtectedRoute'; 
+import LoginPage from './components/LoginPage'; // New login page component
 import vcoachlg from '../public/vcoachlg.jpg';
 
+// New Protected Route component for handling authentication
+const ProtectedRoute = ({ requiredRoles }) => {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const hasRequiredRole = user.roles.some(role => requiredRoles.includes(role));
+
+  if (!hasRequiredRole) {
+    // Redirect to a "not authorized" page or back to student page
+    return <Navigate to="/" replace />; 
+  }
+
+  return <Outlet />;
+};
+
+const AuthButton = () => {
+    const { user, logout } = useAuth();
+    if (user) {
+        return (
+            <div className="flex items-center space-x-4">
+                <span className="font-semibold text-sm text-white/90">{user.username}</span>
+                <button onClick={logout} className="h-10 px-4 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium">Logout</button>
+            </div>
+        );
+    }
+    return <NavLink to="/login" className="h-10 px-5 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold inline-flex items-center">Login</NavLink>;
+};
+
 function App() {
-  const activeLinkStyle = {
-    color: 'white'
-  };
+  const activeLinkStyle = { color: 'white' };
 
   return (
     <Router>
@@ -25,7 +52,6 @@ function App() {
               </Link>
               <nav className="flex items-center gap-6 text-sm">
                 <NavLink to="/" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Student</NavLink>
-                {/* Links are now always visible for testing */}
                 <NavLink to="/coach" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Coach</NavLink>
                 <NavLink to="/admin" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Admin</NavLink>
               </nav>
@@ -38,9 +64,15 @@ function App() {
           <main className="container max-w-screen-xl p-8 mx-auto">
             <Routes>
               <Route path="/" element={<StudentDashboard />} />
-              {/* Routes are now always accessible for testing */}
-              <Route path="/coach" element={<CoachDashboard />} />
-              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/login" element={<LoginPage />} />
+              
+              {/* Protected Routes */}
+              <Route element={<ProtectedRoute requiredRoles={['Coach', 'Head Coach', 'Founders']} />}>
+                <Route path="/coach" element={<CoachDashboard />} />
+              </Route>
+              <Route element={<ProtectedRoute requiredRoles={['Founders']} />}>
+                <Route path="/admin" element={<AdminDashboard />} />
+              </Route>
             </Routes>
           </main>
         </div>

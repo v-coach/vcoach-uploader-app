@@ -18,7 +18,6 @@ const getUsers = async () => {
         const response = await s3Client.send(getCommand);
         return JSON.parse(await response.Body.transformToString());
     } catch (error) {
-        // If the users.json file doesn't exist yet, return an empty array.
         if (error.name === 'NoSuchKey') return [];
         throw error;
     }
@@ -45,7 +44,6 @@ exports.handler = async (event) => {
         let users = await getUsers();
 
         if (event.httpMethod === 'GET') {
-            // Return users without their password hashes for security
             return { statusCode: 200, body: JSON.stringify(users.map(u => ({ username: u.username, roles: u.roles }))) };
         }
 
@@ -60,9 +58,19 @@ exports.handler = async (event) => {
             return { statusCode: 201, body: 'User created' };
         }
 
+        if (event.httpMethod === 'PUT') {
+            const { username, roles } = JSON.parse(event.body);
+            const userIndex = users.findIndex(u => u.username === username);
+            if (userIndex === -1) {
+                return { statusCode: 404, body: 'User not found' };
+            }
+            users[userIndex].roles = roles;
+            await saveUsers(users);
+            return { statusCode: 200, body: 'User updated' };
+        }
+
         if (event.httpMethod === 'DELETE') {
             const { username } = JSON.parse(event.body);
-            // Prevent deleting the last admin user
             const userToDelete = users.find(u => u.username === username);
             const adminCount = users.filter(u => u.roles.includes('Founders')).length;
             if (userToDelete && userToDelete.roles.includes('Founders') && adminCount <= 1) {
@@ -80,4 +88,3 @@ exports.handler = async (event) => {
         return { statusCode: 500 };
     }
 };
-

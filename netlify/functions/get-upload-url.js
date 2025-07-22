@@ -1,30 +1,48 @@
-exports.handler = async (event) => {
-  // This function is for debugging only.
-  // It checks if the frontend is successfully calling the backend.
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
+exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
   
   try {
-    const { fileName } = JSON.parse(event.body);
-    console.log(`SUCCESS: Received request to generate URL for: ${fileName}`);
+    const s3Client = new S3Client({
+      region: "auto",
+      endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+      },
+    });
 
-    // Return a successful response with a fake URL
+    const { fileName, contentType } = JSON.parse(event.body);
+    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, ''); 
+
+    const command = new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: `${Date.now()}-${sanitizedFileName}`,
+      ContentType: contentType,
+    });
+
+    const uploadURL = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ 
-          message: "Function is working correctly!",
-          uploadURL: "https://fake-url.com/upload" 
-      }),
+      body: JSON.stringify({ uploadURL }),
     };
-
   } catch (error) {
-    console.error("--- DEBUG FUNCTION FAILED ---");
-    console.error("Error:", error.message);
+    console.error("--- DETAILED UPLOAD URL ERROR ---");
+    console.error("Error Name:", error.name);
+    console.error("Error Message:", error.message);
+    console.error("Full Error Object:", JSON.stringify(error, null, 2));
+    
     return { 
       statusCode: 500, 
-      body: "The debug function itself failed. Check the logs."
+      body: JSON.stringify({ 
+        error: "Internal Server Error", 
+        message: "Failed to generate pre-signed URL. Check function logs for details." 
+      }) 
     };
   }
 };

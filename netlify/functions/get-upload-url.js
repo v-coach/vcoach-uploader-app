@@ -6,14 +6,6 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
   
-  // --- Step 1: Log the environment variables to check for typos ---
-  console.log("--- VERIFYING ENVIRONMENT VARIABLES ---");
-  console.log("CLOUDFLARE_ACCOUNT_ID:", process.env.CLOUDFLARE_ACCOUNT_ID ? "Loaded" : "MISSING!");
-  console.log("R2_BUCKET_NAME:", process.env.R2_BUCKET_NAME ? "Loaded" : "MISSING!");
-  console.log("R2_ACCESS_KEY_ID:", process.env.R2_ACCESS_KEY_ID ? "Loaded" : "MISSING!");
-  console.log("R2_SECRET_ACCESS_KEY:", process.env.R2_SECRET_ACCESS_KEY ? "Loaded (hidden for security)" : "MISSING!");
-  console.log("------------------------------------");
-
   try {
     const s3Client = new S3Client({
       region: "auto",
@@ -43,9 +35,13 @@ exports.handler = async (event) => {
     console.error("--- DETAILED UPLOAD URL ERROR ---");
     console.error("Error Name:", error.name);
     console.error("Error Message:", error.message);
+    
     return { 
       statusCode: 500, 
-      body: JSON.stringify({ error: "Internal Server Error" }) 
+      body: JSON.stringify({ 
+        error: "Internal Server Error", 
+        message: "Failed to generate pre-signed URL. Check function logs for details." 
+      }) 
     };
   }
 };

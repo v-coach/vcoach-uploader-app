@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
-// --- Reusable Modal Components ---
+// --- Reusable Modal Components (Defined at the top level) ---
 
-// Modal for confirming a destructive action like deletion
 const ConfirmationModal = ({ onConfirm, onCancel, fileName }) => (
   <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
     <div className="rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl p-8 max-w-md w-full">
@@ -22,7 +21,6 @@ const ConfirmationModal = ({ onConfirm, onCancel, fileName }) => (
   </div>
 );
 
-// Modal for renaming a file
 const RenameModal = ({ onConfirm, onCancel, initialName }) => {
   const [newName, setNewName] = useState(initialName);
 
@@ -52,11 +50,9 @@ const RenameModal = ({ onConfirm, onCancel, initialName }) => {
         </div>
       </form>
     </div>
-  </div>
-);
+  );
+};
 
-
-// Video Player Modal Component
 const VideoPlayerModal = ({ videoUrl, onClose }) => {
   const videoRef = useRef(null);
 

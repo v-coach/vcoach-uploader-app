@@ -2,6 +2,60 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
+// --- Reusable Modal Components ---
+
+// Modal for confirming a destructive action like deletion
+const ConfirmationModal = ({ onConfirm, onCancel, fileName }) => (
+  <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div className="rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl p-8 max-w-md w-full">
+      <h2 className="text-xl font-bold text-white mb-2">Confirm Deletion</h2>
+      <p className="text-white/80 mb-6">Are you sure you want to delete the file <span className="font-semibold text-white">{fileName}</span>? This action cannot be undone.</p>
+      <div className="flex justify-end space-x-4">
+        <button onClick={onCancel} className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium">
+          Cancel
+        </button>
+        <button onClick={onConfirm} className="h-10 px-5 bg-red-600 text-white hover:bg-red-700 rounded-md text-sm font-medium">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+// Modal for renaming a file
+const RenameModal = ({ onConfirm, onCancel, initialName }) => {
+  const [newName, setNewName] = useState(initialName);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onConfirm(newName);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+      <form onSubmit={handleSubmit} className="rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl p-8 max-w-md w-full">
+        <h2 className="text-xl font-bold text-white mb-4">Rename File</h2>
+        <input
+          type="text"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          className="w-full h-12 rounded-md border border-white/20 bg-transparent px-3 text-base text-white ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+          autoFocus
+        />
+        <div className="flex justify-end space-x-4 mt-6">
+          <button type="button" onClick={onCancel} className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium">
+            Cancel
+          </button>
+          <button type="submit" className="h-10 px-5 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold">
+            Rename
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+);
+
+
 // Video Player Modal Component
 const VideoPlayerModal = ({ videoUrl, onClose }) => {
   const videoRef = useRef(null);
@@ -22,7 +76,6 @@ const VideoPlayerModal = ({ videoUrl, onClose }) => {
     videoRef.current.playbackRate = speed;
   };
 
-  // Close modal on Escape key press
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -63,7 +116,7 @@ function CoachDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const { token } = useAuth();
+  const [modalState, setModalState] = useState({ type: null, fileKey: null });
 
   const fetchFiles = async () => {
     try {
@@ -82,37 +135,48 @@ function CoachDashboard() {
     fetchFiles();
   }, []);
 
-  const handleDelete = async (fileKey) => {
-    if (!window.confirm(`Are you sure you want to delete ${fileKey}? This action cannot be undone.`)) return;
-    
+  const handleDelete = async () => {
     try {
-        await axios.post('/.netlify/functions/delete-file', { fileKey });
-        setFiles(files.filter(f => f.key !== fileKey));
+        await axios.post('/.netlify/functions/delete-file', { fileKey: modalState.fileKey });
+        setFiles(files.filter(f => f.key !== modalState.fileKey));
+        setModalState({ type: null, fileKey: null }); // Close modal
     } catch (err) {
         alert('Failed to delete file.');
     }
   };
 
-  const handleRename = async (oldKey) => {
-    const newName = window.prompt("Enter the new file name:", oldKey);
-    if (newName && newName !== oldKey) {
+  const handleRename = async (newName) => {
+    if (newName && newName !== modalState.fileKey) {
         try {
-            await axios.post('/.netlify/functions/rename-file', { oldKey, newKey: newName });
-            // Refetch files to update the list with the new name and URL
-            fetchFiles();
+            await axios.post('/.netlify/functions/rename-file', { oldKey: modalState.fileKey, newKey: newName });
+            setModalState({ type: null, fileKey: null }); // Close modal
+            fetchFiles(); // Refetch files to update the list
         } catch (err) {
             alert('Failed to rename file.');
         }
+    } else {
+      setModalState({ type: null, fileKey: null }); // Close if name is unchanged
     }
-  };
-
-  const handleViewClick = (url) => {
-    setSelectedVideo(url);
   };
 
   return (
     <>
       {selectedVideo && <VideoPlayerModal videoUrl={selectedVideo} onClose={() => setSelectedVideo(null)} />}
+      {modalState.type === 'delete' && (
+        <ConfirmationModal 
+          fileName={modalState.fileKey}
+          onConfirm={handleDelete}
+          onCancel={() => setModalState({ type: null, fileKey: null })}
+        />
+      )}
+      {modalState.type === 'rename' && (
+        <RenameModal 
+          initialName={modalState.fileKey}
+          onConfirm={handleRename}
+          onCancel={() => setModalState({ type: null, fileKey: null })}
+        />
+      )}
+
       <div className="flex flex-col">
         <div className="mb-8">
           <h1 className="text-5xl font-bold tracking-tight text-white drop-shadow-lg">VoD Review Queue</h1>
@@ -143,13 +207,13 @@ function CoachDashboard() {
                         <td className="p-4 align-middle text-white/80">{(file.size / 1024 / 1024).toFixed(2)} MB</td>
                         <td className="p-4 align-middle text-white/80">{new Date(file.lastModified).toLocaleDateString()}</td>
                         <td className="p-4 align-middle text-right space-x-2">
-                          <button onClick={() => handleViewClick(file.url)} className="h-9 px-3 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold">
+                          <button onClick={() => setSelectedVideo(file.url)} className="h-9 px-3 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold">
                             View
                           </button>
-                          <button onClick={() => handleRename(file.key)} className="h-9 px-3 bg-gray-500 text-white hover:bg-gray-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium">
+                          <button onClick={() => setModalState({ type: 'rename', fileKey: file.key })} className="h-9 px-3 bg-gray-500 text-white hover:bg-gray-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium">
                             Rename
                           </button>
-                          <button onClick={() => handleDelete(file.key)} className="h-9 px-3 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium">
+                          <button onClick={() => setModalState({ type: 'delete', fileKey: file.key })} className="h-9 px-3 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium">
                             Delete
                           </button>
                         </td>

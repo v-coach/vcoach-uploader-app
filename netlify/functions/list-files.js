@@ -1,5 +1,5 @@
 const { S3Client, ListObjectsV2Command } = require("@aws-sdk/client-s3");
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken'); // No longer needed for testing
 
 const s3Client = new S3Client({
   region: "auto",
@@ -11,14 +11,15 @@ const s3Client = new S3Client({
 });
 
 exports.handler = async (event) => {
-  const token = event.headers.authorization?.split(' ')[1];
-  if (!token) return { statusCode: 401, body: 'Unauthorized' };
+  // --- AUTHENTICATION DISABLED FOR TESTING ---
+  // const token = event.headers.authorization?.split(' ')[1];
+  // if (!token) return { statusCode: 401, body: 'Unauthorized' };
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded.isCoach && !decoded.isAdmin) {
-      return { statusCode: 403, body: 'Forbidden' };
-    }
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // if (!decoded.isCoach && !decoded.isAdmin) {
+    //   return { statusCode: 403, body: 'Forbidden' };
+    // }
 
     const command = new ListObjectsV2Command({
       Bucket: process.env.R2_BUCKET_NAME,
@@ -29,7 +30,8 @@ exports.handler = async (event) => {
         key: file.Key,
         size: file.Size,
         lastModified: file.LastModified,
-        url: `https://<YOUR_R2_PUBLIC_URL>/${file.Key}` // IMPORTANT: Set your public R2 URL
+        // IMPORTANT: Replace with your public R2 URL if you have one set up
+        url: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com/${process.env.R2_BUCKET_NAME}/${file.Key}` 
     }));
 
     return {

@@ -8,6 +8,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('v-coach-token'));
+  const [isInitializing, setIsInitializing] = useState(true); // New state to handle initial load
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,12 +18,20 @@ export const AuthProvider = ({ children }) => {
         if (decoded.exp * 1000 > Date.now()) {
           setUser(decoded);
         } else {
-          logout(); // Token expired
+          // Token expired, clear it
+          localStorage.removeItem('v-coach-token');
+          setToken(null);
+          setUser(null);
         }
       } catch (error) {
-        logout(); // Invalid token
+        // Invalid token, clear it
+        localStorage.removeItem('v-coach-token');
+        setToken(null);
+        setUser(null);
       }
     }
+    // Mark initialization as complete
+    setIsInitializing(false);
   }, [token]);
 
   const login = async (username, password) => {
@@ -47,7 +56,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, isInitializing }}>
       {children}
     </AuthContext.Provider>
   );

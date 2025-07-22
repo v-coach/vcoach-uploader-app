@@ -1,3 +1,5 @@
+const plugin = require('tailwindcss/plugin')
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -7,5 +9,10 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    // Add this plugin to enable the 'fullscreen' variant
+    plugin(function({ addVariant }) {
+      addVariant('fullscreen', '&:fullscreen')
+    })
+  ],
 }

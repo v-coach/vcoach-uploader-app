@@ -121,10 +121,10 @@ const VideoPlayerModal = ({ videoUrl, onClose }) => {
 
   return (
     <div ref={modalRef} className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-black rounded-lg shadow-xl w-full max-w-6xl h-[90vh] flex" onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl w-full max-w-6xl h-[90vh] flex" onClick={(e) => e.stopPropagation()}>
         {/* Video Player Section */}
         <div className="flex-grow flex flex-col">
-          <video ref={videoRef} src={videoUrl} controls className="w-full h-full object-contain rounded-tl-lg" />
+          <video ref={videoRef} src={videoUrl} controls className="w-full h-full object-contain rounded-tl-lg bg-black" />
           <div className="p-4 bg-gray-900/80 backdrop-blur-sm rounded-bl-lg flex items-center justify-between space-x-4 text-white">
             <div className="flex items-center space-x-2">
               <button onClick={() => handleSeek(-5)} className="px-3 py-1 bg-sky-500 hover:bg-sky-600 rounded text-sm font-semibold">-5s</button>
@@ -146,7 +146,7 @@ const VideoPlayerModal = ({ videoUrl, onClose }) => {
         </div>
 
         {/* Notes Sidebar Section */}
-        <div className="w-96 bg-gray-900/50 backdrop-blur-sm border-l border-white/20 flex flex-col rounded-r-lg">
+        <div className="w-96 bg-transparent border-l border-white/20 flex flex-col rounded-r-lg">
           <h3 className="text-lg font-bold p-4 border-b border-white/20">Review Notes</h3>
           <div className="flex-grow overflow-y-auto p-4 space-y-3">
             {notes.map((note, index) => (

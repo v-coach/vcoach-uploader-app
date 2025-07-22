@@ -11,11 +11,19 @@ const s3Client = new S3Client({
 });
 
 exports.handler = async (event) => {
+  // Log the raw event to see what is being received
+  console.log("--- RAW EVENT RECEIVED ---");
+  console.log(JSON.stringify(event, null, 2));
+
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
   
   try {
+    // Log the event body before parsing
+    console.log("--- EVENT BODY ---");
+    console.log(event.body);
+
     const { fileName, contentType } = JSON.parse(event.body);
     const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, ''); 
 

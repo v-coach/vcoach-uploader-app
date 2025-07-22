@@ -3,25 +3,38 @@ import axios from 'axios';
 import { useAuth } from '../AuthContext';
 import CoachDashboard from './CoachDashboard';
 
-// --- Edit User Modal ---
+// --- Edit User Modal (Updated) ---
 const EditUserModal = ({ user, onConfirm, onCancel }) => {
   const [roles, setRoles] = useState(user.roles);
+  const [newPassword, setNewPassword] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onConfirm(user.username, roles);
+    onConfirm(user.username, roles, newPassword);
   };
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <form onSubmit={handleSubmit} className="rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl p-8 max-w-md w-full">
         <h2 className="text-xl font-bold text-white mb-4">Edit User: {user.username}</h2>
-        <select value={roles.join(',')} onChange={e => setRoles(e.target.value.split(','))} className="w-full h-12 rounded-md border border-white/20 bg-transparent px-3 text-base text-white">
+        
+        <label className="text-sm font-medium text-white/80 block mb-2">Roles</label>
+        <select value={roles.join(',')} onChange={e => setRoles(e.target.value.split(','))} className="w-full h-12 rounded-md border border-white/20 bg-transparent px-3 text-base text-white mb-4">
           <option value="Coach">Coach</option>
           <option value="Head Coach">Head Coach</option>
           <option value="Coach,Head Coach">Coach & Head Coach</option>
           <option value="Founders">Admin (Founders)</option>
         </select>
+
+        <label className="text-sm font-medium text-white/80 block mb-2">Reset Password (Optional)</label>
+        <input
+          type="password"
+          placeholder="Enter new password to reset"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          className="w-full h-12 rounded-md border border-white/20 bg-transparent px-3 text-base text-white"
+        />
+
         <div className="flex justify-end space-x-4 mt-6">
           <button type="button" onClick={onCancel} className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium">Cancel</button>
           <button type="submit" className="h-10 px-5 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold">Save Changes</button>
@@ -68,9 +81,13 @@ const UserManagement = () => {
     }
   };
 
-  const handleUpdateUser = async (username, roles) => {
+  const handleUpdateUser = async (username, roles, newPassword) => {
     try {
-      await axios.put('/.netlify/functions/manage-users', { username, roles }, { headers: { Authorization: `Bearer ${token}` } });
+      const payload = { username, roles };
+      if (newPassword) {
+        payload.password = newPassword;
+      }
+      await axios.put('/.netlify/functions/manage-users', payload, { headers: { Authorization: `Bearer ${token}` } });
       setEditingUser(null);
       fetchUsers();
     } catch (err) {

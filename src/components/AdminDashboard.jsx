@@ -135,7 +135,7 @@ const UserManagement = () => {
   );
 };
 
-// --- Log Viewer Component ---
+// --- Log Viewer Component (Updated) ---
 const LogViewer = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -166,18 +166,20 @@ const LogViewer = () => {
 
   return (
     <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl h-full flex flex-col">
-      <div className="p-6 border-b border-white/20"><h2 className="text-3xl font-bold tracking-tight text-white">Action Logs</h2></div>
-      <div className="flex-grow overflow-y-auto p-4 space-y-3">
+      <div className="p-6 border-b border-white/20">
+        <h2 className="text-3xl font-bold tracking-tight text-white">Action Logs</h2>
+      </div>
+      <div className="flex-grow overflow-y-auto p-4 space-y-4">
         {loading ? (
           <p className="p-4 text-center text-white/60">Loading logs...</p>
         ) : logs.length > 0 ? (
           logs.slice(0, visibleCount).map(log => (
-            <div key={log.id} className="p-3 rounded-md bg-white/5 flex items-start space-x-4">
-              <div className="flex-shrink-0 w-40">
+            <div key={log.id} className="p-3 rounded-md bg-white/5 grid grid-cols-3 gap-4">
+              <div className="col-span-1">
                 <p className="text-white/80 text-xs">{new Date(log.timestamp).toLocaleString()}</p>
-                <p className="text-white font-semibold">{log.user}</p>
+                <p className="text-white font-semibold truncate">{log.user}</p>
               </div>
-              <div className="flex-grow">
+              <div className="col-span-2">
                 <p className="text-sky-400 font-semibold">{log.action}</p>
                 <p className="text-white/80 text-sm break-words">{log.details}</p>
               </div>
@@ -188,7 +190,9 @@ const LogViewer = () => {
         )}
       </div>
       {logs.length > visibleCount && (
-        <div className="p-4 text-center border-t border-white/20"><button onClick={showMoreLogs} className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium">Show More</button></div>
+        <div className="p-4 text-center border-t border-white/20">
+          <button onClick={showMoreLogs} className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium">Show More</button>
+        </div>
       )}
     </div>
   );

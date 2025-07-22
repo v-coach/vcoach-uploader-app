@@ -1,7 +1,81 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
-import CoachDashboard from './CoachDashboard'; // <-- This line was missing
+import CoachDashboard from './CoachDashboard';
+
+const LogViewer = () => {
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(5); // State to manage how many logs are visible
+  const { token } = useAuth();
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      // Re-enable token check for production
+      // if (!token) return; 
+      try {
+        setLoading(true);
+        const res = await axios.get('/.netlify/functions/get-logs', {
+          // headers: { Authorization: `Bearer ${token}` }, // Re-enable for production
+        });
+        setLogs(res.data);
+      } catch (err) {
+        console.error('Failed to fetch logs:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLogs();
+  }, []); // The dependency array is empty to run once on mount
+
+  const showMoreLogs = () => {
+    setVisibleCount(prevCount => prevCount + 10); // Show 10 more logs
+  };
+
+  return (
+    <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl mt-8">
+      <div className="p-6">
+        <h2 className="text-3xl font-bold tracking-tight text-white">Action Logs</h2>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full caption-bottom text-sm">
+          <thead className="[&_tr]:border-b border-white/20">
+            <tr className="transition-colors">
+              <th className="h-12 px-4 text-left align-middle font-medium text-white/60">Timestamp</th>
+              <th className="h-12 px-4 text-left align-middle font-medium text-white/60">User</th>
+              <th className="h-12 px-4 text-left align-middle font-medium text-white/60">Action</th>
+              <th className="h-12 px-4 text-left align-middle font-medium text-white/60">Details</th>
+            </tr>
+          </thead>
+          <tbody className="[&_tr:last-child]:border-0">
+            {loading ? (
+              <tr><td colSpan="4" className="p-4 text-center text-white/60">Loading logs...</td></tr>
+            ) : logs.length > 0 ? (
+              logs.slice(0, visibleCount).map(log => (
+                <tr key={log.id} className="border-b border-white/20">
+                  <td className="p-4 align-middle text-white/80 whitespace-nowrap">{new Date(log.timestamp).toLocaleString()}</td>
+                  <td className="p-4 align-middle text-white">{log.user}</td>
+                  <td className="p-4 align-middle text-white/80">{log.action}</td>
+                  <td className="p-4 align-middle text-white/80">{log.details}</td>
+                </tr>
+              ))
+            ) : (
+              <tr><td colSpan="4" className="p-4 text-center text-white/60">No logs found.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      {logs.length > visibleCount && (
+        <div className="p-4 text-center">
+          <button onClick={showMoreLogs} className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium">
+            Show More
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 
 function AdminDashboard() {
   const [metrics, setMetrics] = useState({ totalSize: 0, fileCount: 0 });
@@ -10,12 +84,12 @@ function AdminDashboard() {
 
   useEffect(() => {
     const fetchMetrics = async () => {
-      // In testing mode, we don't need a token. For production, you'd re-enable this.
-      // if (!token) return; 
+      // Re-enable token check for production
+      // if (!token) return;
       try {
         setLoading(true);
         const res = await axios.get('/.netlify/functions/get-metrics', {
-          // headers: { Authorization: `Bearer ${token}` }, // Also re-enable for production
+          // headers: { Authorization: `Bearer ${token}` }, // Re-enable for production
         });
         setMetrics(res.data);
       } catch (err) {
@@ -25,7 +99,7 @@ function AdminDashboard() {
       }
     };
     fetchMetrics();
-  }, [token]); // The dependency array is fine even in testing mode
+  }, []); // The dependency array is empty to run once on mount
 
   return (
     <div className="flex flex-col">
@@ -61,6 +135,8 @@ function AdminDashboard() {
         <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">File Management</h2>
         <CoachDashboard />
       </div>
+
+      <LogViewer />
     </div>
   );
 }

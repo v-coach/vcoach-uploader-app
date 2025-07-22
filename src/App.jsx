@@ -4,21 +4,28 @@ import { AuthProvider, useAuth } from './AuthContext';
 import StudentDashboard from './components/StudentDashboard';
 import CoachDashboard from './components/CoachDashboard';
 import AdminDashboard from './components/AdminDashboard';
-import LoginPage from './components/LoginPage'; // New login page component
+import LoginPage from './components/LoginPage';
 import vcoachlg from '../public/vcoachlg.jpg';
 
-// New Protected Route component for handling authentication
+// Updated Protected Route component to handle initialization
 const ProtectedRoute = ({ requiredRoles }) => {
-  const { user } = useAuth();
+  const { user, isInitializing } = useAuth();
 
+  // If we are still checking for a token, show a loading message
+  if (isInitializing) {
+    return <div className="text-center text-white/80">Loading...</div>;
+  }
+
+  // After checking, if there's no user, redirect to login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
+  // Check if the user has the required role
   const hasRequiredRole = user.roles.some(role => requiredRoles.includes(role));
 
   if (!hasRequiredRole) {
-    // Redirect to a "not authorized" page or back to student page
+    // If user doesn't have the role, send them to the student page
     return <Navigate to="/" replace />; 
   }
 

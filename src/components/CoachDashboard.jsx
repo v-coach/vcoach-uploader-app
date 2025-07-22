@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
-// New Video Player Modal Component
+// Video Player Modal Component
 const VideoPlayerModal = ({ videoUrl, onClose }) => {
   const videoRef = useRef(null);
 
@@ -65,19 +65,20 @@ function CoachDashboard() {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const { token } = useAuth();
 
+  const fetchFiles = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get('/.netlify/functions/list-files');
+      setFiles(res.data.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified)));
+    } catch (err) {
+      setError('Failed to fetch files. Please check the function logs.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get('/.netlify/functions/list-files');
-        setFiles(res.data.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified)));
-      } catch (err) {
-        setError('Failed to fetch files. Please check the function logs.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchFiles();
   }, []);
 
@@ -89,6 +90,19 @@ function CoachDashboard() {
         setFiles(files.filter(f => f.key !== fileKey));
     } catch (err) {
         alert('Failed to delete file.');
+    }
+  };
+
+  const handleRename = async (oldKey) => {
+    const newName = window.prompt("Enter the new file name:", oldKey);
+    if (newName && newName !== oldKey) {
+        try {
+            await axios.post('/.netlify/functions/rename-file', { oldKey, newKey: newName });
+            // Refetch files to update the list with the new name and URL
+            fetchFiles();
+        } catch (err) {
+            alert('Failed to rename file.');
+        }
     }
   };
 
@@ -131,6 +145,9 @@ function CoachDashboard() {
                         <td className="p-4 align-middle text-right space-x-2">
                           <button onClick={() => handleViewClick(file.url)} className="h-9 px-3 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold">
                             View
+                          </button>
+                          <button onClick={() => handleRename(file.key)} className="h-9 px-3 bg-gray-500 text-white hover:bg-gray-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium">
+                            Rename
                           </button>
                           <button onClick={() => handleDelete(file.key)} className="h-9 px-3 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium">
                             Delete

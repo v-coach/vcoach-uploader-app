@@ -1,4 +1,3 @@
-// File: netlify/functions/manage-users.js
 const { S3Client, GetObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -59,12 +58,20 @@ exports.handler = async (event) => {
         }
 
         if (event.httpMethod === 'PUT') {
-            const { username, roles } = JSON.parse(event.body);
+            const { username, roles, password } = JSON.parse(event.body);
             const userIndex = users.findIndex(u => u.username === username);
             if (userIndex === -1) {
                 return { statusCode: 404, body: 'User not found' };
             }
+            
+            // Update roles
             users[userIndex].roles = roles;
+
+            // If a new password is provided, hash and update it
+            if (password) {
+                users[userIndex].passwordHash = bcrypt.hashSync(password, 10);
+            }
+
             await saveUsers(users);
             return { statusCode: 200, body: 'User updated' };
         }

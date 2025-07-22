@@ -13,12 +13,30 @@ const s3Client = new S3Client({
 
 exports.handler = async (event) => {
   const token = event.headers.authorization?.split(' ')[1];
-  if (!token) return { statusCode: 401 };
+  
+  // --- New Logging Step 1: Check if token exists ---
+  console.log("Received token:", token ? "A token was received" : "No token received");
+
+  if (!token) {
+    return { statusCode: 401, body: "No token provided." };
+  }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    let decoded;
+    try {
+      // --- New Logging Step 2: Verify the token ---
+      console.log("Attempting to verify token...");
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log("Token verified successfully for user:", decoded.username);
+    } catch (jwtError) {
+      console.error("--- JWT VERIFICATION FAILED ---");
+      console.error("Error:", jwtError.message);
+      return { statusCode: 401, body: "Invalid or expired token." };
+    }
+
     if (!decoded.isCoach && !decoded.isAdmin) {
-        return { statusCode: 403 };
+        console.log(`User ${decoded.username} denied access due to insufficient roles.`);
+        return { statusCode: 403, body: "Forbidden: Insufficient roles." };
     }
 
     const listCommand = new ListObjectsV2Command({
@@ -31,7 +49,6 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: JSON.stringify([]) };
     }
 
-    // Filter out system files before mapping
     const filteredContents = Contents.filter(file => 
         file.Key !== 'users.json' && file.Key !== 'logs.json'
     );
@@ -53,13 +70,11 @@ exports.handler = async (event) => {
           };
         } catch (err) {
             console.error(`Failed to get signed URL for ${file.Key}:`, err);
-            // Return null for files that cause an error, so Promise.all doesn't fail completely
             return null;
         }
       })
     );
     
-    // Filter out any null results from failed signed URL generations
     const validFiles = filesWithUrls.filter(file => file !== null);
 
     return {
@@ -68,11 +83,8 @@ exports.handler = async (event) => {
     };
 
   } catch (error) {
-    // --- Enhanced Error Logging ---
-    console.error("--- DETAILED LIST FILES ERROR ---");
-    console.error("Error Name:", error.name);
+    console.error("--- UNEXPECTED LIST FILES ERROR ---");
     console.error("Error Message:", error.message);
-    console.error("Full Error Object:", JSON.stringify(error, null, 2));
     return { statusCode: 500, body: "Internal Server Error" };
   }
 };

@@ -1,5 +1,6 @@
 const { S3Client, ListObjectsV2Command, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const jwt = require('jsonwebtoken');
 
 const s3Client = new S3Client({
   region: "auto",
@@ -11,9 +12,15 @@ const s3Client = new S3Client({
 });
 
 exports.handler = async (event) => {
-  // --- AUTHENTICATION DISABLED FOR TESTING ---
+  const token = event.headers.authorization?.split(' ')[1];
+  if (!token) return { statusCode: 401 };
 
   try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded.isCoach && !decoded.isAdmin) {
+        return { statusCode: 403 };
+    }
+
     const listCommand = new ListObjectsV2Command({
       Bucket: process.env.R2_BUCKET_NAME,
     });
@@ -21,20 +28,20 @@ exports.handler = async (event) => {
     const { Contents } = await s3Client.send(listCommand);
     
     if (!Contents || Contents.length === 0) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify([]),
-      };
+      return { statusCode: 200, body: JSON.stringify([]) };
     }
 
-    // Create a pre-signed URL for each file
+    // Filter out system files before mapping
+    const filteredContents = Contents.filter(file => 
+        file.Key !== 'users.json' && file.Key !== 'logs.json'
+    );
+
     const filesWithUrls = await Promise.all(
-      Contents.map(async (file) => {
+      filteredContents.map(async (file) => {
         const getCommand = new GetObjectCommand({
           Bucket: process.env.R2_BUCKET_NAME,
           Key: file.Key,
         });
-        // Create a temporary URL valid for 1 hour
         const url = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
 
         return {
@@ -51,8 +58,7 @@ exports.handler = async (event) => {
       body: JSON.stringify(filesWithUrls),
     };
 
-  } catch (error)
-  {
+  } catch (error) {
     console.error("List files error:", error);
     return { statusCode: 500, body: "Internal Server Error" };
   }

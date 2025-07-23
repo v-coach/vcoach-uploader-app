@@ -7,8 +7,6 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.398.0",
-    "@aws-sdk/s3-request-presigner": "^3.398.0",
     "axios": "^1.5.0",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",

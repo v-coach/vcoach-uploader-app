@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import * as tus from 'tus-js-client';
 
 function UploadPanel() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [upload, setUpload] = useState(null);
   const [message, setMessage] = useState('');
   const [fileName, setFileName] = useState('');
   const [notification, setNotification] = useState('');
 
-  const handleFileChange = async (e) => {
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification('');
+      }, 5000); // Notification disappears after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const MAX_FILE_SIZE = 4 * 1024 * 1024 * 1024;
+    const MAX_FILE_SIZE = 4 * 1024 * 1024 * 1024; // 4 GB in bytes
     if (file.size > MAX_FILE_SIZE) {
       setMessage('File is too large. The maximum upload size is 4GB.');
       setFileName('');
@@ -24,55 +35,55 @@ function UploadPanel() {
     setUploadProgress(0);
     setMessage(`Preparing upload for ${file.name}...`);
 
-    try {
-      // Step 1: Get the pre-signed URL from our function
-      const presignedUrlResponse = await fetch('/.netlify/functions/get-upload-url', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileName: file.name, contentType: file.type }),
-      });
-
-      if (!presignedUrlResponse.ok) {
-        throw new Error('Could not get an upload URL from the server.');
-      }
-
-      const { uploadURL } = await presignedUrlResponse.json();
-      setMessage(`Uploading ${file.name}...`);
-
-      // Step 2: Upload the file directly to R2 using the pre-signed URL
-      // We use XMLHttpRequest here because it has built-in upload progress tracking.
-      const xhr = new XMLHttpRequest();
-      xhr.open('PUT', uploadURL, true);
-      xhr.setRequestHeader('Content-Type', file.type);
-
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percentage = (event.loaded / event.total) * 100;
-          setUploadProgress(percentage);
+    fetch('/.netlify/functions/get-upload-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileName: file.name, contentType: file.type }),
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`Server responded with ${res.status}`);
         }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status === 200) {
+        return res.json();
+    })
+    .then(({ uploadURL }) => {
+      setMessage(`Uploading ${file.name}...`);
+      const tusUpload = new tus.Upload(file, {
+        endpoint: uploadURL,
+        retryDelays: [0, 3000, 5000, 10000],
+        metadata: { filename: file.name, filetype: file.type },
+        onError: (error) => {
+          console.error("Upload failed:", error);
+          setIsUploading(false);
+          setMessage('Upload failed. Please try again.');
+        },
+        onProgress: (bytesUploaded, bytesTotal) => {
+          const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
+          setUploadProgress(percentage);
+        },
+        onSuccess: () => {
           setIsUploading(false);
           setNotification(`${fileName} has been uploaded successfully!`);
           setMessage('');
           setFileName('');
-        } else {
-          throw new Error(`Upload failed with status: ${xhr.status}`);
-        }
-      };
+        },
+      });
+      setUpload(tusUpload);
+      tusUpload.start();
+    })
+    .catch(err => {
+        console.error("Error preparing upload:", err);
+        setIsUploading(false);
+        setMessage('Could not prepare upload. Check function logs.');
+    });
+  };
 
-      xhr.onerror = () => {
-        throw new Error('An error occurred during the upload.');
-      };
-
-      xhr.send(file);
-
-    } catch (err) {
-      console.error("Upload process failed:", err);
+  const handleCancel = () => {
+    if (upload) {
+      upload.abort();
       setIsUploading(false);
-      setMessage('Upload failed. Please check the function logs and CORS policy.');
+      setMessage('Upload canceled.');
+      setFileName('');
     }
   };
 
@@ -106,10 +117,15 @@ function UploadPanel() {
           
           {isUploading && (
             <div>
-              <div className="w-full bg-white/20 rounded-full h-2.5">
-                <div className="bg-white h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
+              <div className="w-full bg-green-900/50 rounded-full h-2.5">
+                <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
               </div>
-              <p className="text-center text-sm text-white/80 mt-2">{uploadProgress.toFixed(0)}%</p>
+              <p className="text-center text-sm text-white/80 mt-2">{uploadProgress}%</p>
+              <div className="mt-4 flex justify-center">
+                  <button onClick={handleCancel} className="h-10 px-6 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium">
+                    Cancel Upload
+                  </button>
+              </div>
             </div>
           )}
 

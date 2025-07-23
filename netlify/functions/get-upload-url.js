@@ -5,7 +5,7 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
-  
+
   try {
     const s3Client = new S3Client({
       region: "auto",
@@ -18,18 +18,18 @@ exports.handler = async (event) => {
 
     const { fileName, contentType } = JSON.parse(event.body);
     
-    // 1. Sanitize the original filename to remove special characters
+    // Sanitize the original filename to remove special characters
     const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '');
     
-    // 2. Use Date.now() to create a unique prefix (the original working method)
+    // Use Date.now() to create a unique prefix
     const uniquePrefix = Date.now();
 
-    // 3. Combine the unique prefix and sanitized filename
+    // Combine the unique prefix and sanitized filename
     const finalKey = `${uniquePrefix}-${sanitizedFileName}`;
 
     const command = new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME,
-      Key: finalKey, // Use the restored, reliable key format
+      Key: finalKey,
       ContentType: contentType,
     });
 

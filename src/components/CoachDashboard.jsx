@@ -151,9 +151,11 @@ const VideoPlayerModal = ({ videoFile, initialNotes, onSave, onClose }) => {
           <video ref={videoRef} src={videoFile.url} controls className={`w-full h-full object-contain bg-black ${isFullscreen ? 'rounded-none' : 'rounded-tl-lg'}`} />
           <div className={`p-4 bg-gray-900/80 backdrop-blur-sm flex items-center justify-between space-x-4 text-white ${isFullscreen ? 'rounded-none' : 'rounded-bl-lg'}`}>
             <div className="flex items-center space-x-2">
+              <button onClick={() => handleSeek(-10)} className="px-3 py-1 bg-sky-500 hover:bg-sky-600 rounded text-sm font-semibold">-10s</button>
               <button onClick={() => handleSeek(-5)} className="px-3 py-1 bg-sky-500 hover:bg-sky-600 rounded text-sm font-semibold">-5s</button>
               <button onClick={handlePlayPause} className="px-3 py-1 bg-sky-500 hover:bg-sky-600 rounded text-sm font-semibold">Play/Pause</button>
               <button onClick={() => handleSeek(5)} className="px-3 py-1 bg-sky-500 hover:bg-sky-600 rounded text-sm font-semibold">+5s</button>
+              <button onClick={() => handleSeek(10)} className="px-3 py-1 bg-sky-500 hover:bg-sky-600 rounded text-sm font-semibold">+10s</button>
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-sm font-semibold">Speed:</span>
@@ -161,6 +163,8 @@ const VideoPlayerModal = ({ videoFile, initialNotes, onSave, onClose }) => {
               <button onClick={() => handlePlaybackSpeed(1)} className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-xs">1x</button>
               <button onClick={() => handlePlaybackSpeed(1.5)} className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-xs">1.5x</button>
               <button onClick={() => handlePlaybackSpeed(2)} className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-xs">2x</button>
+              <button onClick={() => handlePlaybackSpeed(5)} className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-xs">5x</button>
+              <button onClick={() => handlePlaybackSpeed(10)} className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-xs">10x</button>
             </div>
             <div className="flex items-center space-x-2">
                 <button onClick={handleToggleFullScreen} className="px-3 py-1 bg-white/10 rounded">Fullscreen</button>

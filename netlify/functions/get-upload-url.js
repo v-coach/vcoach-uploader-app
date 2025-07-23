@@ -1,22 +1,6 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
-/**
- * Creates a safe, formatted timestamp string (YYYYMMDD_HHmm).
- * @returns {string} The formatted timestamp.
- */
-const getSafeTimestamp = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  
-  // Creates a format like: 20250723_1102
-  return `${year}${month}${day}_${hours}${minutes}`;
-};
-
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
@@ -34,18 +18,18 @@ exports.handler = async (event) => {
 
     const { fileName, contentType } = JSON.parse(event.body);
     
-    // Sanitize the original filename to remove problematic characters
+    // 1. Sanitize the original filename to remove special characters
     const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '');
     
-    // Get the new, safer timestamp
-    const timestamp = getSafeTimestamp();
+    // 2. Use Date.now() to create a unique prefix (the original working method)
+    const uniquePrefix = Date.now();
 
-    // Combine timestamp and sanitized filename for the final key
-    const finalKey = `${timestamp}-${sanitizedFileName}`;
+    // 3. Combine the unique prefix and sanitized filename
+    const finalKey = `${uniquePrefix}-${sanitizedFileName}`;
 
     const command = new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME,
-      Key: finalKey, // Use the new, safe key
+      Key: finalKey, // Use the restored, reliable key format
       ContentType: contentType,
     });
 

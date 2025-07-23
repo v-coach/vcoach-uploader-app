@@ -117,7 +117,7 @@ function UploadPanel() {
           
           {isUploading && (
             <div>
-              <div className="w-full bg-green-900/50 rounded-full h-2.5">
+              <div className="w-full bg-gray-700 rounded-full h-2.5">
                 <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
               </div>
               <p className="text-center text-sm text-white/80 mt-2">{uploadProgress}%</p>

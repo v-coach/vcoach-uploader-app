@@ -104,11 +104,17 @@ export default async (req: Request, context: Context) => {
     const uploadURL = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
     console.log("Signed URL generated successfully");
 
+    // Generate the correct public URL for R2
+    // Use the R2 public development URL from environment variable
+    const r2PublicUrl = Netlify.env.get('R2_PUBLIC_URL') || 'https://pub-be91dda7d39a4f969cc9be2f9c867baa.r2.dev';
+    const publicUrl = `${r2PublicUrl}/${finalKey}`;
+    console.log("Using R2 public URL:", publicUrl);
+
     // Return both upload URL and the final key for storing in coach data
     return new Response(JSON.stringify({ 
       uploadURL, 
       imageKey: finalKey,
-      publicUrl: `https://${Netlify.env.get('CLOUDFLARE_ACCOUNT_ID')}.r2.cloudflarestorage.com/${Netlify.env.get('R2_BUCKET_NAME')}/${finalKey}`
+      publicUrl: publicUrl
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }

@@ -184,9 +184,17 @@ function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
             {coaches.map((coach) => (
               <div key={coach.id} className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
-                <div className={`w-24 h-24 bg-gradient-to-br ${coach.avatarColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                  <span className="text-2xl font-bold text-white">{coach.initials}</span>
-                </div>
+                {coach.profileImage ? (
+                  <img 
+                    src={coach.profileImage}
+                    alt={coach.name}
+                    className="w-24 h-24 rounded-full object-cover border-2 border-white/20 mx-auto mb-4"
+                  />
+                ) : (
+                  <div className={`w-24 h-24 bg-gradient-to-br ${coach.avatarColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                    <span className="text-2xl font-bold text-white">{coach.initials}</span>
+                  </div>
+                )}
                 <h3 className="text-xl font-bold text-white mb-2">{coach.name}</h3>
                 <div className="text-sky-400 font-semibold mb-3">{coach.title}</div>
                 <p className="text-white/70 text-sm mb-4">

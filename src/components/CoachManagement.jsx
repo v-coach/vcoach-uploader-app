@@ -524,7 +524,16 @@ const CoachManagement = () => {
       }
       
       setModalState({ type: null, coach: null });
-      await fetchCoaches(); // Refresh the list
+      
+      // Add a small delay before refreshing to ensure the image is accessible
+      if (coachData.profileImage && coachData.profileImage.includes('pub-be91dda')) {
+        console.log('New image uploaded, waiting 2 seconds before refresh...');
+        setTimeout(async () => {
+          await fetchCoaches();
+        }, 2000);
+      } else {
+        await fetchCoaches();
+      }
     } catch (err) {
       console.error('Failed to save coach:', err);
       const errorMessage = err.response?.data?.error || err.message;
@@ -650,35 +659,29 @@ const CoachManagement = () => {
                           src={profileImage}
                           alt={coach.name}
                           className="w-16 h-16 rounded-full object-cover border-2 border-white/20"
-                          onLoad={() => console.log('Image loaded successfully:', profileImage)}
+                          onLoad={() => console.log('✅ Image loaded successfully:', profileImage)}
                           onError={(e) => {
-                            console.error("Coach image failed to load:", profileImage);
-                            console.error("Error event:", e);
+                            console.error("❌ Coach image failed to load:", profileImage);
                             // Hide the broken image and show avatar instead
                             e.currentTarget.style.display = 'none';
-                            const avatarDiv = e.currentTarget.parentElement?.nextElementSibling;
-                            if (avatarDiv) {
-                              avatarDiv.style.display = 'flex';
+                            const parentDiv = e.currentTarget.parentElement;
+                            if (parentDiv) {
+                              // Create and show avatar fallback
+                              const avatarDiv = document.createElement('div');
+                              avatarDiv.className = `w-16 h-16 bg-gradient-to-br ${avatarColor} rounded-full flex items-center justify-center`;
+                              avatarDiv.innerHTML = `<span class="text-lg font-bold text-white">${coach.initials || coach.name.split(' ').map(n => n[0]).join('').toUpperCase()}</span>`;
+                              parentDiv.appendChild(avatarDiv);
                             }
                           }}
                         />
-                        {/* Fallback avatar - initially hidden */}
-                        <div 
-                          className={`w-16 h-16 bg-gradient-to-br ${avatarColor} rounded-full flex items-center justify-center absolute top-0 left-0`}
-                          style={{ display: 'none' }}
-                        >
-                          <span className="text-lg font-bold text-white">
-                            {coach.initials || coach.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                          </span>
-                        </div>
                       </div>
                     ) : (
-                      <div className={`w-16 h-16 bg-gradient-to-br ${avatarColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                      <div className={`w-16 h-16 bg-gradient-to-br ${avatarColor} rounded-full flex items-center justify-center mx-auto mb-4 relative`}>
                         <span className="text-lg font-bold text-white">
                           {coach.initials || coach.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                         </span>
                         {isOldUrl && (
-                          <div className="absolute top-0 right-0 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center text-xs">
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center text-xs" title="Image needs to be re-uploaded">
                             ⚠️
                           </div>
                         )}

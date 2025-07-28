@@ -503,9 +503,10 @@ const CoachManagement = () => {
     try {
       console.log('Saving coach data:', coachData);
       
+      let response;
       if (coachData.id) {
         // Update existing coach
-        const response = await axios.put('/.netlify/functions/manage-coaches', coachData, {
+        response = await axios.put('/.netlify/functions/manage-coaches', coachData, {
           headers: { 
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -514,7 +515,7 @@ const CoachManagement = () => {
         console.log('Coach updated successfully:', response.data);
       } else {
         // Create new coach
-        const response = await axios.post('/.netlify/functions/manage-coaches', coachData, {
+        response = await axios.post('/.netlify/functions/manage-coaches', coachData, {
           headers: { 
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -525,15 +526,26 @@ const CoachManagement = () => {
       
       setModalState({ type: null, coach: null });
       
-      // Add a small delay before refreshing to ensure the image is accessible
-      if (coachData.profileImage && coachData.profileImage.includes('pub-be91dda')) {
-        console.log('New image uploaded, waiting 2 seconds before refresh...');
-        setTimeout(async () => {
-          await fetchCoaches();
-        }, 2000);
-      } else {
-        await fetchCoaches();
+      // Immediately update the local coaches state with the returned data
+      if (response.data) {
+        if (coachData.id) {
+          // Update existing coach in local state
+          setCoaches(prevCoaches => 
+            prevCoaches.map(coach => 
+              coach.id === coachData.id ? response.data : coach
+            )
+          );
+        } else {
+          // Add new coach to local state
+          setCoaches(prevCoaches => [...prevCoaches, response.data]);
+        }
       }
+      
+      // Also fetch fresh data after a short delay to ensure everything is in sync
+      setTimeout(async () => {
+        await fetchCoaches();
+      }, 1000);
+      
     } catch (err) {
       console.error('Failed to save coach:', err);
       const errorMessage = err.response?.data?.error || err.message;

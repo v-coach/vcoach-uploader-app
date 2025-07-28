@@ -223,7 +223,7 @@ function LandingPage() {
                     {coach.socialMedia.instagram && (
                       <a href={coach.socialMedia.instagram} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full flex items-center justify-center transition-colors">
                         <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.40z"/>
+                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.40z"/>
                         </svg>
                       </a>
                     )}
@@ -270,6 +270,166 @@ function LandingPage() {
             </Link>
           </div>
         )}
+      </div>
+
+      {/* Subscription Plans Section */}
+      <div className="text-center mb-16">
+        <h2 className="text-4xl font-bold text-white mb-4">Choose Your Plan</h2>
+        <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto">
+          Select the perfect plan for your gaming journey. Upgrade your skills with professional coaching and exclusive features.
+        </p>
+        
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {/* Free Plan */}
+          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center relative">
+            <div className="mb-6">
+              <img src="/vcoachlg.jpg" alt="V-Coach Logo" className="w-16 h-16 mx-auto mb-4 rounded-lg" />
+              <h3 className="text-2xl font-bold text-white mb-2">Free Plan</h3>
+              <div className="text-4xl font-bold text-white mb-2">$0.00</div>
+              <div className="text-white/60 text-sm">USD / month</div>
+            </div>
+            
+            <button className="w-full h-12 px-6 bg-green-500 text-white hover:bg-green-600 rounded-xl text-lg font-bold mb-6 transition-colors">
+              Subscribe
+            </button>
+            
+            <div className="space-y-4 text-left">
+              <div className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Exclusive Roles</div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">Basic VoD Upload</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">Community Access</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">Basic Analytics</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Individual Plan */}
+          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center relative">
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <div className="bg-sky-500 text-white px-4 py-1 rounded-full text-xs font-bold">MOST POPULAR</div>
+            </div>
+            
+            <div className="mb-6">
+              <img src="/vcoachlg.jpg" alt="V-Coach Logo" className="w-16 h-16 mx-auto mb-4 rounded-lg" />
+              <h3 className="text-2xl font-bold text-white mb-2">Individual Plan</h3>
+              <div className="text-4xl font-bold text-white mb-2">$26.99</div>
+              <div className="text-white/60 text-sm">USD / month</div>
+            </div>
+            
+            <button className="w-full h-12 px-6 bg-green-500 text-white hover:bg-green-600 rounded-xl text-lg font-bold mb-6 transition-colors">
+              Subscribe
+            </button>
+            
+            <div className="space-y-4 text-left">
+              <div className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Exclusive Roles</div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3"/>
+                    <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">Priority VoD Review</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3"/>
+                    <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">1-on-1 Coaching Sessions</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3"/>
+                    <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">Detailed Analytics</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3"/>
+                    <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">Custom Training Plans</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Team Plan */}
+          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center relative">
+            <div className="mb-6">
+              <img src="/vcoachlg.jpg" alt="V-Coach Logo" className="w-16 h-16 mx-auto mb-4 rounded-lg" />
+              <h3 className="text-2xl font-bold text-white mb-2">Team Plan</h3>
+              <div className="text-4xl font-bold text-white mb-2">$100.99</div>
+              <div className="text-white/60 text-sm">USD / month</div>
+            </div>
+            
+            <button className="w-full h-12 px-6 bg-green-500 text-white hover:bg-green-600 rounded-xl text-lg font-bold mb-6 transition-colors">
+              Subscribe
+            </button>
+            
+            <div className="space-y-4 text-left">
+              <div className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Exclusive Roles</div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">Team VoD Analysis</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">Group Coaching Sessions</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">Strategy Development</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </div>
+                <span className="text-white/80 text-sm">Tournament Preparation</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Stats Section */}

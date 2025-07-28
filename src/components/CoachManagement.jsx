@@ -1,4 +1,307 @@
-// Replace your CoachManagement component with this debug version:
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useAuth } from '../AuthContext';
+
+const CoachModal = ({ coach, onSave, onCancel }) => {
+  console.log("=== COACH MODAL LOADING ===", { coach, onSave: !!onSave, onCancel: !!onCancel });
+  
+  const [formData, setFormData] = useState({
+    name: coach?.name || '',
+    title: coach?.title || '',
+    description: coach?.description || '',
+    skills: coach?.skills?.join(', ') || '',
+    avatarColor: coach?.avatarColor || 'from-sky-400 to-blue-600',
+    initials: coach?.initials || '',
+    profileImage: coach?.profileImage || null,
+    socialMedia: {
+      twitter: coach?.socialMedia?.twitter || '',
+      instagram: coach?.socialMedia?.instagram || '',
+      youtube: coach?.socialMedia?.youtube || '',
+      twitch: coach?.socialMedia?.twitch || '',
+      discord: coach?.socialMedia?.discord || ''
+    }
+  });
+  
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(coach?.profileImage || null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const { token } = useAuth();
+
+  const colorOptions = [
+    { value: 'from-sky-400 to-blue-600', label: 'Blue', preview: 'bg-gradient-to-br from-sky-400 to-blue-600' },
+    { value: 'from-green-400 to-emerald-600', label: 'Green', preview: 'bg-gradient-to-br from-green-400 to-emerald-600' },
+    { value: 'from-purple-400 to-violet-600', label: 'Purple', preview: 'bg-gradient-to-br from-purple-400 to-violet-600' },
+    { value: 'from-red-400 to-rose-600', label: 'Red', preview: 'bg-gradient-to-br from-red-400 to-rose-600' },
+    { value: 'from-orange-400 to-amber-600', label: 'Orange', preview: 'bg-gradient-to-br from-orange-400 to-amber-600' },
+    { value: 'from-pink-400 to-fuchsia-600', label: 'Pink', preview: 'bg-gradient-to-br from-pink-400 to-fuchsia-600' }
+  ];
+
+  useEffect(() => {
+    if (!formData.initials && formData.name) {
+      setFormData(prev => ({
+        ...prev,
+        initials: formData.name.split(' ').map(n => n[0]).join('').toUpperCase()
+      }));
+    }
+  }, [formData.name, formData.initials]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please select a valid image file (JPEG, PNG, WebP, or GIF)');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    setImageFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const uploadImage = async () => {
+    if (!imageFile || !coach?.id) return null;
+
+    setUploadingImage(true);
+    try {
+      // Get pre-signed URL for image upload
+      const response = await fetch('/.netlify/functions/upload-coach-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          fileName: imageFile.name,
+          contentType: imageFile.type,
+          coachId: coach.id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get upload URL');
+      }
+
+      const { uploadURL, publicUrl } = await response.json();
+
+      // Upload the file
+      const uploadResponse = await fetch(uploadURL, {
+        method: 'PUT',
+        body: imageFile,
+        headers: {
+          'Content-Type': imageFile.type
+        }
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      alert('Failed to upload image. Please try again.');
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("=== FORM SUBMIT ===", formData);
+    
+    let profileImageUrl = formData.profileImage;
+    
+    // Upload new image if one was selected
+    if (imageFile) {
+      profileImageUrl = await uploadImage();
+      if (!profileImageUrl) return; // Upload failed
+    }
+    
+    const skillsArray = formData.skills.split(',').map(s => s.trim()).filter(s => s);
+    onSave({
+      ...coach,
+      ...formData,
+      skills: skillsArray,
+      profileImage: profileImageUrl
+    });
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setFormData(prev => ({ ...prev, profileImage: null }));
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
+        
+        {/* Debug indicator */}
+        <div className="mb-4 p-2 bg-green-500/20 border border-green-500 rounded text-xs text-white">
+          ✅ MODAL IS WORKING! Coach: {coach ? coach.name || "New Coach" : "New Coach"}
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <h2 className="text-xl font-bold text-white mb-6">
+            {coach ? 'Edit Coach' : 'Add New Coach'}
+          </h2>
+          
+          {/* Avatar/Image Preview */}
+          <div className="text-center mb-6">
+            {imagePreview || formData.profileImage ? (
+              <div className="relative w-20 h-20 mx-auto mb-2">
+                <img 
+                  src={imagePreview || formData.profileImage}
+                  alt="Coach profile"
+                  className="w-20 h-20 rounded-full object-cover border-2 border-white/20"
+                />
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
+              <div className={`w-20 h-20 bg-gradient-to-br ${formData.avatarColor} rounded-full flex items-center justify-center mx-auto mb-2`}>
+                <span className="text-xl font-bold text-white">
+                  {formData.initials || '??'}
+                </span>
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <label className="cursor-pointer h-8 px-3 bg-white/10 hover:bg-white/20 text-white rounded-md text-xs font-medium inline-flex items-center transition-colors">
+                {uploadingImage ? 'Uploading...' : 'Upload Photo'}
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  disabled={uploadingImage}
+                />
+              </label>
+              <p className="text-xs text-white/60">JPEG, PNG, WebP, GIF (max 5MB)</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-white/80 block mb-2">Name</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full h-10 rounded-md border border-white/20 bg-transparent px-3 text-sm text-white"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-white/80 block mb-2">Title</label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="e.g., Head Coach, Mechanics Coach"
+                className="w-full h-10 rounded-md border border-white/20 bg-transparent px-3 text-sm text-white"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-white/80 block mb-2">Description</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Brief description of expertise and experience"
+                className="w-full h-20 rounded-md border border-white/20 bg-transparent px-3 py-2 text-sm text-white resize-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-white/80 block mb-2">Skills (comma-separated)</label>
+              <input
+                type="text"
+                value={formData.skills}
+                onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value }))}
+                placeholder="e.g., Strategy, Team Play, Leadership"
+                className="w-full h-10 rounded-md border border-white/20 bg-transparent px-3 text-sm text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-white/80 block mb-2">Avatar Color</label>
+              <div className="grid grid-cols-3 gap-2">
+                {colorOptions.map((color) => (
+                  <button
+                    key={color.value}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, avatarColor: color.value }))}
+                    className={`h-10 rounded-md ${color.preview} flex items-center justify-center text-white text-sm font-medium border-2 transition-all ${
+                      formData.avatarColor === color.value ? 'border-white' : 'border-transparent'
+                    }`}
+                  >
+                    {color.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-white/80 block mb-2">Initials</label>
+              <input
+                type="text"
+                value={formData.initials}
+                onChange={(e) => setFormData(prev => ({ ...prev, initials: e.target.value.toUpperCase() }))}
+                maxLength="3"
+                className="w-full h-10 rounded-md border border-white/20 bg-transparent px-3 text-sm text-white"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-4 mt-8">
+            <button 
+              type="button" 
+              onClick={() => {
+                console.log("=== CANCEL CLICKED ===");
+                onCancel();
+              }}
+              className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              disabled={uploadingImage}
+              className="h-10 px-5 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {uploadingImage ? 'Uploading...' : (coach ? 'Update Coach' : 'Add Coach')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 const CoachManagement = () => {
   const [coaches, setCoaches] = useState([]);
@@ -6,21 +309,17 @@ const CoachManagement = () => {
   const [modalState, setModalState] = useState({ type: null, coach: null });
   const { token } = useAuth();
 
-  // Add debug logging
   console.log("=== COACH MANAGEMENT RENDER ===");
-  console.log("Token exists:", !!token);
-  console.log("Current modalState:", modalState);
-  console.log("Coaches count:", coaches.length);
+  console.log("Modal state:", modalState);
+  console.log("Has token:", !!token);
 
   const fetchCoaches = async () => {
     if (!token) return;
     try {
       setLoading(true);
-      console.log("Fetching coaches...");
       const res = await axios.get('/.netlify/functions/manage-coaches', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log("Coaches fetched:", res.data);
       setCoaches(res.data);
     } catch (err) {
       console.error('Failed to fetch coaches:', err);
@@ -30,19 +329,10 @@ const CoachManagement = () => {
   };
 
   useEffect(() => {
-    console.log("useEffect triggered - fetching coaches");
     fetchCoaches();
   }, [token]);
 
-  // Add debug to modal state changes
-  useEffect(() => {
-    console.log("=== MODAL STATE CHANGED ===");
-    console.log("modalState:", modalState);
-    console.log("Should render modal?", !!modalState.type);
-  }, [modalState]);
-
   const handleSaveCoach = async (coachData) => {
-    console.log("=== SAVING COACH ===", coachData);
     try {
       if (coachData.id) {
         // Update existing coach
@@ -88,33 +378,15 @@ const CoachManagement = () => {
     return 'bg-gray-500/20 text-gray-300';
   };
 
-  // Debug the modal rendering
-  const renderModal = () => {
-    console.log("=== RENDER MODAL FUNCTION ===");
-    console.log("modalState.type:", modalState.type);
-    
-    if (modalState.type) {
-      console.log("=== RETURNING COACH MODAL ===");
-      return (
+  return (
+    <>
+      {modalState.type && (
         <CoachModal
           coach={modalState.coach}
           onSave={handleSaveCoach}
-          onCancel={() => {
-            console.log("=== MODAL CANCEL CLICKED ===");
-            setModalState({ type: null, coach: null });
-          }}
+          onCancel={() => setModalState({ type: null, coach: null })}
         />
-      );
-    }
-    
-    console.log("=== NOT RENDERING MODAL ===");
-    return null;
-  };
-
-  return (
-    <>
-      {/* Debug modal rendering */}
-      {renderModal()}
+      )}
 
       <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl">
         <div className="p-6 border-b border-white/20 flex justify-between items-center">
@@ -122,34 +394,22 @@ const CoachManagement = () => {
           <button
             onClick={() => {
               console.log("=== ADD COACH BUTTON CLICKED ===");
-              console.log("Current modalState before click:", modalState);
-              
-              // Try immediate alert to test if click works
-              alert("Button was clicked!");
-              
+              alert("Button clicked! Check console for more info.");
               setModalState({ type: 'add', coach: null });
-              console.log("setModalState called with:", { type: 'add', coach: null });
-              
-              // Check state after a brief delay
-              setTimeout(() => {
-                console.log("modalState after timeout:", modalState);
-              }, 100);
+              console.log("Modal state set to:", { type: 'add', coach: null });
             }}
             className="h-10 px-4 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold"
-            style={{ zIndex: 1 }} // Ensure button is clickable
           >
             + Add Coach
           </button>
         </div>
 
         <div className="p-6">
-          {/* Add a debug section */}
-          <div className="mb-4 p-2 bg-gray-800 rounded text-xs text-white">
-            <strong>Debug Info:</strong><br/>
-            Token: {token ? "Present" : "Missing"}<br/>
-            Modal Type: {modalState.type || "null"}<br/>
-            Coaches: {coaches.length}<br/>
-            Loading: {loading.toString()}
+          {/* Debug info */}
+          <div className="mb-4 p-3 bg-gray-800/50 rounded text-sm text-white">
+            <strong>Debug:</strong> Modal Type: {modalState.type || 'null'} | 
+            Token: {token ? 'Present' : 'Missing'} | 
+            Coaches: {coaches.length}
           </div>
 
           {loading ? (
@@ -188,10 +448,7 @@ const CoachManagement = () => {
                   
                   <div className="flex justify-center space-x-2">
                     <button
-                      onClick={() => {
-                        console.log("=== EDIT BUTTON CLICKED ===", coach);
-                        setModalState({ type: 'edit', coach });
-                      }}
+                      onClick={() => setModalState({ type: 'edit', coach })}
                       className="h-8 px-3 bg-gray-500 text-white hover:bg-gray-600 rounded-md text-xs font-medium"
                     >
                       Edit
@@ -217,41 +474,4 @@ const CoachManagement = () => {
   );
 };
 
-// Also add debug to the top of CoachModal:
-const CoachModal = ({ coach, onSave, onCancel }) => {
-  console.log("=== COACH MODAL COMPONENT LOADED ===");
-  console.log("Coach prop:", coach);
-  console.log("onSave exists:", !!onSave);
-  console.log("onCancel exists:", !!onCancel);
-
-  // ... rest of your existing CoachModal code, but add this to the return:
-  return (
-    <div 
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
-      style={{ zIndex: 9999 }} // Force very high z-index
-      onClick={(e) => {
-        console.log("=== MODAL BACKDROP CLICKED ===");
-        if (e.target === e.currentTarget) {
-          onCancel();
-        }
-      }}
-    >
-      <form 
-        onSubmit={handleSubmit} 
-        className="rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => {
-          console.log("=== MODAL FORM CLICKED ===");
-          e.stopPropagation();
-        }}
-      >
-        <div className="mb-4 p-2 bg-red-500/20 rounded text-xs text-white">
-          <strong>MODAL IS RENDERING!</strong><br/>
-          Coach: {coach ? coach.name || "New Coach" : "null"}
-        </div>
-        
-        {/* Rest of your existing form content */}
-        {/* ... */}
-      </form>
-    </div>
-  );
-};
+export default CoachManagement;

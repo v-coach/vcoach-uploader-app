@@ -1,9 +1,67 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
+import axios from 'axios';
 
 function LandingPage() {
   const { user } = useAuth();
+  const [coaches, setCoaches] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCoaches = async () => {
+      try {
+        const res = await axios.get('/.netlify/functions/manage-coaches');
+        setCoaches(res.data || []);
+      } catch (err) {
+        console.error('Failed to fetch coaches:', err);
+        // If no coaches exist, show default coaches
+        setCoaches([
+          {
+            id: '1',
+            name: 'Coach Jordan',
+            title: 'Head Coach',
+            description: 'Former professional player with 5+ years coaching experience. Specializes in strategic gameplay and team coordination.',
+            skills: ['Strategy', 'Team Play', 'Leadership'],
+            avatarColor: 'from-sky-400 to-blue-600',
+            initials: 'JD'
+          },
+          {
+            id: '2',  
+            name: 'Coach Alex',
+            title: 'Mechanics Coach',
+            description: 'Expert in mechanical skill development and precision training. Helps players master the fundamentals and advanced techniques.',
+            skills: ['Mechanics', 'Aim Training', 'Movement'],
+            avatarColor: 'from-green-400 to-emerald-600',
+            initials: 'AS'
+          },
+          {
+            id: '3',
+            name: 'Coach Morgan', 
+            title: 'Mental Performance Coach',
+            description: 'Focuses on mindset, tilt management, and peak performance psychology. Helps players maintain consistency under pressure.',
+            skills: ['Mindset', 'Focus', 'Consistency'],
+            avatarColor: 'from-purple-400 to-violet-600',
+            initials: 'MK'
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCoaches();
+  }, []);
+
+  const getSkillColor = (avatarColor) => {
+    if (avatarColor.includes('sky') || avatarColor.includes('blue')) return 'bg-sky-500/20 text-sky-300';
+    if (avatarColor.includes('green') || avatarColor.includes('emerald')) return 'bg-green-500/20 text-green-300';
+    if (avatarColor.includes('purple') || avatarColor.includes('violet')) return 'bg-purple-500/20 text-purple-300';
+    if (avatarColor.includes('red') || avatarColor.includes('rose')) return 'bg-red-500/20 text-red-300';
+    if (avatarColor.includes('orange') || avatarColor.includes('amber')) return 'bg-orange-500/20 text-orange-300';
+    if (avatarColor.includes('pink') || avatarColor.includes('fuchsia')) return 'bg-pink-500/20 text-pink-300';
+    return 'bg-gray-500/20 text-gray-300';
+  };
 
   return (
     <div className="flex flex-col min-h-[80vh]">
@@ -111,65 +169,56 @@ function LandingPage() {
           Learn from professional players and experienced coaches who have helped hundreds of players reach their competitive goals.
         </p>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-          {/* Coach 1 */}
-          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-sky-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-white">JD</span>
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Coach Jordan</h3>
-            <div className="text-sky-400 font-semibold mb-3">Head Coach</div>
-            <p className="text-white/70 text-sm mb-4">
-              Former professional player with 5+ years coaching experience. Specializes in strategic gameplay and team coordination.
-            </p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              <span className="px-3 py-1 bg-sky-500/20 text-sky-300 rounded-full text-xs">Strategy</span>
-              <span className="px-3 py-1 bg-sky-500/20 text-sky-300 rounded-full text-xs">Team Play</span>
-              <span className="px-3 py-1 bg-sky-500/20 text-sky-300 rounded-full text-xs">Leadership</span>
-            </div>
+        {loading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
+                <div className="w-24 h-24 bg-white/10 rounded-full mx-auto mb-4 animate-pulse"></div>
+                <div className="h-6 bg-white/10 rounded mb-2 animate-pulse"></div>
+                <div className="h-4 bg-white/10 rounded mb-4 animate-pulse"></div>
+                <div className="h-16 bg-white/10 rounded animate-pulse"></div>
+              </div>
+            ))}
           </div>
-
-          {/* Coach 2 */}
-          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-white">AS</span>
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Coach Alex</h3>
-            <div className="text-green-400 font-semibold mb-3">Mechanics Coach</div>
-            <p className="text-white/70 text-sm mb-4">
-              Expert in mechanical skill development and precision training. Helps players master the fundamentals and advanced techniques.
-            </p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs">Mechanics</span>
-              <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs">Aim Training</span>
-              <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs">Movement</span>
-            </div>
+        ) : coaches.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {coaches.map((coach) => (
+              <div key={coach.id} className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
+                <div className={`w-24 h-24 bg-gradient-to-br ${coach.avatarColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                  <span className="text-2xl font-bold text-white">{coach.initials}</span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">{coach.name}</h3>
+                <div className="text-sky-400 font-semibold mb-3">{coach.title}</div>
+                <p className="text-white/70 text-sm mb-4">
+                  {coach.description}
+                </p>
+                {coach.skills && coach.skills.length > 0 && (
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {coach.skills.map((skill, index) => (
+                      <span key={index} className={`px-3 py-1 rounded-full text-xs ${getSkillColor(coach.avatarColor)}`}>
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-
-          {/* Coach 3 */}
-          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-violet-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-white">MK</span>
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Coach Morgan</h3>
-            <div className="text-purple-400 font-semibold mb-3">Mental Performance Coach</div>
-            <p className="text-white/70 text-sm mb-4">
-              Focuses on mindset, tilt management, and peak performance psychology. Helps players maintain consistency under pressure.
-            </p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs">Mindset</span>
-              <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs">Focus</span>
-              <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs">Consistency</span>
-            </div>
+        ) : (
+          <div className="text-center text-white/60 mb-8">
+            <p>No coaches available at the moment.</p>
           </div>
-        </div>
+        )}
 
         {/* Add Coach Button - Only visible to admins */}
         {user && user.roles?.includes('Founders') && (
           <div className="text-center">
-            <button className="h-12 px-6 bg-white/10 text-white hover:bg-white/20 border border-white/20 inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium backdrop-blur-lg transition-all duration-300">
-              + Add New Coach
-            </button>
+            <Link 
+              to="/admin"
+              className="h-12 px-6 bg-white/10 text-white hover:bg-white/20 border border-white/20 inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium backdrop-blur-lg transition-all duration-300"
+            >
+              + Manage Coaches
+            </Link>
           </div>
         )}
       </div>

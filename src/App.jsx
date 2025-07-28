@@ -71,24 +71,38 @@ const AuthButton = () => {
     return <NavLink to="/login" className="h-10 px-5 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold inline-flex items-center">Login</NavLink>;
 };
 
-// Professional Footer Component
+// Compact Professional Footer Component
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
+  const handleSectionClick = (sectionId) => {
+    // If we're not on the home page, navigate there first
+    if (window.location.pathname !== '/') {
+      window.location.href = `/#${sectionId}`;
+      return;
+    }
+    
+    // If we're already on the home page, scroll to the section
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <footer className="bg-black/50 backdrop-blur-lg border-t border-white/20 mt-16">
-      <div className="container max-w-screen-xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <footer className="bg-black/50 backdrop-blur-lg border-t border-white/20 mt-12">
+      <div className="container max-w-screen-xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Company Info */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <img src={vcoachlg} alt="V-Coach Central Logo" className="h-10" />
-              <span className="font-bold text-lg text-white">V-Coach Central</span>
+              <img src={vcoachlg} alt="V-Coach Central Logo" className="h-8" />
+              <span className="font-bold text-base text-white">V-Coach Central</span>
             </div>
             <p className="text-white/70 text-sm leading-relaxed">
               The ultimate platform for competitive gaming improvement. Upload your gameplay, get professional analysis, and take your skills to the next level.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-3">
               <a href="#" className="w-8 h-8 bg-white/10 hover:bg-sky-500 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 group">
                 <svg className="w-4 h-4 text-white/70 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -113,9 +127,9 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Quick Links</h3>
-            <ul className="space-y-2">
+          <div className="space-y-3">
+            <h3 className="text-base font-semibold text-white">Quick Links</h3>
+            <ul className="space-y-1.5">
               <li>
                 <Link to="/" className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm">
                   Home
@@ -127,27 +141,36 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="#coaches" className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm">
+                <button 
+                  onClick={() => handleSectionClick('coaches')} 
+                  className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left"
+                >
                   Our Coaches
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#pricing" className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm">
+                <button 
+                  onClick={() => handleSectionClick('pricing')} 
+                  className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left"
+                >
                   Pricing
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm">
+                <button 
+                  onClick={() => handleSectionClick('how-it-works')} 
+                  className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left"
+                >
                   How It Works
-                </a>
+                </button>
               </li>
             </ul>
           </div>
 
           {/* Services */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Services</h3>
-            <ul className="space-y-2">
+          <div className="space-y-3">
+            <h3 className="text-base font-semibold text-white">Services</h3>
+            <ul className="space-y-1.5">
               <li>
                 <a href="#" className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm">
                   VoD Review
@@ -177,18 +200,18 @@ const Footer = () => {
           </div>
 
           {/* Newsletter Signup */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Stay Updated</h3>
+          <div className="space-y-3">
+            <h3 className="text-base font-semibold text-white">Stay Updated</h3>
             <p className="text-white/70 text-sm">
               Get the latest tips, coaching insights, and platform updates.
             </p>
-            <div className="space-y-3">
+            <div className="space-y-2">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="w-full h-10 px-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300"
+                className="w-full h-9 px-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300"
               />
-              <button className="w-full h-10 px-4 bg-sky-500 hover:bg-sky-600 text-white rounded-md text-sm font-medium transition-all duration-300 hover:scale-105">
+              <button className="w-full h-9 px-4 bg-sky-500 hover:bg-sky-600 text-white rounded-md text-sm font-medium transition-all duration-300 hover:scale-105">
                 Subscribe
               </button>
             </div>
@@ -196,12 +219,12 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-white/20 mt-8 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div className="border-t border-white/20 mt-6 pt-6">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
             <div className="text-white/60 text-sm">
               © {currentYear} V-Coach Central. All rights reserved.
             </div>
-            <div className="flex space-x-6">
+            <div className="flex flex-wrap justify-center md:justify-end space-x-4">
               <a href="#" className="text-white/60 hover:text-sky-400 transition-colors duration-300 text-sm">
                 Privacy Policy
               </a>

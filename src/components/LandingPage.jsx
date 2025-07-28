@@ -175,120 +175,109 @@ function LandingPage() {
             {/* Animated Progress Line with Gradient */}
             <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-sky-400 via-blue-500 to-purple-500 top-0 opacity-60"></div>
             
-            {/* String of Flashing Dots */}
+            {/* String of Flashing Dots - 3 dots per stage */}
             <div className="absolute left-[12.5%] right-[12.5%] top-0">
-              {/* Dot 1 */}
+              {/* Stage 1-2: Upload to Review */}
               <div 
-                className="absolute w-2 h-2 bg-sky-400 rounded-full top-[-3px] shadow-lg shadow-sky-400/50" 
+                className="absolute w-3 h-3 bg-sky-500 rounded-full top-[-4.5px] shadow-xl shadow-sky-500/80 border border-sky-300" 
                 style={{
-                  left: '0%',
-                  animation: 'flashDot 3s infinite linear',
+                  left: '11%',
+                  animation: 'flashDot 2s infinite linear',
                   animationDelay: '0s'
                 }}
               ></div>
-              
-              {/* Dot 2 */}
               <div 
-                className="absolute w-2 h-2 bg-blue-400 rounded-full top-[-3px] shadow-lg shadow-blue-400/50" 
+                className="absolute w-3 h-3 bg-sky-400 rounded-full top-[-4.5px] shadow-xl shadow-sky-400/80 border border-sky-200" 
                 style={{
-                  left: '10%',
-                  animation: 'flashDot 3s infinite linear',
-                  animationDelay: '0.3s'
+                  left: '22%',
+                  animation: 'flashDot 2s infinite linear',
+                  animationDelay: '0.2s'
+                }}
+              ></div>
+              <div 
+                className="absolute w-3 h-3 bg-blue-500 rounded-full top-[-4.5px] shadow-xl shadow-blue-500/80 border border-blue-300" 
+                style={{
+                  left: '33%',
+                  animation: 'flashDot 2s infinite linear',
+                  animationDelay: '0.4s'
                 }}
               ></div>
               
-              {/* Dot 3 */}
+              {/* Stage 2-3: Review to Learn */}
               <div 
-                className="absolute w-2 h-2 bg-cyan-400 rounded-full top-[-3px] shadow-lg shadow-cyan-400/50" 
+                className="absolute w-3 h-3 bg-blue-400 rounded-full top-[-4.5px] shadow-xl shadow-blue-400/80 border border-blue-200" 
                 style={{
-                  left: '20%',
-                  animation: 'flashDot 3s infinite linear',
+                  left: '44%',
+                  animation: 'flashDot 2s infinite linear',
                   animationDelay: '0.6s'
                 }}
               ></div>
-              
-              {/* Dot 4 */}
               <div 
-                className="absolute w-2 h-2 bg-indigo-400 rounded-full top-[-3px] shadow-lg shadow-indigo-400/50" 
+                className="absolute w-3 h-3 bg-indigo-500 rounded-full top-[-4.5px] shadow-xl shadow-indigo-500/80 border border-indigo-300" 
                 style={{
-                  left: '33.33%',
-                  animation: 'flashDot 3s infinite linear',
-                  animationDelay: '0.9s'
+                  left: '55%',
+                  animation: 'flashDot 2s infinite linear',
+                  animationDelay: '0.8s'
+                }}
+              ></div>
+              <div 
+                className="absolute w-3 h-3 bg-purple-500 rounded-full top-[-4.5px] shadow-xl shadow-purple-500/80 border border-purple-300" 
+                style={{
+                  left: '66%',
+                  animation: 'flashDot 2s infinite linear',
+                  animationDelay: '1.0s'
                 }}
               ></div>
               
-              {/* Dot 5 */}
+              {/* Stage 3-4: Learn to Improve */}
               <div 
-                className="absolute w-2 h-2 bg-purple-400 rounded-full top-[-3px] shadow-lg shadow-purple-400/50" 
+                className="absolute w-3 h-3 bg-purple-400 rounded-full top-[-4.5px] shadow-xl shadow-purple-400/80 border border-purple-200" 
                 style={{
-                  left: '50%',
-                  animation: 'flashDot 3s infinite linear',
+                  left: '77%',
+                  animation: 'flashDot 2s infinite linear',
                   animationDelay: '1.2s'
                 }}
               ></div>
-              
-              {/* Dot 6 */}
               <div 
-                className="absolute w-2 h-2 bg-violet-400 rounded-full top-[-3px] shadow-lg shadow-violet-400/50" 
+                className="absolute w-3 h-3 bg-violet-500 rounded-full top-[-4.5px] shadow-xl shadow-violet-500/80 border border-violet-300" 
                 style={{
-                  left: '66.66%',
-                  animation: 'flashDot 3s infinite linear',
-                  animationDelay: '1.5s'
+                  left: '88%',
+                  animation: 'flashDot 2s infinite linear',
+                  animationDelay: '1.4s'
                 }}
               ></div>
-              
-              {/* Dot 7 */}
               <div 
-                className="absolute w-2 h-2 bg-pink-400 rounded-full top-[-3px] shadow-lg shadow-pink-400/50" 
+                className="absolute w-3 h-3 bg-pink-500 rounded-full top-[-4.5px] shadow-xl shadow-pink-500/80 border border-pink-300" 
                 style={{
-                  left: '80%',
-                  animation: 'flashDot 3s infinite linear',
-                  animationDelay: '1.8s'
-                }}
-              ></div>
-              
-              {/* Dot 8 */}
-              <div 
-                className="absolute w-2 h-2 bg-rose-400 rounded-full top-[-3px] shadow-lg shadow-rose-400/50" 
-                style={{
-                  left: '90%',
-                  animation: 'flashDot 3s infinite linear',
-                  animationDelay: '2.1s'
-                }}
-              ></div>
-              
-              {/* Dot 9 */}
-              <div 
-                className="absolute w-2 h-2 bg-red-400 rounded-full top-[-3px] shadow-lg shadow-red-400/50" 
-                style={{
-                  left: '100%',
-                  animation: 'flashDot 3s infinite linear',
-                  animationDelay: '2.4s'
-                }}
-              ></div>
-            </div>
-            
-            {/* Traveling Energy Pulse */}
-            <div className="absolute left-[12.5%] right-[12.5%] top-0">
-              <div 
-                className="w-4 h-4 bg-yellow-400 rounded-full top-[-6px] absolute shadow-xl shadow-yellow-400/80 opacity-80"
-                style={{
-                  animation: 'energyPulse 4s infinite ease-in-out'
+                  left: '99%',
+                  animation: 'flashDot 2s infinite linear',
+                  animationDelay: '1.6s'
                 }}
               ></div>
             </div>
           </div>
 
           {/* Mobile Animated Dots */}
-          <div className="md:hidden flex flex-col items-center space-y-4 absolute left-1/2 transform -translate-x-1/2 top-16 pointer-events-none">
-            <div className="w-1 h-8 bg-white/20 relative">
-              <div className="w-2 h-2 bg-sky-400 rounded-full absolute left-[-2px] top-2 shadow-md shadow-sky-400/50" style={{animation: 'flashDot 2s infinite', animationDelay: '0s'}}></div>
+          <div className="md:hidden flex flex-col items-center space-y-2 absolute left-1/2 transform -translate-x-1/2 top-16 pointer-events-none">
+            {/* Stage 1-2 */}
+            <div className="w-1 h-6 bg-white/20 relative flex flex-col justify-center space-y-1">
+              <div className="w-3 h-3 bg-sky-400 rounded-full absolute left-[-5px] shadow-lg shadow-sky-400/60 border border-sky-200" style={{animation: 'flashDot 2s infinite', animationDelay: '0s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-sky-500 rounded-full absolute left-[-5px] shadow-lg shadow-sky-500/60 border border-sky-300" style={{animation: 'flashDot 2s infinite', animationDelay: '0.2s', top: '8px'}}></div>
+              <div className="w-3 h-3 bg-blue-400 rounded-full absolute left-[-5px] shadow-lg shadow-blue-400/60 border border-blue-200" style={{animation: 'flashDot 2s infinite', animationDelay: '0.4s', top: '16px'}}></div>
             </div>
-            <div className="w-1 h-8 bg-white/20 relative">
-              <div className="w-2 h-2 bg-blue-400 rounded-full absolute left-[-2px] top-2 shadow-md shadow-blue-400/50" style={{animation: 'flashDot 2s infinite', animationDelay: '0.5s'}}></div>
+            
+            {/* Stage 2-3 */}
+            <div className="w-1 h-6 bg-white/20 relative flex flex-col justify-center space-y-1">
+              <div className="w-3 h-3 bg-indigo-400 rounded-full absolute left-[-5px] shadow-lg shadow-indigo-400/60 border border-indigo-200" style={{animation: 'flashDot 2s infinite', animationDelay: '0.6s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-indigo-500 rounded-full absolute left-[-5px] shadow-lg shadow-indigo-500/60 border border-indigo-300" style={{animation: 'flashDot 2s infinite', animationDelay: '0.8s', top: '8px'}}></div>
+              <div className="w-3 h-3 bg-purple-400 rounded-full absolute left-[-5px] shadow-lg shadow-purple-400/60 border border-purple-200" style={{animation: 'flashDot 2s infinite', animationDelay: '1.0s', top: '16px'}}></div>
             </div>
-            <div className="w-1 h-8 bg-white/20 relative">
-              <div className="w-2 h-2 bg-purple-400 rounded-full absolute left-[-2px] top-2 shadow-md shadow-purple-400/50" style={{animation: 'flashDot 2s infinite', animationDelay: '1s'}}></div>
+            
+            {/* Stage 3-4 */}
+            <div className="w-1 h-6 bg-white/20 relative flex flex-col justify-center space-y-1">
+              <div className="w-3 h-3 bg-purple-500 rounded-full absolute left-[-5px] shadow-lg shadow-purple-500/60 border border-purple-300" style={{animation: 'flashDot 2s infinite', animationDelay: '1.2s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-violet-400 rounded-full absolute left-[-5px] shadow-lg shadow-violet-400/60 border border-violet-200" style={{animation: 'flashDot 2s infinite', animationDelay: '1.4s', top: '8px'}}></div>
+              <div className="w-3 h-3 bg-pink-400 rounded-full absolute left-[-5px] shadow-lg shadow-pink-400/60 border border-pink-200" style={{animation: 'flashDot 2s infinite', animationDelay: '1.6s', top: '16px'}}></div>
             </div>
           </div>
         </div>
@@ -296,52 +285,20 @@ function LandingPage() {
         {/* Custom CSS for flashing dots animation */}
         <style jsx>{`
           @keyframes flashDot {
-            0%, 20% { 
-              opacity: 0.3; 
-              transform: scale(0.8); 
+            0%, 70% { 
+              opacity: 0.2; 
+              transform: scale(0.6); 
               box-shadow: 0 0 5px currentColor;
             }
-            10% { 
+            15%, 35% { 
               opacity: 1; 
-              transform: scale(1.2); 
-              box-shadow: 0 0 15px currentColor, 0 0 25px currentColor;
+              transform: scale(1.4); 
+              box-shadow: 0 0 20px currentColor, 0 0 35px currentColor, 0 0 50px currentColor;
             }
-            30%, 100% { 
-              opacity: 0.3; 
-              transform: scale(0.8); 
+            80%, 100% { 
+              opacity: 0.2; 
+              transform: scale(0.6); 
               box-shadow: 0 0 5px currentColor;
-            }
-          }
-          
-          @keyframes energyPulse {
-            0% { 
-              left: 0%; 
-              opacity: 0; 
-              transform: scale(0.5);
-            }
-            5% {
-              opacity: 1;
-              transform: scale(1);
-            }
-            25% { 
-              left: 33.33%; 
-              opacity: 0.8; 
-              transform: scale(1.1);
-            }
-            50% { 
-              left: 66.66%; 
-              opacity: 0.6; 
-              transform: scale(1);
-            }
-            75% { 
-              left: 100%; 
-              opacity: 0.4; 
-              transform: scale(0.8);
-            }
-            100% { 
-              left: 100%; 
-              opacity: 0; 
-              transform: scale(0.5);
             }
           }
         `}</style>

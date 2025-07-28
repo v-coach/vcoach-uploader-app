@@ -9,8 +9,14 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
     description: coach?.description || '',
     skills: coach?.skills?.join(', ') || '',
     avatarColor: coach?.avatarColor || 'from-sky-400 to-blue-600',
-    initials: coach?.initials || ''
+    initials: coach?.initials || '',
+    profileImage: coach?.profileImage || null
   });
+  
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(coach?.profileImage || null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const { token } = useAuth();
 
   const colorOptions = [
     { value: 'from-sky-400 to-blue-600', label: 'Blue', preview: 'bg-gradient-to-br from-sky-400 to-blue-600' },
@@ -30,14 +36,106 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
     }
   }, [formData.name]);
 
-  const handleSubmit = (e) => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please select a valid image file (JPEG, PNG, WebP, or GIF)');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    setImageFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const uploadImage = async () => {
+    if (!imageFile || !coach?.id) return null;
+
+    setUploadingImage(true);
+    try {
+      // Get pre-signed URL for image upload
+      const response = await fetch('/.netlify/functions/upload-coach-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          fileName: imageFile.name,
+          contentType: imageFile.type,
+          coachId: coach.id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get upload URL');
+      }
+
+      const { uploadURL, publicUrl } = await response.json();
+
+      // Upload the file
+      const uploadResponse = await fetch(uploadURL, {
+        method: 'PUT',
+        body: imageFile,
+        headers: {
+          'Content-Type': imageFile.type
+        }
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      alert('Failed to upload image. Please try again.');
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    let profileImageUrl = formData.profileImage;
+    
+    // Upload new image if one was selected
+    if (imageFile) {
+      profileImageUrl = await uploadImage();
+      if (!profileImageUrl) return; // Upload failed
+    }
+    
     const skillsArray = formData.skills.split(',').map(s => s.trim()).filter(s => s);
     onSave({
       ...coach,
       ...formData,
-      skills: skillsArray
+      skills: skillsArray,
+      profileImage: profileImageUrl
     });
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setFormData(prev => ({ ...prev, profileImage: null }));
   };
 
   return (
@@ -47,12 +145,43 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
           {coach ? 'Edit Coach' : 'Add New Coach'}
         </h2>
         
-        {/* Avatar Preview */}
+        {/* Avatar/Image Preview */}
         <div className="text-center mb-6">
-          <div className={`w-20 h-20 bg-gradient-to-br ${formData.avatarColor} rounded-full flex items-center justify-center mx-auto mb-2`}>
-            <span className="text-xl font-bold text-white">
-              {formData.initials || '??'}
-            </span>
+          {imagePreview || formData.profileImage ? (
+            <div className="relative w-20 h-20 mx-auto mb-2">
+              <img 
+                src={imagePreview || formData.profileImage}
+                alt="Coach profile"
+                className="w-20 h-20 rounded-full object-cover border-2 border-white/20"
+              />
+              <button
+                type="button"
+                onClick={removeImage}
+                className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+          ) : (
+            <div className={`w-20 h-20 bg-gradient-to-br ${formData.avatarColor} rounded-full flex items-center justify-center mx-auto mb-2`}>
+              <span className="text-xl font-bold text-white">
+                {formData.initials || '??'}
+              </span>
+            </div>
+          )}
+          
+          <div className="space-y-2">
+            <label className="cursor-pointer h-8 px-3 bg-white/10 hover:bg-white/20 text-white rounded-md text-xs font-medium inline-flex items-center transition-colors">
+              {uploadingImage ? 'Uploading...' : 'Upload Photo'}
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageChange}
+                disabled={uploadingImage}
+              />
+            </label>
+            <p className="text-xs text-white/60">JPEG, PNG, WebP, GIF (max 5MB)</p>
           </div>
         </div>
 
@@ -142,9 +271,10 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
           </button>
           <button 
             type="submit" 
-            className="h-10 px-5 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold"
+            disabled={uploadingImage}
+            className="h-10 px-5 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {coach ? 'Update Coach' : 'Add Coach'}
+            {uploadingImage ? 'Uploading...' : (coach ? 'Update Coach' : 'Add Coach')}
           </button>
         </div>
       </form>
@@ -251,9 +381,17 @@ const CoachManagement = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {coaches.map((coach) => (
                 <div key={coach.id} className="rounded-xl border border-white/20 bg-black/20 backdrop-blur-lg p-6 text-center">
-                  <div className={`w-16 h-16 bg-gradient-to-br ${coach.avatarColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                    <span className="text-lg font-bold text-white">{coach.initials}</span>
-                  </div>
+                  {coach.profileImage ? (
+                    <img 
+                      src={coach.profileImage}
+                      alt={coach.name}
+                      className="w-16 h-16 rounded-full object-cover border-2 border-white/20 mx-auto mb-4"
+                    />
+                  ) : (
+                    <div className={`w-16 h-16 bg-gradient-to-br ${coach.avatarColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                      <span className="text-lg font-bold text-white">{coach.initials}</span>
+                    </div>
+                  )}
                   <h3 className="text-lg font-bold text-white mb-1">{coach.name}</h3>
                   <div className="text-sky-400 font-semibold mb-3 text-sm">{coach.title}</div>
                   <p className="text-white/70 text-xs mb-4 leading-relaxed">{coach.description}</p>

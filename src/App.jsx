@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import LoginPage from './components/LoginPage';
 import StudentDashboard from './components/StudentDashboard';
@@ -72,14 +72,12 @@ function AppContent() {
 }
 
 /**
- * The root App component that sets up the router.
- * The AuthProvider is now correctly placed in `main.jsx` and wraps this component.
+ * The root App component. The Router has been moved to main.jsx
+ * to wrap the AuthProvider, which fixes the hook context issue.
  */
 function App() {
   return (
-    <Router>
       <AppContent />
-    </Router>
   );
 }
 

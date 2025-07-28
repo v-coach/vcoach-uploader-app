@@ -1,294 +1,90 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
-import axios from 'axios';
+import { ArrowRight, Star } from 'lucide-react';
 
-function LandingPage() {
-  const { user } = useAuth();
-  const [coaches, setCoaches] = useState([]);
-  const [loading, setLoading] = useState(true);
+// Mock API function - replace with your actual API call
+const getCoaches = async () => {
+    const response = await fetch('/.netlify/functions/get-coaches?limit=4'); // Fetch only 4 coaches for the landing page
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+};
 
-  useEffect(() => {
-    const fetchCoaches = async () => {
-      try {
-        const res = await axios.get('/.netlify/functions/manage-coaches');
-        setCoaches(res.data || []);
-      } catch (err) {
-        console.error('Failed to fetch coaches:', err);
-        // If no coaches exist, show default coaches
-        setCoaches([
-          {
-            id: '1',
-            name: 'Coach Jordan',
-            title: 'Head Coach',
-            description: 'Former professional player with 5+ years coaching experience. Specializes in strategic gameplay and team coordination.',
-            skills: ['Strategy', 'Team Play', 'Leadership'],
-            avatarColor: 'from-sky-400 to-blue-600',
-            initials: 'JD'
-          },
-          {
-            id: '2',  
-            name: 'Coach Alex',
-            title: 'Mechanics Coach',
-            description: 'Expert in mechanical skill development and precision training. Helps players master the fundamentals and advanced techniques.',
-            skills: ['Mechanics', 'Aim Training', 'Movement'],
-            avatarColor: 'from-green-400 to-emerald-600',
-            initials: 'AS'
-          },
-          {
-            id: '3',
-            name: 'Coach Morgan', 
-            title: 'Mental Performance Coach',
-            description: 'Focuses on mindset, tilt management, and peak performance psychology. Helps players maintain consistency under pressure.',
-            skills: ['Mindset', 'Focus', 'Consistency'],
-            avatarColor: 'from-purple-400 to-violet-600',
-            initials: 'MK'
-          }
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
+const LandingPage = () => {
+  const { data: coaches = [], isLoading, error } = useQuery({
+    queryKey: ['coaches-landing'],
+    queryFn: getCoaches,
+  });
 
-    fetchCoaches();
-  }, []);
-
-  const getSkillColor = (avatarColor) => {
-    if (avatarColor.includes('sky') || avatarColor.includes('blue')) return 'bg-sky-500/20 text-sky-300';
-    if (avatarColor.includes('green') || avatarColor.includes('emerald')) return 'bg-green-500/20 text-green-300';
-    if (avatarColor.includes('purple') || avatarColor.includes('violet')) return 'bg-purple-500/20 text-purple-300';
-    if (avatarColor.includes('red') || avatarColor.includes('rose')) return 'bg-red-500/20 text-red-300';
-    if (avatarColor.includes('orange') || avatarColor.includes('amber')) return 'bg-orange-500/20 text-orange-300';
-    if (avatarColor.includes('pink') || avatarColor.includes('fuchsia')) return 'bg-pink-500/20 text-pink-300';
-    return 'bg-gray-500/20 text-gray-300';
-  };
+  const avatarColors = [
+    'from-red-500 to-orange-500', 'from-blue-500 to-teal-500',
+    'from-green-400 to-blue-600', 'from-purple-500 to-pink-500',
+  ];
 
   return (
-    <div className="flex flex-col min-h-[80vh]">
+    <div className="min-h-screen bg-gray-900 text-white">
       {/* Hero Section */}
-      <div className="text-center mb-16">
-        <h1 className="text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-2xl mb-6">
-          Welcome to
-          <span className="block bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
-            V-Coach Central
-          </span>
+      <div className="text-center py-20 lg:py-32" style={{background: 'radial-gradient(ellipse at top, #1a202c, #111827)'}}>
+        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+          Unlock Your Potential
         </h1>
-        <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
-          The ultimate platform for competitive gaming improvement. Upload your gameplay, get professional analysis, and take your skills to the next level.
+        <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-300 mb-8">
+          Connect with world-class coaches who are dedicated to helping you achieve your personal and professional goals.
         </p>
-        
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link 
-            to="/upload" 
-            className="h-14 px-8 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-xl text-lg font-bold shadow-2xl transition-all duration-300 transform hover:scale-105"
-          >
-            Upload Your VoD
-          </Link>
-          {user && (user.roles.includes('Coach') || user.roles.includes('Head Coach') || user.roles.includes('Founders')) && (
-            <Link 
-              to="/coach" 
-              className="h-14 px-8 bg-white/10 text-white hover:bg-white/20 border border-white/20 inline-flex items-center justify-center whitespace-nowrap rounded-xl text-lg font-medium backdrop-blur-lg transition-all duration-300 transform hover:scale-105"
-            >
-              Coach Dashboard
-            </Link>
-          )}
-        </div>
+        <Link
+          to="/dashboard"
+          className="inline-block bg-indigo-600 text-white font-bold text-lg px-8 py-3 rounded-lg hover:bg-indigo-700 transition-transform transform hover:scale-105"
+        >
+          Get Started
+          <ArrowRight className="inline-block ml-2" />
+        </Link>
       </div>
 
-      {/* Features Grid */}
-      <div className="grid md:grid-cols-3 gap-8 mb-16">
-        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center">
-          <div className="w-16 h-16 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-8 h-8 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-bold text-white mb-4">Easy Upload</h3>
-          <p className="text-white/70">
-            Drag and drop your gameplay videos. Support for MP4, MKV, AVI, and MOV formats up to 4GB.
-          </p>
-        </div>
+      {/* Featured Coaches Section */}
+      <div className="py-20 bg-gray-900">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl font-bold text-center mb-12">
+            Meet Our Top Coaches
+          </h2>
+          {isLoading && <div className="text-center">Loading coaches...</div>}
+          {error && <div className="text-center text-red-400">Could not load coaches.</div>}
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {coaches.map((coach, index) => {
+              const profileImage = coach.profileImageUrl || coach.profileimage;
+              const avatarColor = avatarColors[index % avatarColors.length];
 
-        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center">
-          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-bold text-white mb-4">Professional Review</h3>
-          <p className="text-white/70">
-            Get detailed feedback from experienced coaches with timestamped notes and actionable insights.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center">
-          <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-bold text-white mb-4">Track Progress</h3>
-          <p className="text-white/70">
-            Monitor your improvement over time with detailed analytics and personalized coaching recommendations.
-          </p>
-        </div>
-      </div>
-
-      {/* How It Works Section */}
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-white mb-12">How It Works</h2>
-        <div className="grid md:grid-cols-4 gap-8">
-          <div className="flex flex-col items-center">
-            <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">1</div>
-            <h4 className="font-semibold text-white mb-2">Upload</h4>
-            <p className="text-white/70 text-sm">Share your gameplay video</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">2</div>
-            <h4 className="font-semibold text-white mb-2">Review</h4>
-            <p className="text-white/70 text-sm">Coaches analyze your gameplay</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">3</div>
-            <h4 className="font-semibold text-white mb-2">Learn</h4>
-            <p className="text-white/70 text-sm">Receive detailed feedback</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">4</div>
-            <h4 className="font-semibold text-white mb-2">Improve</h4>
-            <p className="text-white/70 text-sm">Apply insights to rank up</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Meet Our Coaches Section */}
-      <div className="text-center mb-16">
-        <h2 className="text-4xl font-bold text-white mb-4">Meet Our Expert Coaches</h2>
-        <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto">
-          Learn from professional players and experienced coaches who have helped hundreds of players reach their competitive goals.
-        </p>
-        
-        {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
-                <div className="w-24 h-24 bg-white/10 rounded-full mx-auto mb-4 animate-pulse"></div>
-                <div className="h-6 bg-white/10 rounded mb-2 animate-pulse"></div>
-                <div className="h-4 bg-white/10 rounded mb-4 animate-pulse"></div>
-                <div className="h-16 bg-white/10 rounded animate-pulse"></div>
-              </div>
-            ))}
-          </div>
-        ) : coaches.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            {coaches.map((coach) => (
-              <div key={coach.id} className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
-                {coach.profileImage ? (
-                  <img 
-                    src={coach.profileImage}
-                    alt={coach.name}
-                    className="w-24 h-24 rounded-full object-cover border-2 border-white/20 mx-auto mb-4"
-                  />
-                ) : (
-                  <div className={`w-24 h-24 bg-gradient-to-br ${coach.avatarColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                    <span className="text-2xl font-bold text-white">{coach.initials}</span>
-                  </div>
-                )}
-                <h3 className="text-xl font-bold text-white mb-2">{coach.name}</h3>
-                <div className="text-sky-400 font-semibold mb-3">{coach.title}</div>
-                <p className="text-white/70 text-sm mb-4">
-                  {coach.description}
-                </p>
-                {coach.skills && coach.skills.length > 0 && (
-                  <div className="flex flex-wrap gap-2 justify-center mb-4">
-                    {coach.skills.map((skill, index) => (
-                      <span key={index} className={`px-3 py-1 rounded-full text-xs ${getSkillColor(coach.avatarColor)}`}>
-                        {skill}
+              return (
+                <div key={coach.id} className="bg-black/20 border border-white/10 rounded-xl p-6 text-center backdrop-blur-md transition-all duration-300 hover:border-indigo-500 hover:scale-105">
+                  {profileImage ? (
+                    <img
+                      src={profileImage}
+                      alt={coach.name}
+                      className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-2 border-white/20"
+                    />
+                  ) : (
+                    <div className={`w-24 h-24 bg-gradient-to-br ${avatarColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                      <span className="text-2xl font-bold text-white">
+                        {coach.initials || coach.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                       </span>
-                    ))}
+                    </div>
+                  )}
+                  <h3 className="text-xl font-semibold mt-4">{coach.name}</h3>
+                  <div className="flex justify-center mt-2">
+                      {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                      ))}
                   </div>
-                )}
-
-                {/* Social Media Links */}
-                {coach.socialMedia && Object.values(coach.socialMedia).some(link => link) && (
-                  <div className="flex justify-center space-x-3 mt-4">
-                    {coach.socialMedia.twitter && (
-                      <a href={coach.socialMedia.twitter} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                        </svg>
-                      </a>
-                    )}
-                    {coach.socialMedia.instagram && (
-                      <a href={coach.socialMedia.instagram} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full flex items-center justify-center transition-colors">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                        </svg>
-                      </a>
-                    )}
-                    {coach.socialMedia.youtube && (
-                      <a href={coach.socialMedia.youtube} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                        </svg>
-                      </a>
-                    )}
-                    {coach.socialMedia.twitch && (
-                      <a href={coach.socialMedia.twitch} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-purple-600 hover:bg-purple-700 rounded-full flex items-center justify-center transition-colors">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M11.571 4.714h.857c2.329 0 4.429 1.143 4.429 2.571v9.43c0 1.427-2.1 2.571-4.429 2.571h-.857C9.243 19.286 7.143 18.143 7.143 16.715V7.285C7.143 5.857 9.243 4.714 11.571 4.714z"/>
-                        </svg>
-                      </a>
-                    )}
-                    {coach.socialMedia.discord && (
-                      <a href={coach.socialMedia.discord.startsWith('http') ? coach.socialMedia.discord : `https://discord.gg/${coach.socialMedia.discord}`} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center transition-colors">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-                        </svg>
-                      </a>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
-        ) : (
-          <div className="text-center text-white/60 mb-8">
-            <p>No coaches available at the moment.</p>
-          </div>
-        )}
-
-        {/* Add Coach Button - Only visible to admins */}
-        {user && user.roles?.includes('Founders') && (
-          <div className="text-center">
-            <Link 
-              to="/admin"
-              className="h-12 px-6 bg-white/10 text-white hover:bg-white/20 border border-white/20 inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium backdrop-blur-lg transition-all duration-300"
-            >
-              + Manage Coaches
-            </Link>
-          </div>
-        )}
-      </div>
-
-      {/* Stats Section */}
-      <div className="grid md:grid-cols-3 gap-8 text-center mb-16">
-        <div className="rounded-xl border border-white/20 bg-black/20 backdrop-blur-lg p-6">
-          <div className="text-3xl font-bold text-sky-400 mb-2">500+</div>
-          <div className="text-white/80">VoDs Reviewed</div>
-        </div>
-        <div className="rounded-xl border border-white/20 bg-black/20 backdrop-blur-lg p-6">
-          <div className="text-3xl font-bold text-green-400 mb-2">95%</div>
-          <div className="text-white/80">Improvement Rate</div>
-        </div>
-        <div className="rounded-xl border border-white/20 bg-black/20 backdrop-blur-lg p-6">
-          <div className="text-3xl font-bold text-purple-400 mb-2">24hr</div>
-          <div className="text-white/80">Average Turnaround</div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default LandingPage;

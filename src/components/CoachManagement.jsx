@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
+// Replace your CoachModal component with this version that works with your upload function:
+
 const CoachModal = ({ coach, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     name: coach?.name || '',
@@ -65,10 +67,15 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
   };
 
   const uploadImage = async () => {
-    if (!imageFile || !coach?.id) return null;
+    if (!imageFile) return null;
+
+    // For new coaches, we'll create a temporary ID for the upload
+    const tempCoachId = coach?.id || `temp-${Date.now()}`;
 
     setUploadingImage(true);
     try {
+      console.log("Starting image upload for coach:", tempCoachId);
+      
       // Get pre-signed URL for image upload
       const response = await fetch('/.netlify/functions/upload-coach-image', {
         method: 'POST',
@@ -79,15 +86,20 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
         body: JSON.stringify({
           fileName: imageFile.name,
           contentType: imageFile.type,
-          coachId: coach.id
+          coachId: tempCoachId
         })
       });
 
+      console.log("Upload URL response status:", response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to get upload URL');
+        const errorText = await response.text();
+        console.error("Upload URL error:", errorText);
+        throw new Error(`Failed to get upload URL: ${response.status} ${errorText}`);
       }
 
       const { uploadURL, publicUrl } = await response.json();
+      console.log("Got upload URL, uploading file...");
 
       // Upload the file
       const uploadResponse = await fetch(uploadURL, {
@@ -98,14 +110,17 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
         }
       });
 
+      console.log("File upload response status:", uploadResponse.status);
+
       if (!uploadResponse.ok) {
-        throw new Error('Failed to upload image');
+        throw new Error(`Failed to upload image: ${uploadResponse.status}`);
       }
 
+      console.log("Image uploaded successfully:", publicUrl);
       return publicUrl;
     } catch (error) {
       console.error('Image upload failed:', error);
-      alert('Failed to upload image. Please try again.');
+      alert(`Failed to upload image: ${error.message}`);
       return null;
     } finally {
       setUploadingImage(false);
@@ -119,18 +134,25 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
     
     // Upload new image if one was selected
     if (imageFile) {
+      console.log("Uploading image before saving coach...");
       profileImageUrl = await uploadImage();
-      if (!profileImageUrl) return; // Upload failed
+      if (!profileImageUrl) {
+        console.log("Image upload failed, not saving coach");
+        return; // Upload failed
+      }
     }
     
     const skillsArray = formData.skills.split(',').map(s => s.trim()).filter(s => s);
-    onSave({
+    const coachData = {
       ...coach,
       ...formData,
       skills: skillsArray,
       profileImage: profileImageUrl,
       initials: initials // Auto-generated from name
-    });
+    };
+    
+    console.log("Saving coach with data:", coachData);
+    onSave(coachData);
   };
 
   const removeImage = () => {
@@ -166,6 +188,11 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
                   src={imagePreview || formData.profileImage}
                   alt="Coach profile"
                   className="w-20 h-20 rounded-full object-cover border-2 border-white/20"
+                  onError={(e) => {
+                    console.error("Image failed to load:", e.target.src);
+                    // Fallback to avatar if image fails to load
+                    removeImage();
+                  }}
                 />
                 <button
                   type="button"
@@ -195,6 +222,11 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
                 />
               </label>
               <p className="text-xs text-white/60">JPEG, PNG, WebP, GIF (max 5MB)</p>
+              {imageFile && (
+                <p className="text-xs text-green-400">
+                  📁 {imageFile.name} ready to upload
+                </p>
+              )}
             </div>
           </div>
 
@@ -298,7 +330,7 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.40z"/>
                     </svg>
                   </div>
                   <input
@@ -391,7 +423,7 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
               disabled={uploadingImage}
               className="h-10 px-5 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {uploadingImage ? 'Uploading...' : (coach ? 'Update Coach' : 'Add Coach')}
+              {uploadingImage ? 'Uploading Image...' : (coach ? 'Update Coach' : 'Add Coach')}
             </button>
           </div>
         </form>

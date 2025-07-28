@@ -7,19 +7,28 @@ function UploadPanel() {
   const [fileName, setFileName] = useState('');
   const [notification, setNotification] = useState('');
   const [uploadController, setUploadController] = useState(null);
+  const [debugInfo, setDebugInfo] = useState('');
 
   useEffect(() => {
     if (notification) {
       const timer = setTimeout(() => {
         setNotification('');
-      }, 5000); // Notification disappears after 5 seconds
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [notification]);
 
+  const addDebugInfo = (info) => {
+    console.log(info);
+    setDebugInfo(prev => prev + '\n' + new Date().toLocaleTimeString() + ': ' + info);
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    setDebugInfo(''); // Clear previous debug info
+    addDebugInfo(`File selected: ${file.name} (${file.size} bytes)`);
 
     const MAX_FILE_SIZE = 4 * 1024 * 1024 * 1024; // 4 GB in bytes
     if (file.size > MAX_FILE_SIZE) {
@@ -33,6 +42,7 @@ function UploadPanel() {
     setIsUploading(true);
     setUploadProgress(0);
     setMessage(`Preparing upload for ${file.name}...`);
+    addDebugInfo('Requesting pre-signed URL...');
 
     // Get pre-signed URL from Netlify function
     fetch('/.netlify/functions/get-upload-url', {
@@ -41,73 +51,71 @@ function UploadPanel() {
       body: JSON.stringify({ fileName: file.name, contentType: file.type }),
     })
     .then(res => {
+        addDebugInfo(`Pre-signed URL response status: ${res.status}`);
         if (!res.ok) {
             throw new Error(`Server responded with ${res.status}`);
         }
         return res.json();
     })
     .then(({ uploadURL, key }) => {
+      addDebugInfo(`Pre-signed URL received. Key: ${key}`);
+      addDebugInfo(`Upload URL length: ${uploadURL.length}`);
       setMessage(`Uploading ${file.name}...`);
       
       // Create AbortController for cancellation
       const controller = new AbortController();
       setUploadController(controller);
 
-      // Create a ReadableStream to track upload progress
-      let uploadedBytes = 0;
-      const totalBytes = file.size;
-
-      const trackingStream = new ReadableStream({
-        start(controller) {
-          const reader = file.stream().getReader();
-          
-          function pump() {
-            return reader.read().then(({ done, value }) => {
-              if (done) {
-                controller.close();
-                return;
-              }
-              
-              uploadedBytes += value.byteLength;
-              const percentage = (uploadedBytes / totalBytes) * 100;
-              setUploadProgress(percentage.toFixed(2));
-              
-              controller.enqueue(value);
-              return pump();
-            });
-          }
-          
-          return pump();
+      // Simple progress simulation since we can't track real progress with pre-signed URLs
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        progress += Math.random() * 10;
+        if (progress < 90) {
+          setUploadProgress(progress.toFixed(2));
         }
-      });
+      }, 200);
+
+      addDebugInfo('Starting file upload to R2...');
 
       // Upload using fetch with the pre-signed URL
       fetch(uploadURL, {
         method: 'PUT',
-        body: trackingStream,
+        body: file,
         headers: {
           'Content-Type': file.type,
         },
         signal: controller.signal,
       })
       .then(response => {
+        clearInterval(progressInterval);
+        addDebugInfo(`Upload response status: ${response.status}`);
+        addDebugInfo(`Upload response headers: ${JSON.stringify([...response.headers.entries()])}`);
+        
         if (!response.ok) {
-          throw new Error(`Upload failed with status ${response.status}`);
+          return response.text().then(text => {
+            addDebugInfo(`Upload error response body: ${text}`);
+            throw new Error(`Upload failed with status ${response.status}: ${text}`);
+          });
         }
         
+        setUploadProgress(100);
         setIsUploading(false);
         setNotification(`${fileName} has been uploaded successfully!`);
-        setMessage('');
+        setMessage('Upload completed successfully!');
+        addDebugInfo('Upload completed successfully!');
         setFileName('');
         setUploadController(null);
         e.target.value = null; // Reset file input
       })
       .catch(error => {
+        clearInterval(progressInterval);
         if (error.name === 'AbortError') {
           setMessage('Upload canceled.');
+          addDebugInfo('Upload was canceled by user');
         } else {
           console.error("Upload failed:", error);
-          setMessage('Upload failed. Please try again.');
+          setMessage(`Upload failed: ${error.message}`);
+          addDebugInfo(`Upload failed: ${error.message}`);
         }
         setIsUploading(false);
         setUploadController(null);
@@ -116,7 +124,8 @@ function UploadPanel() {
     .catch(err => {
         console.error("Error preparing upload:", err);
         setIsUploading(false);
-        setMessage('Could not prepare upload. Check function logs.');
+        setMessage(`Could not prepare upload: ${err.message}`);
+        addDebugInfo(`Failed to get pre-signed URL: ${err.message}`);
         setUploadController(null);
     });
   };
@@ -174,6 +183,16 @@ function UploadPanel() {
           )}
 
           {message && <p className="text-sm text-center text-white/80">{message}</p>}
+          
+          {/* Debug Information */}
+          {debugInfo && (
+            <div className="mt-4 p-4 bg-black/50 rounded-lg">
+              <h4 className="text-sm font-bold text-white mb-2">Debug Info:</h4>
+              <pre className="text-xs text-green-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                {debugInfo}
+              </pre>
+            </div>
+          )}
         </div>
       </div>
     </>

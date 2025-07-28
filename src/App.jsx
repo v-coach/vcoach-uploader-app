@@ -72,6 +72,8 @@ const AuthButton = () => {
 };
 
 function App() {
+  const activeLinkStyle = { color: 'white' };
+
   return (
     <Router>
       <AuthProvider>

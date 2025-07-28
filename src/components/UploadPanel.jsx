@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import * as tus from 'tus-js-client';
 
 function UploadPanel() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
-  const [upload, setUpload] = useState(null);
   const [message, setMessage] = useState('');
   const [fileName, setFileName] = useState('');
   const [notification, setNotification] = useState('');
+  const [uploadController, setUploadController] = useState(null);
 
   useEffect(() => {
     if (notification) {
@@ -35,6 +34,7 @@ function UploadPanel() {
     setUploadProgress(0);
     setMessage(`Preparing upload for ${file.name}...`);
 
+    // Get pre-signed URL from Netlify function
     fetch('/.netlify/functions/get-upload-url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -46,44 +46,88 @@ function UploadPanel() {
         }
         return res.json();
     })
-    .then(({ uploadURL }) => {
+    .then(({ uploadURL, key }) => {
       setMessage(`Uploading ${file.name}...`);
-      const tusUpload = new tus.Upload(file, {
-        endpoint: uploadURL,
-        retryDelays: [0, 3000, 5000, 10000],
-        metadata: { filename: file.name, filetype: file.type },
-        onError: (error) => {
-          console.error("Upload failed:", error);
-          setIsUploading(false);
-          setMessage('Upload failed. Please try again.');
-        },
-        onProgress: (bytesUploaded, bytesTotal) => {
-          const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
-          setUploadProgress(percentage);
-        },
-        onSuccess: () => {
-          setIsUploading(false);
-          setNotification(`${fileName} has been uploaded successfully!`);
-          setMessage('');
-          setFileName('');
-        },
+      
+      // Create AbortController for cancellation
+      const controller = new AbortController();
+      setUploadController(controller);
+
+      // Create a ReadableStream to track upload progress
+      let uploadedBytes = 0;
+      const totalBytes = file.size;
+
+      const trackingStream = new ReadableStream({
+        start(controller) {
+          const reader = file.stream().getReader();
+          
+          function pump() {
+            return reader.read().then(({ done, value }) => {
+              if (done) {
+                controller.close();
+                return;
+              }
+              
+              uploadedBytes += value.byteLength;
+              const percentage = (uploadedBytes / totalBytes) * 100;
+              setUploadProgress(percentage.toFixed(2));
+              
+              controller.enqueue(value);
+              return pump();
+            });
+          }
+          
+          return pump();
+        }
       });
-      setUpload(tusUpload);
-      tusUpload.start();
+
+      // Upload using fetch with the pre-signed URL
+      fetch(uploadURL, {
+        method: 'PUT',
+        body: trackingStream,
+        headers: {
+          'Content-Type': file.type,
+        },
+        signal: controller.signal,
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Upload failed with status ${response.status}`);
+        }
+        
+        setIsUploading(false);
+        setNotification(`${fileName} has been uploaded successfully!`);
+        setMessage('');
+        setFileName('');
+        setUploadController(null);
+        e.target.value = null; // Reset file input
+      })
+      .catch(error => {
+        if (error.name === 'AbortError') {
+          setMessage('Upload canceled.');
+        } else {
+          console.error("Upload failed:", error);
+          setMessage('Upload failed. Please try again.');
+        }
+        setIsUploading(false);
+        setUploadController(null);
+      });
     })
     .catch(err => {
         console.error("Error preparing upload:", err);
         setIsUploading(false);
         setMessage('Could not prepare upload. Check function logs.');
+        setUploadController(null);
     });
   };
 
   const handleCancel = () => {
-    if (upload) {
-      upload.abort();
+    if (uploadController) {
+      uploadController.abort();
       setIsUploading(false);
       setMessage('Upload canceled.');
       setFileName('');
+      setUploadController(null);
     }
   };
 
@@ -105,12 +149,12 @@ function UploadPanel() {
                 name="file-upload"
                 type="file" 
                 className="hidden"
-                accept="video/mp4,video/mkv" 
+                accept="video/mp4,video/mkv,video/avi,video/mov" 
                 onChange={handleFileChange} 
                 disabled={isUploading} 
               />
               <p className="text-center text-xs text-white/60 mt-3">
-                  Supported formats: MP4, MKV. Max size: 4GB.
+                  Supported formats: MP4, MKV, AVI, MOV. Max size: 4GB.
               </p>
               {fileName && !isUploading && <p className="text-center text-sm text-white/80 mt-2">Selected: {fileName}</p>}
           </div>
@@ -118,7 +162,7 @@ function UploadPanel() {
           {isUploading && (
             <div>
               <div className="w-full bg-gray-700 rounded-full h-2.5">
-                <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
+                <div className="bg-green-500 h-2.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
               </div>
               <p className="text-center text-sm text-white/80 mt-2">{uploadProgress}%</p>
               <div className="mt-4 flex justify-center">

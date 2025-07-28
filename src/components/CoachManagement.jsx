@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
+// Replace the CoachModal component with this highly visible version:
+
 const CoachModal = ({ coach, onSave, onCancel }) => {
   console.log("=== COACH MODAL LOADING ===", { coach, onSave: !!onSave, onCancel: !!onCancel });
   
@@ -45,256 +47,219 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
     }
   }, [formData.name, formData.initials]);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!allowedTypes.includes(file.type)) {
-      alert('Please select a valid image file (JPEG, PNG, WebP, or GIF)');
-      return;
-    }
-
-    // Validate file size (5MB max)
-    const maxSize = 5 * 1024 * 1024;
-    if (file.size > maxSize) {
-      alert('File size must be less than 5MB');
-      return;
-    }
-
-    setImageFile(file);
-    
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setImagePreview(e.target.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const uploadImage = async () => {
-    if (!imageFile || !coach?.id) return null;
-
-    setUploadingImage(true);
-    try {
-      // Get pre-signed URL for image upload
-      const response = await fetch('/.netlify/functions/upload-coach-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          fileName: imageFile.name,
-          contentType: imageFile.type,
-          coachId: coach.id
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get upload URL');
-      }
-
-      const { uploadURL, publicUrl } = await response.json();
-
-      // Upload the file
-      const uploadResponse = await fetch(uploadURL, {
-        method: 'PUT',
-        body: imageFile,
-        headers: {
-          'Content-Type': imageFile.type
-        }
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error('Failed to upload image');
-      }
-
-      return publicUrl;
-    } catch (error) {
-      console.error('Image upload failed:', error);
-      alert('Failed to upload image. Please try again.');
-      return null;
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("=== FORM SUBMIT ===", formData);
-    
-    let profileImageUrl = formData.profileImage;
-    
-    // Upload new image if one was selected
-    if (imageFile) {
-      profileImageUrl = await uploadImage();
-      if (!profileImageUrl) return; // Upload failed
-    }
     
     const skillsArray = formData.skills.split(',').map(s => s.trim()).filter(s => s);
     onSave({
       ...coach,
       ...formData,
       skills: skillsArray,
-      profileImage: profileImageUrl
+      profileImage: formData.profileImage
     });
   };
 
-  const removeImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
-    setFormData(prev => ({ ...prev, profileImage: null }));
-  };
-
+  // Force modal to be visible with very high z-index and solid background
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="rounded-xl border border-white/20 bg-black/50 backdrop-blur-lg shadow-2xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
-        
-        {/* Debug indicator */}
-        <div className="mb-4 p-2 bg-green-500/20 border border-green-500 rounded text-xs text-white">
-          ✅ MODAL IS WORKING! Coach: {coach ? coach.name || "New Coach" : "New Coach"}
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.9)', // Solid dark background
+        zIndex: 999999, // Very high z-index
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px'
+      }}
+      onClick={(e) => {
+        console.log("=== BACKDROP CLICKED ===");
+        if (e.target === e.currentTarget) {
+          onCancel();
+        }
+      }}
+    >
+      <div 
+        style={{
+          backgroundColor: '#1a1a1a', // Solid dark background
+          border: '2px solid #ffffff',
+          borderRadius: '12px',
+          padding: '32px',
+          maxWidth: '500px',
+          width: '100%',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          color: 'white'
+        }}
+        onClick={(e) => {
+          console.log("=== MODAL CONTENT CLICKED ===");
+          e.stopPropagation();
+        }}
+      >
+        {/* Very visible header */}
+        <div style={{
+          backgroundColor: '#00ff00',
+          color: '#000000',
+          padding: '16px',
+          margin: '-32px -32px 24px -32px',
+          borderRadius: '10px 10px 0 0',
+          textAlign: 'center',
+          fontSize: '18px',
+          fontWeight: 'bold'
+        }}>
+          🎉 MODAL IS WORKING! 🎉<br/>
+          {coach ? `Edit: ${coach.name}` : 'Add New Coach'}
         </div>
 
         <form onSubmit={handleSubmit}>
-          <h2 className="text-xl font-bold text-white mb-6">
-            {coach ? 'Edit Coach' : 'Add New Coach'}
-          </h2>
-          
-          {/* Avatar/Image Preview */}
-          <div className="text-center mb-6">
-            {imagePreview || formData.profileImage ? (
-              <div className="relative w-20 h-20 mx-auto mb-2">
-                <img 
-                  src={imagePreview || formData.profileImage}
-                  alt="Coach profile"
-                  className="w-20 h-20 rounded-full object-cover border-2 border-white/20"
-                />
-                <button
-                  type="button"
-                  onClick={removeImage}
-                  className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors"
-                >
-                  ×
-                </button>
-              </div>
-            ) : (
-              <div className={`w-20 h-20 bg-gradient-to-br ${formData.avatarColor} rounded-full flex items-center justify-center mx-auto mb-2`}>
-                <span className="text-xl font-bold text-white">
-                  {formData.initials || '??'}
-                </span>
-              </div>
-            )}
-            
-            <div className="space-y-2">
-              <label className="cursor-pointer h-8 px-3 bg-white/10 hover:bg-white/20 text-white rounded-md text-xs font-medium inline-flex items-center transition-colors">
-                {uploadingImage ? 'Uploading...' : 'Upload Photo'}
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  disabled={uploadingImage}
-                />
-              </label>
-              <p className="text-xs text-white/60">JPEG, PNG, WebP, GIF (max 5MB)</p>
-            </div>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+              Coach Name *
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '12px',
+                backgroundColor: '#333',
+                border: '2px solid #666',
+                borderRadius: '6px',
+                color: 'white',
+                fontSize: '16px'
+              }}
+              placeholder="Enter coach name"
+              required
+            />
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-white/80 block mb-2">Name</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full h-10 rounded-md border border-white/20 bg-transparent px-3 text-sm text-white"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-white/80 block mb-2">Title</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="e.g., Head Coach, Mechanics Coach"
-                className="w-full h-10 rounded-md border border-white/20 bg-transparent px-3 text-sm text-white"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-white/80 block mb-2">Description</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Brief description of expertise and experience"
-                className="w-full h-20 rounded-md border border-white/20 bg-transparent px-3 py-2 text-sm text-white resize-none"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-white/80 block mb-2">Skills (comma-separated)</label>
-              <input
-                type="text"
-                value={formData.skills}
-                onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value }))}
-                placeholder="e.g., Strategy, Team Play, Leadership"
-                className="w-full h-10 rounded-md border border-white/20 bg-transparent px-3 text-sm text-white"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-white/80 block mb-2">Avatar Color</label>
-              <div className="grid grid-cols-3 gap-2">
-                {colorOptions.map((color) => (
-                  <button
-                    key={color.value}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, avatarColor: color.value }))}
-                    className={`h-10 rounded-md ${color.preview} flex items-center justify-center text-white text-sm font-medium border-2 transition-all ${
-                      formData.avatarColor === color.value ? 'border-white' : 'border-transparent'
-                    }`}
-                  >
-                    {color.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-white/80 block mb-2">Initials</label>
-              <input
-                type="text"
-                value={formData.initials}
-                onChange={(e) => setFormData(prev => ({ ...prev, initials: e.target.value.toUpperCase() }))}
-                maxLength="3"
-                className="w-full h-10 rounded-md border border-white/20 bg-transparent px-3 text-sm text-white"
-              />
-            </div>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+              Title *
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '12px',
+                backgroundColor: '#333',
+                border: '2px solid #666',
+                borderRadius: '6px',
+                color: 'white',
+                fontSize: '16px'
+              }}
+              placeholder="e.g., Head Coach, Mechanics Coach"
+              required
+            />
           </div>
 
-          <div className="flex justify-end space-x-4 mt-8">
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+              Description *
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '12px',
+                backgroundColor: '#333',
+                border: '2px solid #666',
+                borderRadius: '6px',
+                color: 'white',
+                fontSize: '16px',
+                minHeight: '80px',
+                resize: 'vertical'
+              }}
+              placeholder="Brief description of expertise and experience"
+              required
+            />
+          </div>
+
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+              Skills (comma-separated)
+            </label>
+            <input
+              type="text"
+              value={formData.skills}
+              onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '12px',
+                backgroundColor: '#333',
+                border: '2px solid #666',
+                borderRadius: '6px',
+                color: 'white',
+                fontSize: '16px'
+              }}
+              placeholder="e.g., Strategy, Team Play, Leadership"
+            />
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+              Initials
+            </label>
+            <input
+              type="text"
+              value={formData.initials}
+              onChange={(e) => setFormData(prev => ({ ...prev, initials: e.target.value.toUpperCase() }))}
+              style={{
+                width: '100%',
+                padding: '12px',
+                backgroundColor: '#333',
+                border: '2px solid #666',
+                borderRadius: '6px',
+                color: 'white',
+                fontSize: '16px'
+              }}
+              placeholder="e.g., JD"
+              maxLength="3"
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end' }}>
             <button 
               type="button" 
               onClick={() => {
                 console.log("=== CANCEL CLICKED ===");
                 onCancel();
               }}
-              className="h-10 px-5 bg-white/10 text-white hover:bg-white/20 rounded-md text-sm font-medium"
+              style={{
+                padding: '12px 24px',
+                backgroundColor: '#666',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '16px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
             >
               Cancel
             </button>
             <button 
               type="submit" 
-              disabled={uploadingImage}
-              className="h-10 px-5 bg-sky-500 text-white hover:bg-sky-600 rounded-md text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                padding: '12px 24px',
+                backgroundColor: '#0ea5e9',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '16px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
             >
-              {uploadingImage ? 'Uploading...' : (coach ? 'Update Coach' : 'Add Coach')}
+              {coach ? 'Update Coach' : 'Add Coach'}
             </button>
           </div>
         </form>

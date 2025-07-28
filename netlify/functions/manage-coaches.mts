@@ -79,17 +79,36 @@ export default async (req: Request, context: Context) => {
     console.log("=== MANAGE COACHES FUNCTION START ===");
     console.log("Method:", req.method);
     
+    // CORS headers for all responses
+    const corsHeaders = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Content-Type': 'application/json'
+    };
+
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        return new Response('', {
+            status: 200,
+            headers: corsHeaders
+        });
+    }
+    
     // For GET requests (public coach data), don't require authentication
     if (req.method === 'GET') {
         try {
             const coaches = await getCoaches();
             return new Response(JSON.stringify(coaches), {
                 status: 200,
-                headers: { 'Content-Type': 'application/json' }
+                headers: corsHeaders
             });
         } catch (error) {
             console.error("Get coaches error:", error);
-            return new Response('Internal Server Error', { status: 500 });
+            return new Response(JSON.stringify({ error: 'Internal Server Error' }), { 
+                status: 500,
+                headers: corsHeaders
+            });
         }
     }
 
@@ -102,7 +121,10 @@ export default async (req: Request, context: Context) => {
     
     if (!token) {
         console.log("No token provided");
-        return new Response('Unauthorized - No token provided', { status: 401 });
+        return new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), { 
+            status: 401,
+            headers: corsHeaders
+        });
     }
     
     try {
@@ -111,73 +133,127 @@ export default async (req: Request, context: Context) => {
         
         if (!decoded.isAdmin) {
             console.log("User is not admin");
-            return new Response('Forbidden - Admin access required', { status: 403 });
+            return new Response(JSON.stringify({ error: 'Forbidden - Admin access required' }), { 
+                status: 403,
+                headers: corsHeaders
+            });
         }
 
         let coaches = await getCoaches();
 
         if (req.method === 'POST') {
             const body = await req.text();
-            const { name, title, description, skills, avatarColor, initials, profileImage, socialMedia } = JSON.parse(body);
+            const coachData = JSON.parse(body);
             
-            console.log("Creating new coach:", name);
+            console.log("Creating new coach:", coachData.name);
+            console.log("Coach data received:", coachData);
             
             const newCoach = {
                 id: Date.now().toString(),
-                name,
-                title,
-                description,
-                skills: skills || [],
-                avatarColor: avatarColor || 'from-sky-400 to-blue-600',
-                initials: initials || name.split(' ').map((n: string) => n[0]).join(''),
-                profileImage: profileImage || null,
-                socialMedia: socialMedia || {},
+                name: coachData.name,
+                title: coachData.title,
+                description: coachData.description || '', // Preserve spaces and formatting
+                skills: Array.isArray(coachData.skills) ? coachData.skills : [],
+                avatarColor: coachData.avatarColor || 'from-sky-400 to-blue-600',
+                initials: coachData.initials || coachData.name.split(' ').map((n: string) => n[0]).join(''),
+                profileImage: coachData.profileImage || null,
+                // Social media support - handle both formats
+                socialMedia: coachData.socialMedia || {
+                    twitter: coachData.twitter_url || '',
+                    instagram: coachData.instagram_url || '',
+                    youtube: coachData.youtube_url || '',
+                    twitch: coachData.twitch_url || '',
+                    discord: coachData.discord_url || ''
+                },
+                // Individual social media fields for backward compatibility
+                twitter_url: coachData.socialMedia?.twitter || coachData.twitter_url || '',
+                instagram_url: coachData.socialMedia?.instagram || coachData.instagram_url || '',
+                youtube_url: coachData.socialMedia?.youtube || coachData.youtube_url || '',
+                twitch_url: coachData.socialMedia?.twitch || coachData.twitch_url || '',
+                discord_url: coachData.socialMedia?.discord || coachData.discord_url || '',
+                // Additional fields
+                bio: coachData.bio || '',
+                experience: coachData.experience || '',
+                rank_peak: coachData.rank_peak || coachData.rankPeak || '',
+                rank_current: coachData.rank_current || coachData.rankCurrent || '',
+                specialties: Array.isArray(coachData.specialties) ? coachData.specialties : [],
+                region: coachData.region || '',
+                timezone: coachData.timezone || '',
+                hourly_rate: coachData.hourly_rate || coachData.hourlyRate || null,
+                languages: Array.isArray(coachData.languages) ? coachData.languages : [],
                 createdAt: new Date().toISOString()
             };
             
             coaches.push(newCoach);
             await saveCoaches(coaches);
-            await logActionToR2(decoded.username, 'COACH_CREATED', `Added new coach: ${name}`);
+            await logActionToR2(decoded.username, 'COACH_CREATED', `Added new coach: ${coachData.name}`);
             
             console.log("Coach created successfully");
             return new Response(JSON.stringify(newCoach), {
                 status: 201,
-                headers: { 'Content-Type': 'application/json' }
+                headers: corsHeaders
             });
         }
 
         if (req.method === 'PUT') {
             const body = await req.text();
-            const { id, name, title, description, skills, avatarColor, initials, profileImage, socialMedia } = JSON.parse(body);
+            const coachData = JSON.parse(body);
             
-            console.log("Updating coach:", id, name);
+            console.log("Updating coach:", coachData.id, coachData.name);
+            console.log("Update data received:", coachData);
             
-            const coachIndex = coaches.findIndex((c: any) => c.id === id);
+            const coachIndex = coaches.findIndex((c: any) => c.id === coachData.id);
             if (coachIndex === -1) {
-                console.log("Coach not found:", id);
-                return new Response('Coach not found', { status: 404 });
+                console.log("Coach not found:", coachData.id);
+                return new Response(JSON.stringify({ error: 'Coach not found' }), { 
+                    status: 404,
+                    headers: corsHeaders
+                });
             }
             
             coaches[coachIndex] = {
                 ...coaches[coachIndex],
-                name,
-                title,
-                description,
-                skills: skills || [],
-                avatarColor: avatarColor || coaches[coachIndex].avatarColor,
-                initials: initials || name.split(' ').map((n: string) => n[0]).join(''),
-                profileImage: profileImage !== undefined ? profileImage : coaches[coachIndex].profileImage,
-                socialMedia: socialMedia || coaches[coachIndex].socialMedia || {},
+                name: coachData.name,
+                title: coachData.title,
+                description: coachData.description !== undefined ? coachData.description : coaches[coachIndex].description, // Preserve formatting
+                skills: Array.isArray(coachData.skills) ? coachData.skills : coaches[coachIndex].skills || [],
+                avatarColor: coachData.avatarColor || coaches[coachIndex].avatarColor,
+                initials: coachData.initials || coachData.name.split(' ').map((n: string) => n[0]).join(''),
+                profileImage: coachData.profileImage !== undefined ? coachData.profileImage : coaches[coachIndex].profileImage,
+                // Social media support - handle both formats
+                socialMedia: coachData.socialMedia || {
+                    twitter: coachData.twitter_url || coaches[coachIndex].twitter_url || '',
+                    instagram: coachData.instagram_url || coaches[coachIndex].instagram_url || '',
+                    youtube: coachData.youtube_url || coaches[coachIndex].youtube_url || '',
+                    twitch: coachData.twitch_url || coaches[coachIndex].twitch_url || '',
+                    discord: coachData.discord_url || coaches[coachIndex].discord_url || ''
+                },
+                // Individual social media fields for backward compatibility
+                twitter_url: coachData.socialMedia?.twitter || coachData.twitter_url || coaches[coachIndex].twitter_url || '',
+                instagram_url: coachData.socialMedia?.instagram || coachData.instagram_url || coaches[coachIndex].instagram_url || '',
+                youtube_url: coachData.socialMedia?.youtube || coachData.youtube_url || coaches[coachIndex].youtube_url || '',
+                twitch_url: coachData.socialMedia?.twitch || coachData.twitch_url || coaches[coachIndex].twitch_url || '',
+                discord_url: coachData.socialMedia?.discord || coachData.discord_url || coaches[coachIndex].discord_url || '',
+                // Additional fields
+                bio: coachData.bio !== undefined ? coachData.bio : coaches[coachIndex].bio || '',
+                experience: coachData.experience !== undefined ? coachData.experience : coaches[coachIndex].experience || '',
+                rank_peak: coachData.rank_peak || coachData.rankPeak || coaches[coachIndex].rank_peak || '',
+                rank_current: coachData.rank_current || coachData.rankCurrent || coaches[coachIndex].rank_current || '',
+                specialties: Array.isArray(coachData.specialties) ? coachData.specialties : coaches[coachIndex].specialties || [],
+                region: coachData.region !== undefined ? coachData.region : coaches[coachIndex].region || '',
+                timezone: coachData.timezone !== undefined ? coachData.timezone : coaches[coachIndex].timezone || '',
+                hourly_rate: coachData.hourly_rate !== undefined ? coachData.hourly_rate : (coachData.hourlyRate !== undefined ? coachData.hourlyRate : coaches[coachIndex].hourly_rate),
+                languages: Array.isArray(coachData.languages) ? coachData.languages : coaches[coachIndex].languages || [],
                 updatedAt: new Date().toISOString()
             };
             
             await saveCoaches(coaches);
-            await logActionToR2(decoded.username, 'COACH_UPDATED', `Updated coach: ${name}`);
+            await logActionToR2(decoded.username, 'COACH_UPDATED', `Updated coach: ${coachData.name}`);
             
             console.log("Coach updated successfully");
             return new Response(JSON.stringify(coaches[coachIndex]), {
                 status: 200,
-                headers: { 'Content-Type': 'application/json' }
+                headers: corsHeaders
             });
         }
 
@@ -190,7 +266,10 @@ export default async (req: Request, context: Context) => {
             const coachToDelete = coaches.find((c: any) => c.id === id);
             if (!coachToDelete) {
                 console.log("Coach not found for deletion:", id);
-                return new Response('Coach not found', { status: 404 });
+                return new Response(JSON.stringify({ error: 'Coach not found' }), { 
+                    status: 404,
+                    headers: corsHeaders
+                });
             }
             
             const filteredCoaches = coaches.filter((c: any) => c.id !== id);
@@ -198,20 +277,35 @@ export default async (req: Request, context: Context) => {
             await logActionToR2(decoded.username, 'COACH_DELETED', `Deleted coach: ${coachToDelete.name}`);
             
             console.log("Coach deleted successfully");
-            return new Response('Coach deleted', { status: 200 });
+            return new Response(JSON.stringify({ message: 'Coach deleted successfully' }), { 
+                status: 200,
+                headers: corsHeaders
+            });
         }
 
-        return new Response('Method not allowed', { status: 405 });
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
+            status: 405,
+            headers: corsHeaders
+        });
         
     } catch (error: any) {
         console.error("JWT verification failed:", error);
         if (error.name === 'JsonWebTokenError') {
-            return new Response('Unauthorized - Invalid token', { status: 401 });
+            return new Response(JSON.stringify({ error: 'Unauthorized - Invalid token' }), { 
+                status: 401,
+                headers: corsHeaders
+            });
         }
         if (error.name === 'TokenExpiredError') {
-            return new Response('Unauthorized - Token expired', { status: 401 });
+            return new Response(JSON.stringify({ error: 'Unauthorized - Token expired' }), { 
+                status: 401,
+                headers: corsHeaders
+            });
         }
         console.error("Coach management error:", error);
-        return new Response('Internal Server Error', { status: 500 });
+        return new Response(JSON.stringify({ error: 'Internal Server Error' }), { 
+            status: 500,
+            headers: corsHeaders
+        });
     }
 };

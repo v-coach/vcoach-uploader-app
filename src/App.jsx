@@ -10,11 +10,31 @@ import LandingPage from './components/LandingPage';
 import AuthButton from './components/AuthButton';
 
 /**
+ * A dedicated component to handle redirection from the generic /dashboard
+ * to a role-specific dashboard. This improves stability.
+ */
+function DashboardRedirect() {
+  const { user } = useAuth();
+
+  if (user?.role === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
+
+  if (user?.role === 'coach') {
+    return <Navigate to="/coach" replace />;
+  }
+
+  // Default to the student dashboard
+  return <StudentDashboard />;
+}
+
+
+/**
  * Renders the main content of the application based on authentication status.
  * It uses the `useAuth` hook to access user and loading state.
  */
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   // Display a loading indicator while the authentication status is being checked.
   if (loading) {
@@ -39,10 +59,7 @@ function AppContent() {
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                {/* Redirect users from the generic dashboard to their specific role-based dashboard */}
-                {user?.role === 'student' && <StudentDashboard />}
-                {user?.role === 'coach' && <Navigate to="/coach" />}
-                {user?.role === 'admin' && <Navigate to="/admin" />}
+                <DashboardRedirect />
               </ProtectedRoute>
             } 
           />

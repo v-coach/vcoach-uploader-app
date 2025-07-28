@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, NavLink, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink, Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
 import LandingPage from './components/LandingPage';
 import StudentDashboard from './components/StudentDashboard';
@@ -74,18 +74,26 @@ const AuthButton = () => {
 // Compact Professional Footer Component
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSectionClick = (sectionId) => {
     // If we're not on the home page, navigate there first
-    if (window.location.pathname !== '/') {
-      window.location.href = `/#${sectionId}`;
-      return;
-    }
-    
-    // If we're already on the home page, scroll to the section
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (location.pathname !== '/') {
+      navigate('/');
+      // Wait for navigation to complete, then scroll to section
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      // If we're already on the home page, scroll to the section
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -131,19 +139,25 @@ const Footer = () => {
             <h3 className="text-base font-semibold text-white">Quick Links</h3>
             <ul className="space-y-1.5">
               <li>
-                <Link to="/" className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm">
+                <Link 
+                  to="/" 
+                  className={`text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm ${location.pathname === '/' ? 'text-sky-400' : ''}`}
+                >
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/upload" className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm">
+                <Link 
+                  to="/upload" 
+                  className={`text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm ${location.pathname === '/upload' ? 'text-sky-400' : ''}`}
+                >
                   Upload VoD
                 </Link>
               </li>
               <li>
                 <button 
                   onClick={() => handleSectionClick('coaches')} 
-                  className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left"
+                  className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left hover:underline"
                 >
                   Our Coaches
                 </button>
@@ -151,7 +165,7 @@ const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleSectionClick('pricing')} 
-                  className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left"
+                  className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left hover:underline"
                 >
                   Pricing
                 </button>
@@ -159,7 +173,7 @@ const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleSectionClick('how-it-works')} 
-                  className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left"
+                  className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left hover:underline"
                 >
                   How It Works
                 </button>

@@ -33,6 +33,31 @@ const ProtectedRoute = ({ requiredRoles }) => {
   return <Outlet />;
 };
 
+const NavigationLinks = () => {
+  const { user } = useAuth();
+  const activeLinkStyle = { color: 'white' };
+
+  if (!user) return null;
+
+  return (
+    <>
+      {/* Show Coach link if user is Coach or Head Coach (but not if they're Admin only) */}
+      {(user.roles.includes('Coach') || user.roles.includes('Head Coach')) && !user.roles.includes('Founders') && (
+        <NavLink to="/coach" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
+          Coach
+        </NavLink>
+      )}
+      
+      {/* Show Admin link if user is Admin (Founders) */}
+      {user.roles.includes('Founders') && (
+        <NavLink to="/admin" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>
+          Admin
+        </NavLink>
+      )}
+    </>
+  );
+};
+
 const AuthButton = () => {
     const { user, logout } = useAuth();
     if (user) {
@@ -47,8 +72,6 @@ const AuthButton = () => {
 };
 
 function App() {
-  const activeLinkStyle = { color: 'white' };
-
   return (
     <Router>
       <AuthProvider>
@@ -61,8 +84,7 @@ function App() {
               <nav className="flex items-center gap-6 text-sm">
                 <NavLink to="/" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Home</NavLink>
                 <NavLink to="/upload" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Upload</NavLink>
-                <NavLink to="/coach" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Coach</NavLink>
-                <NavLink to="/admin" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Admin</NavLink>
+                <NavigationLinks />
               </nav>
               <div className="flex flex-1 items-center justify-end">
                 <AuthButton />

@@ -7,7 +7,6 @@ function UploadPanel() {
   const [fileName, setFileName] = useState('');
   const [notification, setNotification] = useState('');
   const [uploadController, setUploadController] = useState(null);
-  const [debugInfo, setDebugInfo] = useState('');
 
   useEffect(() => {
     if (notification) {
@@ -18,17 +17,9 @@ function UploadPanel() {
     }
   }, [notification]);
 
-  const addDebugInfo = (info) => {
-    console.log(info);
-    setDebugInfo(prev => prev + '\n' + new Date().toLocaleTimeString() + ': ' + info);
-  };
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    setDebugInfo(''); // Clear previous debug info
-    addDebugInfo(`File selected: ${file.name} (${file.size} bytes)`);
 
     const MAX_FILE_SIZE = 4 * 1024 * 1024 * 1024; // 4 GB in bytes
     if (file.size > MAX_FILE_SIZE) {
@@ -42,7 +33,6 @@ function UploadPanel() {
     setIsUploading(true);
     setUploadProgress(0);
     setMessage(`Preparing upload for ${file.name}...`);
-    addDebugInfo('Requesting pre-signed URL...');
 
     // Get pre-signed URL from Netlify function
     fetch('/.netlify/functions/get-upload-url', {
@@ -51,22 +41,19 @@ function UploadPanel() {
       body: JSON.stringify({ fileName: file.name, contentType: file.type }),
     })
     .then(res => {
-        addDebugInfo(`Pre-signed URL response status: ${res.status}`);
         if (!res.ok) {
             throw new Error(`Server responded with ${res.status}`);
         }
         return res.json();
     })
     .then(({ uploadURL, key }) => {
-      addDebugInfo(`Pre-signed URL received. Key: ${key}`);
-      addDebugInfo(`Upload URL length: ${uploadURL.length}`);
       setMessage(`Uploading ${file.name}...`);
       
       // Create AbortController for cancellation
       const controller = new AbortController();
       setUploadController(controller);
 
-      // Simple progress simulation since we can't track real progress with pre-signed URLs
+      // Progress simulation for better UX
       let progress = 0;
       const progressInterval = setInterval(() => {
         progress += Math.random() * 10;
@@ -74,8 +61,6 @@ function UploadPanel() {
           setUploadProgress(progress.toFixed(2));
         }
       }, 200);
-
-      addDebugInfo('Starting file upload to R2...');
 
       // Upload using fetch with the pre-signed URL
       fetch(uploadURL, {
@@ -88,21 +73,15 @@ function UploadPanel() {
       })
       .then(response => {
         clearInterval(progressInterval);
-        addDebugInfo(`Upload response status: ${response.status}`);
-        addDebugInfo(`Upload response headers: ${JSON.stringify([...response.headers.entries()])}`);
         
         if (!response.ok) {
-          return response.text().then(text => {
-            addDebugInfo(`Upload error response body: ${text}`);
-            throw new Error(`Upload failed with status ${response.status}: ${text}`);
-          });
+          throw new Error(`Upload failed with status ${response.status}`);
         }
         
         setUploadProgress(100);
         setIsUploading(false);
         setNotification(`${fileName} has been uploaded successfully!`);
-        setMessage('Upload completed successfully!');
-        addDebugInfo('Upload completed successfully!');
+        setMessage('');
         setFileName('');
         setUploadController(null);
         e.target.value = null; // Reset file input
@@ -111,11 +90,9 @@ function UploadPanel() {
         clearInterval(progressInterval);
         if (error.name === 'AbortError') {
           setMessage('Upload canceled.');
-          addDebugInfo('Upload was canceled by user');
         } else {
           console.error("Upload failed:", error);
           setMessage(`Upload failed: ${error.message}`);
-          addDebugInfo(`Upload failed: ${error.message}`);
         }
         setIsUploading(false);
         setUploadController(null);
@@ -125,7 +102,6 @@ function UploadPanel() {
         console.error("Error preparing upload:", err);
         setIsUploading(false);
         setMessage(`Could not prepare upload: ${err.message}`);
-        addDebugInfo(`Failed to get pre-signed URL: ${err.message}`);
         setUploadController(null);
     });
   };
@@ -183,16 +159,6 @@ function UploadPanel() {
           )}
 
           {message && <p className="text-sm text-center text-white/80">{message}</p>}
-          
-          {/* Debug Information */}
-          {debugInfo && (
-            <div className="mt-4 p-4 bg-black/50 rounded-lg">
-              <h4 className="text-sm font-bold text-white mb-2">Debug Info:</h4>
-              <pre className="text-xs text-green-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
-                {debugInfo}
-              </pre>
-            </div>
-          )}
         </div>
       </div>
     </>

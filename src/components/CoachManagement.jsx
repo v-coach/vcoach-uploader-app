@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../AuthContext'; // Corrected import path
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PlusCircle, X, Image as ImageIcon, Upload, AlertTriangle } from 'lucide-react';
 

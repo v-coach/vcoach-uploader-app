@@ -136,7 +136,7 @@ function LandingPage() {
       </div>
 
       {/* How It Works Section with Flashing Dots Animation */}
-      <div className="text-center mb-12 relative">
+      <div id="how-it-works" className="text-center mb-12 relative">
         <h2 className="text-4xl font-bold text-white mb-12 hover:text-sky-300 transition-colors duration-300">How It Works</h2>
         
         {/* Steps Container */}
@@ -329,7 +329,7 @@ function LandingPage() {
       </div>
 
       {/* Meet Our Coaches Section */}
-      <div className="text-center mb-16">
+      <div id="coaches" className="text-center mb-16">
         <h2 className="text-4xl font-bold text-white mb-4 hover:text-sky-300 transition-colors duration-300">Meet Our Expert Coaches</h2>
         <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto hover:text-white/90 transition-colors duration-300">
           Learn from professional players and experienced coaches who have helped hundreds of players reach their competitive goals.
@@ -439,7 +439,7 @@ function LandingPage() {
       </div>
 
       {/* Subscription Plans Section */}
-      <div className="text-center mb-16">
+      <div id="pricing" className="text-center mb-16">
         <h2 className="text-4xl font-bold text-white mb-4 hover:text-sky-300 transition-colors duration-300">Choose Your Plan</h2>
         <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto hover:text-white/90 transition-colors duration-300">
           Select the perfect plan for your gaming journey. Upgrade your skills with professional coaching and exclusive features.

@@ -143,25 +143,49 @@ function LandingPage() {
         <div className="relative">
           <div className="grid md:grid-cols-4 gap-8 relative z-10">
             <div className="flex flex-col items-center group cursor-pointer">
-              <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10">1</div>
+              <div 
+                className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
+                style={{
+                  animation: 'flashDot 2s infinite linear',
+                  animationDelay: '0s'
+                }}
+              >1</div>
               <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Upload</h4>
               <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Share your gameplay video</p>
             </div>
             
             <div className="flex flex-col items-center group cursor-pointer">
-              <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10">2</div>
+              <div 
+                className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
+                style={{
+                  animation: 'flashDot 2s infinite linear',
+                  animationDelay: '0.5s'
+                }}
+              >2</div>
               <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Review</h4>
               <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Coaches analyze your gameplay</p>
             </div>
             
             <div className="flex flex-col items-center group cursor-pointer">
-              <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10">3</div>
+              <div 
+                className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
+                style={{
+                  animation: 'flashDot 2s infinite linear',
+                  animationDelay: '1.0s'
+                }}
+              >3</div>
               <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Learn</h4>
               <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Receive detailed feedback</p>
             </div>
             
             <div className="flex flex-col items-center group cursor-pointer">
-              <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10">4</div>
+              <div 
+                className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
+                style={{
+                  animation: 'flashDot 2s infinite linear',
+                  animationDelay: '1.5s'
+                }}
+              >4</div>
               <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Improve</h4>
               <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Apply insights to rank up</p>
             </div>

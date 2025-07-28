@@ -135,7 +135,7 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* How It Works Section with Animated Dots */}
+      {/* How It Works Section with Flashing Dots Animation */}
       <div className="text-center mb-12 relative">
         <h2 className="text-4xl font-bold text-white mb-12 hover:text-sky-300 transition-colors duration-300">How It Works</h2>
         
@@ -167,80 +167,182 @@ function LandingPage() {
             </div>
           </div>
 
-          {/* Animated Connecting Lines and Dots - Hidden on Mobile */}
+          {/* Flashing Dots Animation - Hidden on Mobile */}
           <div className="hidden md:block absolute top-6 left-0 w-full h-0.5 pointer-events-none">
             {/* Background Line */}
             <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-white/20 top-0"></div>
             
-            {/* Animated Progress Line */}
-            <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-sky-400 to-blue-500 top-0 animate-pulse"></div>
+            {/* Animated Progress Line with Gradient */}
+            <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-sky-400 via-blue-500 to-purple-500 top-0 opacity-60"></div>
             
-            {/* Animated Dots */}
+            {/* String of Flashing Dots */}
             <div className="absolute left-[12.5%] right-[12.5%] top-0">
-              {/* Dot 1 to 2 */}
+              {/* Dot 1 */}
               <div 
-                className="absolute w-2 h-2 bg-sky-400 rounded-full top-[-3px] animate-bounce" 
+                className="absolute w-2 h-2 bg-sky-400 rounded-full top-[-3px] shadow-lg shadow-sky-400/50" 
                 style={{
-                  left: '16.66%',
-                  animationDelay: '0s',
-                  animationDuration: '2s'
+                  left: '0%',
+                  animation: 'flashDot 3s infinite linear',
+                  animationDelay: '0s'
                 }}
               ></div>
               
-              {/* Dot 2 to 3 */}
+              {/* Dot 2 */}
               <div 
-                className="absolute w-2 h-2 bg-blue-400 rounded-full top-[-3px] animate-bounce" 
+                className="absolute w-2 h-2 bg-blue-400 rounded-full top-[-3px] shadow-lg shadow-blue-400/50" 
+                style={{
+                  left: '10%',
+                  animation: 'flashDot 3s infinite linear',
+                  animationDelay: '0.3s'
+                }}
+              ></div>
+              
+              {/* Dot 3 */}
+              <div 
+                className="absolute w-2 h-2 bg-cyan-400 rounded-full top-[-3px] shadow-lg shadow-cyan-400/50" 
+                style={{
+                  left: '20%',
+                  animation: 'flashDot 3s infinite linear',
+                  animationDelay: '0.6s'
+                }}
+              ></div>
+              
+              {/* Dot 4 */}
+              <div 
+                className="absolute w-2 h-2 bg-indigo-400 rounded-full top-[-3px] shadow-lg shadow-indigo-400/50" 
+                style={{
+                  left: '33.33%',
+                  animation: 'flashDot 3s infinite linear',
+                  animationDelay: '0.9s'
+                }}
+              ></div>
+              
+              {/* Dot 5 */}
+              <div 
+                className="absolute w-2 h-2 bg-purple-400 rounded-full top-[-3px] shadow-lg shadow-purple-400/50" 
                 style={{
                   left: '50%',
-                  animationDelay: '0.5s',
-                  animationDuration: '2s'
+                  animation: 'flashDot 3s infinite linear',
+                  animationDelay: '1.2s'
                 }}
               ></div>
               
-              {/* Dot 3 to 4 */}
+              {/* Dot 6 */}
               <div 
-                className="absolute w-2 h-2 bg-purple-400 rounded-full top-[-3px] animate-bounce" 
+                className="absolute w-2 h-2 bg-violet-400 rounded-full top-[-3px] shadow-lg shadow-violet-400/50" 
                 style={{
-                  left: '83.33%',
-                  animationDelay: '1s',
-                  animationDuration: '2s'
+                  left: '66.66%',
+                  animation: 'flashDot 3s infinite linear',
+                  animationDelay: '1.5s'
+                }}
+              ></div>
+              
+              {/* Dot 7 */}
+              <div 
+                className="absolute w-2 h-2 bg-pink-400 rounded-full top-[-3px] shadow-lg shadow-pink-400/50" 
+                style={{
+                  left: '80%',
+                  animation: 'flashDot 3s infinite linear',
+                  animationDelay: '1.8s'
+                }}
+              ></div>
+              
+              {/* Dot 8 */}
+              <div 
+                className="absolute w-2 h-2 bg-rose-400 rounded-full top-[-3px] shadow-lg shadow-rose-400/50" 
+                style={{
+                  left: '90%',
+                  animation: 'flashDot 3s infinite linear',
+                  animationDelay: '2.1s'
+                }}
+              ></div>
+              
+              {/* Dot 9 */}
+              <div 
+                className="absolute w-2 h-2 bg-red-400 rounded-full top-[-3px] shadow-lg shadow-red-400/50" 
+                style={{
+                  left: '100%',
+                  animation: 'flashDot 3s infinite linear',
+                  animationDelay: '2.4s'
                 }}
               ></div>
             </div>
             
-            {/* Traveling Dot Animation */}
+            {/* Traveling Energy Pulse */}
             <div className="absolute left-[12.5%] right-[12.5%] top-0">
               <div 
-                className="w-3 h-3 bg-yellow-400 rounded-full top-[-4px] absolute"
+                className="w-4 h-4 bg-yellow-400 rounded-full top-[-6px] absolute shadow-xl shadow-yellow-400/80 opacity-80"
                 style={{
-                  animation: 'travel 4s infinite linear'
+                  animation: 'energyPulse 4s infinite ease-in-out'
                 }}
               ></div>
             </div>
           </div>
 
-          {/* Mobile Connecting Dots */}
+          {/* Mobile Animated Dots */}
           <div className="md:hidden flex flex-col items-center space-y-4 absolute left-1/2 transform -translate-x-1/2 top-16 pointer-events-none">
             <div className="w-1 h-8 bg-white/20 relative">
-              <div className="w-2 h-2 bg-sky-400 rounded-full absolute left-[-2px] top-2 animate-pulse"></div>
+              <div className="w-2 h-2 bg-sky-400 rounded-full absolute left-[-2px] top-2 shadow-md shadow-sky-400/50" style={{animation: 'flashDot 2s infinite', animationDelay: '0s'}}></div>
             </div>
             <div className="w-1 h-8 bg-white/20 relative">
-              <div className="w-2 h-2 bg-blue-400 rounded-full absolute left-[-2px] top-2 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+              <div className="w-2 h-2 bg-blue-400 rounded-full absolute left-[-2px] top-2 shadow-md shadow-blue-400/50" style={{animation: 'flashDot 2s infinite', animationDelay: '0.5s'}}></div>
             </div>
             <div className="w-1 h-8 bg-white/20 relative">
-              <div className="w-2 h-2 bg-purple-400 rounded-full absolute left-[-2px] top-2 animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div className="w-2 h-2 bg-purple-400 rounded-full absolute left-[-2px] top-2 shadow-md shadow-purple-400/50" style={{animation: 'flashDot 2s infinite', animationDelay: '1s'}}></div>
             </div>
           </div>
         </div>
 
-        {/* Custom CSS for traveling animation */}
+        {/* Custom CSS for flashing dots animation */}
         <style jsx>{`
-          @keyframes travel {
-            0% { left: 0%; opacity: 1; }
-            25% { left: 33.33%; opacity: 0.8; }
-            50% { left: 66.66%; opacity: 0.6; }
-            75% { left: 100%; opacity: 0.4; }
-            100% { left: 0%; opacity: 1; }
+          @keyframes flashDot {
+            0%, 20% { 
+              opacity: 0.3; 
+              transform: scale(0.8); 
+              box-shadow: 0 0 5px currentColor;
+            }
+            10% { 
+              opacity: 1; 
+              transform: scale(1.2); 
+              box-shadow: 0 0 15px currentColor, 0 0 25px currentColor;
+            }
+            30%, 100% { 
+              opacity: 0.3; 
+              transform: scale(0.8); 
+              box-shadow: 0 0 5px currentColor;
+            }
+          }
+          
+          @keyframes energyPulse {
+            0% { 
+              left: 0%; 
+              opacity: 0; 
+              transform: scale(0.5);
+            }
+            5% {
+              opacity: 1;
+              transform: scale(1);
+            }
+            25% { 
+              left: 33.33%; 
+              opacity: 0.8; 
+              transform: scale(1.1);
+            }
+            50% { 
+              left: 66.66%; 
+              opacity: 0.6; 
+              transform: scale(1);
+            }
+            75% { 
+              left: 100%; 
+              opacity: 0.4; 
+              transform: scale(0.8);
+            }
+            100% { 
+              left: 100%; 
+              opacity: 0; 
+              transform: scale(0.5);
+            }
           }
         `}</style>
       </div>
@@ -512,22 +614,6 @@ function LandingPage() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Stats Section */}
-      <div className="grid md:grid-cols-3 gap-8 text-center mb-16">
-        <div className="rounded-xl border border-white/20 bg-black/20 backdrop-blur-lg p-6 hover:bg-black/30 hover:border-sky-400/50 hover:scale-105 hover:-translate-y-2 hover:shadow-sky-500/20 transition-all duration-300 group cursor-pointer">
-          <div className="text-3xl font-bold text-sky-400 mb-2 group-hover:text-sky-300 group-hover:scale-110 transition-all duration-300">500+</div>
-          <div className="text-white/80 group-hover:text-white transition-colors duration-300">VoDs Reviewed</div>
-        </div>
-        <div className="rounded-xl border border-white/20 bg-black/20 backdrop-blur-lg p-6 hover:bg-black/30 hover:border-green-400/50 hover:scale-105 hover:-translate-y-2 hover:shadow-green-500/20 transition-all duration-300 group cursor-pointer">
-          <div className="text-3xl font-bold text-green-400 mb-2 group-hover:text-green-300 group-hover:scale-110 transition-all duration-300">95%</div>
-          <div className="text-white/80 group-hover:text-white transition-colors duration-300">Improvement Rate</div>
-        </div>
-        <div className="rounded-xl border border-white/20 bg-black/20 backdrop-blur-lg p-6 hover:bg-black/30 hover:border-purple-400/50 hover:scale-105 hover:-translate-y-2 hover:shadow-purple-500/20 transition-all duration-300 group cursor-pointer">
-          <div className="text-3xl font-bold text-purple-400 mb-2 group-hover:text-purple-300 group-hover:scale-110 transition-all duration-300">24hr</div>
-          <div className="text-white/80 group-hover:text-white transition-colors duration-300">Average Turnaround</div>
         </div>
       </div>
     </div>

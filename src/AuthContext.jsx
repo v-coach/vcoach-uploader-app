@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
       const { token } = response.data;
       localStorage.setItem('v-coach-token', token);
       setToken(token);
-      navigate('/admin'); // Redirect to admin dashboard on successful login
+      navigate('/'); // Redirect to home page instead of admin
       return { success: true };
     } catch (error) {
       console.error("Login failed:", error.response?.data?.message || error.message);
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('v-coach-token');
     setToken(null);
     setUser(null);
-    navigate('/login');
+    navigate('/');
   };
 
   return (

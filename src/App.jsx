@@ -78,23 +78,34 @@ const Footer = () => {
   const location = useLocation();
 
   const handleSectionClick = (sectionId) => {
-    // If we're not on the home page, navigate there first
+    // Always navigate to home page first, then scroll to section
     if (location.pathname !== '/') {
-      navigate('/');
-      // Wait for navigation to complete, then scroll to section
+      // Navigate to home page with the section hash
+      navigate('/', { replace: false });
+      // Use a longer timeout to ensure the page has fully loaded
       setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }, 100);
+      }, 300);
     } else {
-      // If we're already on the home page, scroll to the section
+      // If already on home page, just scroll to section
       const element = document.getElementById(sectionId);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
+  };
+
+  const handleHomeClick = (e) => {
+    e.preventDefault();
+    navigate('/');
+  };
+
+  const handleUploadClick = (e) => {
+    e.preventDefault();
+    navigate('/upload');
   };
 
   return (
@@ -139,20 +150,20 @@ const Footer = () => {
             <h3 className="text-base font-semibold text-white">Quick Links</h3>
             <ul className="space-y-1.5">
               <li>
-                <Link 
-                  to="/" 
-                  className={`text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm ${location.pathname === '/' ? 'text-sky-400' : ''}`}
+                <button
+                  onClick={handleHomeClick}
+                  className={`text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left ${location.pathname === '/' ? 'text-sky-400 font-medium' : ''}`}
                 >
                   Home
-                </Link>
+                </button>
               </li>
               <li>
-                <Link 
-                  to="/upload" 
-                  className={`text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm ${location.pathname === '/upload' ? 'text-sky-400' : ''}`}
+                <button
+                  onClick={handleUploadClick}
+                  className={`text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm text-left ${location.pathname === '/upload' ? 'text-sky-400 font-medium' : ''}`}
                 >
                   Upload VoD
-                </Link>
+                </button>
               </li>
               <li>
                 <button 

@@ -135,31 +135,114 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* How It Works Section */}
-      <div className="text-center mb-12">
+      {/* How It Works Section with Animated Dots */}
+      <div className="text-center mb-12 relative">
         <h2 className="text-4xl font-bold text-white mb-12 hover:text-sky-300 transition-colors duration-300">How It Works</h2>
-        <div className="grid md:grid-cols-4 gap-8">
-          <div className="flex flex-col items-center group cursor-pointer">
-            <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300">1</div>
-            <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Upload</h4>
-            <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Share your gameplay video</p>
+        
+        {/* Steps Container */}
+        <div className="relative">
+          <div className="grid md:grid-cols-4 gap-8 relative z-10">
+            <div className="flex flex-col items-center group cursor-pointer">
+              <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10">1</div>
+              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Upload</h4>
+              <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Share your gameplay video</p>
+            </div>
+            
+            <div className="flex flex-col items-center group cursor-pointer">
+              <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10">2</div>
+              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Review</h4>
+              <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Coaches analyze your gameplay</p>
+            </div>
+            
+            <div className="flex flex-col items-center group cursor-pointer">
+              <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10">3</div>
+              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Learn</h4>
+              <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Receive detailed feedback</p>
+            </div>
+            
+            <div className="flex flex-col items-center group cursor-pointer">
+              <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10">4</div>
+              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Improve</h4>
+              <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Apply insights to rank up</p>
+            </div>
           </div>
-          <div className="flex flex-col items-center group cursor-pointer">
-            <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300">2</div>
-            <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Review</h4>
-            <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Coaches analyze your gameplay</p>
+
+          {/* Animated Connecting Lines and Dots - Hidden on Mobile */}
+          <div className="hidden md:block absolute top-6 left-0 w-full h-0.5 pointer-events-none">
+            {/* Background Line */}
+            <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-white/20 top-0"></div>
+            
+            {/* Animated Progress Line */}
+            <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-sky-400 to-blue-500 top-0 animate-pulse"></div>
+            
+            {/* Animated Dots */}
+            <div className="absolute left-[12.5%] right-[12.5%] top-0">
+              {/* Dot 1 to 2 */}
+              <div 
+                className="absolute w-2 h-2 bg-sky-400 rounded-full top-[-3px] animate-bounce" 
+                style={{
+                  left: '16.66%',
+                  animationDelay: '0s',
+                  animationDuration: '2s'
+                }}
+              ></div>
+              
+              {/* Dot 2 to 3 */}
+              <div 
+                className="absolute w-2 h-2 bg-blue-400 rounded-full top-[-3px] animate-bounce" 
+                style={{
+                  left: '50%',
+                  animationDelay: '0.5s',
+                  animationDuration: '2s'
+                }}
+              ></div>
+              
+              {/* Dot 3 to 4 */}
+              <div 
+                className="absolute w-2 h-2 bg-purple-400 rounded-full top-[-3px] animate-bounce" 
+                style={{
+                  left: '83.33%',
+                  animationDelay: '1s',
+                  animationDuration: '2s'
+                }}
+              ></div>
+            </div>
+            
+            {/* Traveling Dot Animation */}
+            <div className="absolute left-[12.5%] right-[12.5%] top-0">
+              <div 
+                className="w-3 h-3 bg-yellow-400 rounded-full top-[-4px] absolute"
+                style={{
+                  animation: 'travel 4s infinite linear'
+                }}
+              ></div>
+            </div>
           </div>
-          <div className="flex flex-col items-center group cursor-pointer">
-            <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300">3</div>
-            <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Learn</h4>
-            <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Receive detailed feedback</p>
-          </div>
-          <div className="flex flex-col items-center group cursor-pointer">
-            <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300">4</div>
-            <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Improve</h4>
-            <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Apply insights to rank up</p>
+
+          {/* Mobile Connecting Dots */}
+          <div className="md:hidden flex flex-col items-center space-y-4 absolute left-1/2 transform -translate-x-1/2 top-16 pointer-events-none">
+            <div className="w-1 h-8 bg-white/20 relative">
+              <div className="w-2 h-2 bg-sky-400 rounded-full absolute left-[-2px] top-2 animate-pulse"></div>
+            </div>
+            <div className="w-1 h-8 bg-white/20 relative">
+              <div className="w-2 h-2 bg-blue-400 rounded-full absolute left-[-2px] top-2 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+            </div>
+            <div className="w-1 h-8 bg-white/20 relative">
+              <div className="w-2 h-2 bg-purple-400 rounded-full absolute left-[-2px] top-2 animate-pulse" style={{animationDelay: '1s'}}></div>
+            </div>
           </div>
         </div>
+
+        {/* Custom CSS for traveling animation */}
+        <style jsx>{`
+          @keyframes travel {
+            0% { left: 0%; opacity: 1; }
+            25% { left: 33.33%; opacity: 0.8; }
+            50% { left: 66.66%; opacity: 0.6; }
+            75% { left: 100%; opacity: 0.4; }
+            100% { left: 0%; opacity: 1; }
+          }
+        `}</style>
       </div>
 
       {/* Meet Our Coaches Section */}

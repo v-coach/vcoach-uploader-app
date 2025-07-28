@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, NavLink, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
+import LandingPage from './components/LandingPage';
 import StudentDashboard from './components/StudentDashboard';
 import CoachDashboard from './components/CoachDashboard';
 import AdminDashboard from './components/AdminDashboard';
@@ -25,7 +26,7 @@ const ProtectedRoute = ({ requiredRoles }) => {
   const hasRequiredRole = user.roles.some(role => requiredRoles.includes(role));
 
   if (!hasRequiredRole) {
-    // If user doesn't have the role, send them to the student page
+    // If user doesn't have the role, send them to the home page
     return <Navigate to="/" replace />; 
   }
 
@@ -58,7 +59,8 @@ function App() {
                 <img src={vcoachlg} alt="V-Coach Central Logo" className="h-16" />
               </Link>
               <nav className="flex items-center gap-6 text-sm">
-                <NavLink to="/" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Student</NavLink>
+                <NavLink to="/" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Home</NavLink>
+                <NavLink to="/upload" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Upload</NavLink>
                 <NavLink to="/coach" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Coach</NavLink>
                 <NavLink to="/admin" className="transition-colors text-white/70 hover:text-white/100 font-medium" style={({ isActive }) => isActive ? activeLinkStyle : undefined}>Admin</NavLink>
               </nav>
@@ -70,7 +72,8 @@ function App() {
 
           <main className="container max-w-screen-xl p-8 mx-auto">
             <Routes>
-              <Route path="/" element={<StudentDashboard />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/upload" element={<StudentDashboard />} />
               <Route path="/login" element={<LoginPage />} />
               
               {/* Protected Routes */}

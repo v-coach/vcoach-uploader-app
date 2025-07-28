@@ -123,11 +123,8 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
 
       console.log("Image uploaded successfully to:", publicUrl);
       
-      // Test if the image URL is accessible
-      const testImg = new Image();
-      testImg.onload = () => console.log("✅ Image URL is accessible:", publicUrl);
-      testImg.onerror = () => console.error("❌ Image URL is not accessible:", publicUrl);
-      testImg.src = publicUrl;
+      // Wait for the image to be accessible before returning the URL
+      await waitForImageToLoad(publicUrl);
       
       return publicUrl;
     } catch (error) {
@@ -137,6 +134,37 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
     } finally {
       setUploadingImage(false);
     }
+  };
+
+  // Helper function to wait for image to be accessible
+  const waitForImageToLoad = (url) => {
+    return new Promise((resolve) => {
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      const tryLoad = () => {
+        attempts++;
+        console.log(`Checking if image is accessible (attempt ${attempts}/${maxAttempts})...`);
+        
+        const testImg = new Image();
+        testImg.onload = () => {
+          console.log("✅ Image is now accessible:", url);
+          resolve(true);
+        };
+        testImg.onerror = () => {
+          if (attempts < maxAttempts) {
+            console.log(`❌ Image not ready yet, retrying in 1 second...`);
+            setTimeout(tryLoad, 1000);
+          } else {
+            console.log("⚠️ Image may not be immediately accessible, but proceeding anyway");
+            resolve(false);
+          }
+        };
+        testImg.src = url;
+      };
+      
+      tryLoad();
+    });
   };
 
   const handleSubmit = async (e) => {

@@ -104,8 +104,78 @@ function LandingPage() {
         </div>
       </div>
 
+      {/* Meet Our Coaches Section */}
+      <div className="text-center mb-16">
+        <h2 className="text-4xl font-bold text-white mb-4">Meet Our Expert Coaches</h2>
+        <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto">
+          Learn from professional players and experienced coaches who have helped hundreds of players reach their competitive goals.
+        </p>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+          {/* Coach 1 */}
+          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
+            <div className="w-24 h-24 bg-gradient-to-br from-sky-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold text-white">JD</span>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Coach Jordan</h3>
+            <div className="text-sky-400 font-semibold mb-3">Head Coach</div>
+            <p className="text-white/70 text-sm mb-4">
+              Former professional player with 5+ years coaching experience. Specializes in strategic gameplay and team coordination.
+            </p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              <span className="px-3 py-1 bg-sky-500/20 text-sky-300 rounded-full text-xs">Strategy</span>
+              <span className="px-3 py-1 bg-sky-500/20 text-sky-300 rounded-full text-xs">Team Play</span>
+              <span className="px-3 py-1 bg-sky-500/20 text-sky-300 rounded-full text-xs">Leadership</span>
+            </div>
+          </div>
+
+          {/* Coach 2 */}
+          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
+            <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold text-white">AS</span>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Coach Alex</h3>
+            <div className="text-green-400 font-semibold mb-3">Mechanics Coach</div>
+            <p className="text-white/70 text-sm mb-4">
+              Expert in mechanical skill development and precision training. Helps players master the fundamentals and advanced techniques.
+            </p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs">Mechanics</span>
+              <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs">Aim Training</span>
+              <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs">Movement</span>
+            </div>
+          </div>
+
+          {/* Coach 3 */}
+          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
+            <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-violet-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold text-white">MK</span>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Coach Morgan</h3>
+            <div className="text-purple-400 font-semibold mb-3">Mental Performance Coach</div>
+            <p className="text-white/70 text-sm mb-4">
+              Focuses on mindset, tilt management, and peak performance psychology. Helps players maintain consistency under pressure.
+            </p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs">Mindset</span>
+              <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs">Focus</span>
+              <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs">Consistency</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Add Coach Button - Only visible to admins */}
+        {user && user.roles?.includes('Founders') && (
+          <div className="text-center">
+            <button className="h-12 px-6 bg-white/10 text-white hover:bg-white/20 border border-white/20 inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium backdrop-blur-lg transition-all duration-300">
+              + Add New Coach
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Stats Section */}
-      <div className="grid md:grid-cols-3 gap-8 text-center">
+      <div className="grid md:grid-cols-3 gap-8 text-center mb-16">
         <div className="rounded-xl border border-white/20 bg-black/20 backdrop-blur-lg p-6">
           <div className="text-3xl font-bold text-sky-400 mb-2">500+</div>
           <div className="text-white/80">VoDs Reviewed</div>

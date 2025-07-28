@@ -95,7 +95,7 @@ export default async (req: Request, context: Context) => {
 
         if (req.method === 'POST') {
             const body = await req.text();
-            const { name, title, description, skills, avatarColor, initials } = JSON.parse(body);
+            const { name, title, description, skills, avatarColor, initials, profileImage } = JSON.parse(body);
             
             const newCoach = {
                 id: Date.now().toString(),
@@ -105,6 +105,7 @@ export default async (req: Request, context: Context) => {
                 skills: skills || [],
                 avatarColor: avatarColor || 'from-sky-400 to-blue-600',
                 initials: initials || name.split(' ').map((n: string) => n[0]).join(''),
+                profileImage: profileImage || null, // Store profile image URL/key
                 createdAt: new Date().toISOString()
             };
             
@@ -120,7 +121,7 @@ export default async (req: Request, context: Context) => {
 
         if (req.method === 'PUT') {
             const body = await req.text();
-            const { id, name, title, description, skills, avatarColor, initials } = JSON.parse(body);
+            const { id, name, title, description, skills, avatarColor, initials, profileImage } = JSON.parse(body);
             
             const coachIndex = coaches.findIndex((c: any) => c.id === id);
             if (coachIndex === -1) {
@@ -135,6 +136,7 @@ export default async (req: Request, context: Context) => {
                 skills: skills || [],
                 avatarColor: avatarColor || coaches[coachIndex].avatarColor,
                 initials: initials || name.split(' ').map((n: string) => n[0]).join(''),
+                profileImage: profileImage !== undefined ? profileImage : coaches[coachIndex].profileImage,
                 updatedAt: new Date().toISOString()
             };
             

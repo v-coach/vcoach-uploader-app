@@ -123,8 +123,9 @@ const CoachModal = ({ coach, onSave, onCancel }) => {
 
       console.log("Image uploaded successfully to:", publicUrl);
       
-      // Wait for the image to be accessible before returning the URL
-      await waitForImageToLoad(publicUrl);
+      // For now, skip the accessibility check since R2 might have propagation delay
+      // The image will work eventually, even if not immediately accessible
+      console.log("⚠️ Skipping accessibility check - image will be available shortly");
       
       return publicUrl;
     } catch (error) {

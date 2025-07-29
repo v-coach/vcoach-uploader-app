@@ -196,8 +196,8 @@ function LandingPage() {
             {/* Background Line */}
             <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-white/20 top-0"></div>
             
-            {/* Animated Progress Line with Gradient */}
-            <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-sky-400 via-blue-500 to-purple-500 top-0 opacity-60"></div>
+            {/* Animated Progress Line - Consistent Color */}
+            <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-sky-500 top-0 opacity-60"></div>
             
             {/* String of Flashing Dots - 2 dots per stage, same colors throughout */}
             <div className="absolute left-[12.5%] right-[12.5%] top-0">

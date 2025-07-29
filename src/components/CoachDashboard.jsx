@@ -83,14 +83,14 @@ const InfoCard = ({ icon, title, value, subtitle, color = "sky" }) => {
   };
 
   return (
-    <div className={`rounded-xl border ${colorClasses[color]} backdrop-blur-lg p-6 transition-all hover:scale-105`}>
+    <div className={`rounded-xl border ${colorClasses[color]} backdrop-blur-lg p-4 transition-all hover:scale-105`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-white/60">{title}</p>
-          <p className="text-3xl font-bold text-white mt-1">{value}</p>
+          <p className="text-xs font-medium text-white/60">{title}</p>
+          <p className="text-2xl font-bold text-white mt-1">{value}</p>
           {subtitle && <p className="text-xs text-white/50 mt-1">{subtitle}</p>}
         </div>
-        <div className={`text-2xl ${iconColorClasses[color]}`}>
+        <div className={`text-xl ${iconColorClasses[color]}`}>
           {icon}
         </div>
       </div>
@@ -398,15 +398,15 @@ function CoachDashboard() {
         />
       )}
 
-      <div className="flex flex-col space-y-8">
+      <div className="flex flex-col space-y-4">
         {/* Header Section */}
-        <div className="mb-4">
-          <h1 className="text-5xl font-bold tracking-tight text-white drop-shadow-lg">VoD Review Queue</h1>
-          <p className="text-white/80 mt-2">Browse, review, and manage all uploaded student VoDs with detailed analytics.</p>
+        <div className="mb-2">
+          <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">VoD Review Queue</h1>
+          <p className="text-white/80 mt-1">Browse, review, and manage all uploaded student VoDs with detailed analytics.</p>
         </div>
 
         {/* Stats Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
           <InfoCard 
             icon="📹"
             title="Total Uploads"
@@ -445,38 +445,38 @@ function CoachDashboard() {
         </div>
 
         {/* Files Table */}
-        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl">
-          <div className="p-0">
-            <div className="overflow-x-auto">
+        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl flex-1 min-h-0">
+          <div className="p-0 flex flex-col h-full">
+            <div className="overflow-x-auto flex-1">
               <table className="w-full caption-bottom text-sm">
                 <thead className="[&_tr]:border-b border-white/20">
                   <tr className="transition-colors">
-                    <th className="h-12 px-4 text-left align-middle font-medium text-white/60">File Name</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-white/60">Size</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-white/60">Est. Duration</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-white/60">Uploaded On</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-white/60">Status</th>
-                    <th className="h-12 px-4 text-right align-middle font-medium text-white/60">Actions</th>
+                    <th className="h-10 px-3 text-left align-middle font-medium text-white/60">File Name</th>
+                    <th className="h-10 px-3 text-left align-middle font-medium text-white/60">Size</th>
+                    <th className="h-10 px-3 text-left align-middle font-medium text-white/60">Est. Duration</th>
+                    <th className="h-10 px-3 text-left align-middle font-medium text-white/60">Uploaded On</th>
+                    <th className="h-10 px-3 text-left align-middle font-medium text-white/60">Status</th>
+                    <th className="h-10 px-3 text-right align-middle font-medium text-white/60">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="[&_tr:last-child]:border-0">
                   {loading ? (
-                    <tr><td colSpan="6" className="p-8 text-center text-white/60">
+                    <tr><td colSpan="6" className="p-6 text-center text-white/60">
                       <div className="flex items-center justify-center space-x-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sky-500"></div>
                         <span>Loading files...</span>
                       </div>
                     </td></tr>
                   ) : error ? (
-                    <tr><td colSpan="6" className="p-8 text-center text-red-400">{error}</td></tr>
+                    <tr><td colSpan="6" className="p-6 text-center text-red-400">{error}</td></tr>
                   ) : files.length > 0 ? (
                     files.map(file => (
                       <tr key={file.key} className="border-b border-white/20 transition-colors hover:bg-white/5">
-                        <td className="p-4 align-middle font-medium text-white">{file.key}</td>
-                        <td className="p-4 align-middle text-white/80">{(file.size / 1024 / 1024).toFixed(1)} MB</td>
-                        <td className="p-4 align-middle text-white/80">{formatDuration(estimateVideoDuration(file.size))}</td>
-                        <td className="p-4 align-middle text-white/80">{new Date(file.lastModified).toLocaleDateString()}</td>
-                        <td className="p-4 align-middle">
+                        <td className="p-3 align-middle font-medium text-white">{file.key}</td>
+                        <td className="p-3 align-middle text-white/80">{(file.size / 1024 / 1024).toFixed(1)} MB</td>
+                        <td className="p-3 align-middle text-white/80">{formatDuration(estimateVideoDuration(file.size))}</td>
+                        <td className="p-3 align-middle text-white/80">{new Date(file.lastModified).toLocaleDateString()}</td>
+                        <td className="p-3 align-middle">
                           {file.hasNotes ? (
                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
                               ✓ Reviewed
@@ -487,28 +487,28 @@ function CoachDashboard() {
                             </span>
                           )}
                         </td>
-                        <td className="p-4 align-middle text-right space-x-2">
-                          <button onClick={() => setSelectedVideo(file)} className="h-9 px-3 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold transition-colors">
+                        <td className="p-3 align-middle text-right space-x-1">
+                          <button onClick={() => setSelectedVideo(file)} className="h-8 px-2 bg-sky-500 text-white hover:bg-sky-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold transition-colors">
                             View
                           </button>
                           {file.hasNotes && (
-                            <button onClick={() => handleDownloadNotes(file.key)} className="h-9 px-3 bg-green-600 text-white hover:bg-green-700 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold transition-colors">
+                            <button onClick={() => handleDownloadNotes(file.key)} className="h-8 px-2 bg-green-600 text-white hover:bg-green-700 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-bold transition-colors">
                                 Notes
                             </button>
                           )}
-                          <button onClick={() => setModalState({ type: 'rename', fileKey: file.key })} className="h-9 px-3 bg-gray-500 text-white hover:bg-gray-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium transition-colors">
+                          <button onClick={() => setModalState({ type: 'rename', fileKey: file.key })} className="h-8 px-2 bg-gray-500 text-white hover:bg-gray-600 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium transition-colors">
                             Rename
                           </button>
-                          <button onClick={() => setModalState({ type: 'delete', fileKey: file.key })} className="h-9 px-3 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium transition-colors">
+                          <button onClick={() => setModalState({ type: 'delete', fileKey: file.key })} className="h-8 px-2 bg-red-600 text-white hover:bg-red-500 inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium transition-colors">
                             Delete
                           </button>
                         </td>
                       </tr>
                     ))
                   ) : (
-                    <tr><td colSpan="6" className="p-12 text-center">
-                      <div className="flex flex-col items-center space-y-4">
-                        <div className="text-4xl">📹</div>
+                    <tr><td colSpan="6" className="p-8 text-center">
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="text-3xl">📹</div>
                         <div className="text-white/60">No VoDs have been uploaded yet</div>
                         <div className="text-white/40 text-sm">Students can upload their gameplay footage for review</div>
                       </div>

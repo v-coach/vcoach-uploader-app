@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../AuthContext';
 import CoachDashboard from './CoachDashboard';
 import CoachManagement from './CoachManagement';
+import PricingManagement from './PricingManagement';
 
 // --- Edit User Modal (Updated) ---
 const EditUserModal = ({ user, onConfirm, onCancel }) => {
@@ -242,6 +243,7 @@ function AdminDashboard() {
   const tabs = [
     { id: 'overview', name: 'Overview', icon: '📊' },
     { id: 'coaches', name: 'Coaches', icon: '👥' },
+    { id: 'pricing', name: 'Pricing', icon: '💰' },
     { id: 'users', name: 'Users', icon: '🔐' },
     { id: 'files', name: 'Files', icon: '📁' }
   ];
@@ -293,6 +295,8 @@ function AdminDashboard() {
       )}
 
       {activeTab === 'coaches' && <CoachManagement />}
+
+      {activeTab === 'pricing' && <PricingManagement />}
 
       {activeTab === 'users' && <UserManagement />}
 

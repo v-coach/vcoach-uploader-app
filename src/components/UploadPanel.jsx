@@ -126,15 +126,12 @@ function UploadPanel() {
       
       {/* Header Section */}
       <div className="text-center mb-12">
-        <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-white drop-shadow-2xl mb-6">
+        <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-white drop-shadow-2xl mb-8">
           Upload Your
           <span className="block bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
             Gameplay VoD
           </span>
         </h1>
-        <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto leading-relaxed">
-          Share your gameplay footage with our expert coaches and get professional analysis to improve your competitive performance.
-        </p>
       </div>
 
       {/* Upload Panel */}
@@ -186,56 +183,56 @@ function UploadPanel() {
       </div>
 
       {/* Features Grid */}
-      <div className="grid md:grid-cols-3 gap-8 mb-16">
-        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center hover:bg-black/40 hover:border-sky-400/50 hover:scale-105 hover:-translate-y-2 hover:shadow-sky-500/20 transition-all duration-300 group cursor-pointer">
-          <div className="w-16 h-16 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-sky-500/30 group-hover:scale-110 transition-all duration-300">
-            <svg className="w-8 h-8 text-sky-400 group-hover:text-sky-300 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="grid lg:grid-cols-3 gap-12 mb-16 max-w-7xl mx-auto">
+        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-10 text-center hover:bg-black/40 hover:border-sky-400/50 hover:scale-105 hover:-translate-y-2 hover:shadow-sky-500/20 transition-all duration-300 group cursor-pointer">
+          <div className="w-20 h-20 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-sky-500/30 group-hover:scale-110 transition-all duration-300">
+            <svg className="w-10 h-10 text-sky-400 group-hover:text-sky-300 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-white mb-4 group-hover:text-sky-300 transition-colors duration-300">Easy Upload</h3>
-          <p className="text-white/70 group-hover:text-white/90 transition-colors duration-300">
+          <h3 className="text-2xl font-bold text-white mb-6 group-hover:text-sky-300 transition-colors duration-300">Easy Upload</h3>
+          <p className="text-white/70 group-hover:text-white/90 transition-colors duration-300 text-lg leading-relaxed">
             Drag and drop your gameplay videos. Support for MP4, MKV, AVI, and MOV formats up to 4GB.
           </p>
         </div>
 
-        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center hover:bg-black/40 hover:border-green-400/50 hover:scale-105 hover:-translate-y-2 hover:shadow-green-500/20 transition-all duration-300 group cursor-pointer">
-          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-500/30 group-hover:scale-110 transition-all duration-300">
-            <svg className="w-8 h-8 text-green-400 group-hover:text-green-300 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-10 text-center hover:bg-black/40 hover:border-green-400/50 hover:scale-105 hover:-translate-y-2 hover:shadow-green-500/20 transition-all duration-300 group cursor-pointer">
+          <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-green-500/30 group-hover:scale-110 transition-all duration-300">
+            <svg className="w-10 h-10 text-green-400 group-hover:text-green-300 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-white mb-4 group-hover:text-green-300 transition-colors duration-300">Professional Review</h3>
-          <p className="text-white/70 group-hover:text-white/90 transition-colors duration-300">
+          <h3 className="text-2xl font-bold text-white mb-6 group-hover:text-green-300 transition-colors duration-300">Professional Review</h3>
+          <p className="text-white/70 group-hover:text-white/90 transition-colors duration-300 text-lg leading-relaxed">
             Get detailed feedback from experienced coaches with timestamped notes and actionable insights.
           </p>
         </div>
 
-        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center hover:bg-black/40 hover:border-purple-400/50 hover:scale-105 hover:-translate-y-2 hover:shadow-purple-500/20 transition-all duration-300 group cursor-pointer">
-          <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-purple-500/30 group-hover:scale-110 transition-all duration-300">
-            <svg className="w-8 h-8 text-purple-400 group-hover:text-purple-300 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-10 text-center hover:bg-black/40 hover:border-purple-400/50 hover:scale-105 hover:-translate-y-2 hover:shadow-purple-500/20 transition-all duration-300 group cursor-pointer">
+          <div className="w-20 h-20 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-purple-500/30 group-hover:scale-110 transition-all duration-300">
+            <svg className="w-10 h-10 text-purple-400 group-hover:text-purple-300 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors duration-300">Track Progress</h3>
-          <p className="text-white/70 group-hover:text-white/90 transition-colors duration-300">
+          <h3 className="text-2xl font-bold text-white mb-6 group-hover:text-purple-300 transition-colors duration-300">Track Progress</h3>
+          <p className="text-white/70 group-hover:text-white/90 transition-colors duration-300 text-lg leading-relaxed">
             Monitor your improvement over time with detailed analytics and personalized coaching recommendations.
           </p>
         </div>
       </div>
 
       {/* Upload Guidelines Section */}
-      <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 mb-16">
-        <h3 className="text-2xl font-bold text-white mb-6 text-center">Upload Guidelines</h3>
-        <div className="grid md:grid-cols-2 gap-8">
+      <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-12 mb-16 max-w-7xl mx-auto">
+        <h3 className="text-3xl font-bold text-white mb-10 text-center">Upload Guidelines</h3>
+        <div className="grid lg:grid-cols-2 gap-12">
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <svg className="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <h4 className="text-xl font-semibold text-white mb-6 flex items-center">
+              <svg className="w-6 h-6 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
               Best Practices
             </h4>
-            <ul className="space-y-2 text-white/70">
+            <ul className="space-y-4 text-white/70 text-lg">
               <li>• Upload recent gameplay for relevant feedback</li>
               <li>• Include both wins and losses for balanced analysis</li>
               <li>• Choose games where you want specific improvement</li>
@@ -244,13 +241,13 @@ function UploadPanel() {
             </ul>
           </div>
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <svg className="w-5 h-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <h4 className="text-xl font-semibold text-white mb-6 flex items-center">
+              <svg className="w-6 h-6 text-blue-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
               </svg>
               Technical Requirements
             </h4>
-            <ul className="space-y-2 text-white/70">
+            <ul className="space-y-4 text-white/70 text-lg">
               <li>• Supported formats: MP4, MKV, AVI, MOV</li>
               <li>• Maximum file size: 4GB</li>
               <li>• Minimum resolution: 720p recommended</li>

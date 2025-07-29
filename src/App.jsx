@@ -109,7 +109,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-black/50 backdrop-blur-lg border-t border-white/20 mt-12">
+    <footer className="bg-black/50 backdrop-blur-lg border-t border-white/20">
       <div className="container max-w-screen-xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Company Info */}
@@ -276,7 +276,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen bg-gray-900 text-white bg-cover bg-center bg-fixed" style={{ backgroundImage: `url(/vcoachbg.jpg)` }}>
+        <div className="min-h-screen bg-gray-900 text-white bg-cover bg-center bg-fixed flex flex-col" style={{ backgroundImage: `url(/vcoachbg.jpg)` }}>
           <header className="sticky top-0 z-50 w-full border-b border-white/20 bg-black/30 backdrop-blur-lg">
             <div className="container flex h-20 max-w-screen-xl items-center justify-between mx-auto px-4">
               <Link to="/" className="mr-6 flex items-center space-x-2">
@@ -293,7 +293,7 @@ function App() {
             </div>
           </header>
 
-          <main className="container max-w-screen-xl p-8 mx-auto">
+          <main className="flex-1 container max-w-screen-xl p-8 mx-auto">
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/upload" element={<StudentDashboard />} />

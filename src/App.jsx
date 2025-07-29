@@ -76,6 +76,47 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   const navigate = useNavigate();
   const location = useLocation();
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [isSubmittingNewsletter, setIsSubmittingNewsletter] = useState(false);
+  const [newsletterMessage, setNewsletterMessage] = useState('');
+
+  const handleNewsletterSubmit = async () => {
+    if (!newsletterEmail || !newsletterEmail.includes('@')) {
+      setNewsletterMessage('Please enter a valid email address');
+      return;
+    }
+
+    setIsSubmittingNewsletter(true);
+    setNewsletterMessage('');
+
+    try {
+      const response = await fetch('/.netlify/functions/newsletter-signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: newsletterEmail,
+          timestamp: new Date().toISOString(),
+          source: 'footer'
+        }),
+      });
+
+      if (response.ok) {
+        setNewsletterMessage('Successfully subscribed! Thank you for joining our newsletter.');
+        setNewsletterEmail('');
+      } else {
+        throw new Error('Subscription failed');
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      setNewsletterMessage('Failed to subscribe. Please try again later.');
+    } finally {
+      setIsSubmittingNewsletter(false);
+      // Clear message after 5 seconds
+      setTimeout(() => setNewsletterMessage(''), 5000);
+    }
+  };
 
   const handleSectionClick = (sectionId) => {
     // Always navigate to home page first, then scroll to section
@@ -251,7 +292,7 @@ const Footer = () => {
               </li>
               <li>
                 <a href="#" className="text-white/70 hover:text-sky-400 transition-colors duration-300 text-sm">
-                  Performance Analytics
+                  Custom Training Plans
                 </a>
               </li>
               <li>
@@ -272,11 +313,22 @@ const Footer = () => {
               <input
                 type="email"
                 placeholder="Enter your email"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 className="w-full h-9 px-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300"
               />
-              <button className="w-full h-9 px-4 bg-sky-500 hover:bg-sky-600 text-white rounded-md text-sm font-medium transition-all duration-300 hover:scale-105">
-                Subscribe
+              <button 
+                onClick={handleNewsletterSubmit}
+                disabled={isSubmittingNewsletter}
+                className="w-full h-9 px-4 bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/50 disabled:cursor-not-allowed text-white rounded-md text-sm font-medium transition-all duration-300 hover:scale-105"
+              >
+                {isSubmittingNewsletter ? 'Subscribing...' : 'Subscribe'}
               </button>
+              {newsletterMessage && (
+                <p className={`text-xs ${newsletterMessage.includes('success') ? 'text-green-400' : 'text-red-400'}`}>
+                  {newsletterMessage}
+                </p>
+              )}
             </div>
           </div>
         </div>

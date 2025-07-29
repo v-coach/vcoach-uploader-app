@@ -199,7 +199,7 @@ function LandingPage() {
             {/* Animated Progress Line with Gradient */}
             <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-sky-400 via-blue-500 to-purple-500 top-0 opacity-60"></div>
             
-            {/* String of Flashing Dots - 2 dots per stage, better centered */}
+            {/* String of Flashing Dots - 2 dots per stage, same colors throughout */}
             <div className="absolute left-[12.5%] right-[12.5%] top-0">
               {/* Stage 1-2: Upload to Review */}
               <div 
@@ -221,17 +221,17 @@ function LandingPage() {
               
               {/* Stage 2-3: Review to Learn */}
               <div 
-                className="absolute w-3 h-3 bg-indigo-400 rounded-full top-[-4.5px] shadow-xl shadow-indigo-400/80 border border-indigo-200" 
+                className="absolute w-3 h-3 bg-sky-500 rounded-full top-[-4.5px] shadow-xl shadow-sky-500/80 border border-sky-300" 
                 style={{
-                  left: '44%',
+                  left: '44.5%',
                   animation: 'flashDot 6s infinite linear',
                   animationDelay: '1.95s'
                 }}
               ></div>
               <div 
-                className="absolute w-3 h-3 bg-purple-500 rounded-full top-[-4.5px] shadow-xl shadow-purple-500/80 border border-purple-300" 
+                className="absolute w-3 h-3 bg-blue-400 rounded-full top-[-4.5px] shadow-xl shadow-blue-400/80 border border-blue-200" 
                 style={{
-                  left: '55%',
+                  left: '55.5%',
                   animation: 'flashDot 6s infinite linear',
                   animationDelay: '2.4s'
                 }}
@@ -239,17 +239,17 @@ function LandingPage() {
               
               {/* Stage 3-4: Learn to Improve */}
               <div 
-                className="absolute w-3 h-3 bg-violet-400 rounded-full top-[-4.5px] shadow-xl shadow-violet-400/80 border border-violet-200" 
+                className="absolute w-3 h-3 bg-sky-500 rounded-full top-[-4.5px] shadow-xl shadow-sky-500/80 border border-sky-300" 
                 style={{
-                  left: '77%',
+                  left: '78%',
                   animation: 'flashDot 6s infinite linear',
                   animationDelay: '3.45s'
                 }}
               ></div>
               <div 
-                className="absolute w-3 h-3 bg-pink-500 rounded-full top-[-4.5px] shadow-xl shadow-pink-500/80 border border-pink-300" 
+                className="absolute w-3 h-3 bg-blue-400 rounded-full top-[-4.5px] shadow-xl shadow-blue-400/80 border border-blue-200" 
                 style={{
-                  left: '88%',
+                  left: '89%',
                   animation: 'flashDot 6s infinite linear',
                   animationDelay: '3.9s'
                 }}
@@ -261,20 +261,20 @@ function LandingPage() {
           <div className="md:hidden flex flex-col items-center space-y-2 absolute left-1/2 transform -translate-x-1/2 top-16 pointer-events-none">
             {/* Stage 1-2 */}
             <div className="w-1 h-5 bg-white/20 relative flex flex-col justify-center space-y-1">
-              <div className="w-3 h-3 bg-sky-400 rounded-full absolute left-[-5px] shadow-lg shadow-sky-400/60 border border-sky-200" style={{animation: 'flashDot 6s infinite', animationDelay: '0.45s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-sky-500 rounded-full absolute left-[-5px] shadow-lg shadow-sky-500/60 border border-sky-300" style={{animation: 'flashDot 6s infinite', animationDelay: '0.45s', top: '0px'}}></div>
               <div className="w-3 h-3 bg-blue-400 rounded-full absolute left-[-5px] shadow-lg shadow-blue-400/60 border border-blue-200" style={{animation: 'flashDot 6s infinite', animationDelay: '0.9s', top: '12px'}}></div>
             </div>
             
             {/* Stage 2-3 */}
             <div className="w-1 h-5 bg-white/20 relative flex flex-col justify-center space-y-1">
-              <div className="w-3 h-3 bg-indigo-400 rounded-full absolute left-[-5px] shadow-lg shadow-indigo-400/60 border border-indigo-200" style={{animation: 'flashDot 6s infinite', animationDelay: '1.95s', top: '0px'}}></div>
-              <div className="w-3 h-3 bg-purple-500 rounded-full absolute left-[-5px] shadow-lg shadow-purple-500/60 border border-purple-300" style={{animation: 'flashDot 6s infinite', animationDelay: '2.4s', top: '12px'}}></div>
+              <div className="w-3 h-3 bg-sky-500 rounded-full absolute left-[-5px] shadow-lg shadow-sky-500/60 border border-sky-300" style={{animation: 'flashDot 6s infinite', animationDelay: '1.95s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-blue-400 rounded-full absolute left-[-5px] shadow-lg shadow-blue-400/60 border border-blue-200" style={{animation: 'flashDot 6s infinite', animationDelay: '2.4s', top: '12px'}}></div>
             </div>
             
             {/* Stage 3-4 */}
             <div className="w-1 h-5 bg-white/20 relative flex flex-col justify-center space-y-1">
-              <div className="w-3 h-3 bg-violet-400 rounded-full absolute left-[-5px] shadow-lg shadow-violet-400/60 border border-violet-200" style={{animation: 'flashDot 6s infinite', animationDelay: '3.45s', top: '0px'}}></div>
-              <div className="w-3 h-3 bg-pink-400 rounded-full absolute left-[-5px] shadow-lg shadow-pink-400/60 border border-pink-200" style={{animation: 'flashDot 6s infinite', animationDelay: '3.9s', top: '12px'}}></div>
+              <div className="w-3 h-3 bg-sky-500 rounded-full absolute left-[-5px] shadow-lg shadow-sky-500/60 border border-sky-300" style={{animation: 'flashDot 6s infinite', animationDelay: '3.45s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-blue-400 rounded-full absolute left-[-5px] shadow-lg shadow-blue-400/60 border border-blue-200" style={{animation: 'flashDot 6s infinite', animationDelay: '3.9s', top: '12px'}}></div>
             </div>
           </div>
         </div>

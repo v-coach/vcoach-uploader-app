@@ -233,8 +233,8 @@ function LandingPage() {
                   animationDelay: '0s'
                 }}
               >1</div>
-              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Upload</h4>
-              <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Share your gameplay video</p>
+              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Subscribe</h4>
+              <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Select a plan that fits your needs</p>
             </div>
             
             <div className="flex flex-col items-center group cursor-pointer">
@@ -245,8 +245,8 @@ function LandingPage() {
                   animationDelay: '1.5s'
                 }}
               >2</div>
-              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Review</h4>
-              <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Coaches analyze your gameplay</p>
+              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Engage</h4>
+              <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Connect with the community</p>
             </div>
             
             <div className="flex flex-col items-center group cursor-pointer">
@@ -258,7 +258,7 @@ function LandingPage() {
                 }}
               >3</div>
               <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Learn</h4>
-              <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Receive detailed feedback</p>
+              <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Coaching sessions and documents</p>
             </div>
             
             <div className="flex flex-col items-center group cursor-pointer">
@@ -284,7 +284,7 @@ function LandingPage() {
             
             {/* String of Flashing Dots - 2 dots per stage, same colors throughout */}
             <div className="absolute left-[12.5%] right-[12.5%] top-0">
-              {/* Stage 1-2: Upload to Review */}
+              {/* Stage 1-2: Subscribe to Engage */}
               <div 
                 className="absolute w-3 h-3 bg-sky-500 rounded-full top-[-4.5px] shadow-xl shadow-sky-500/80 border border-sky-300" 
                 style={{
@@ -302,7 +302,7 @@ function LandingPage() {
                 }}
               ></div>
               
-              {/* Stage 2-3: Review to Learn */}
+              {/* Stage 2-3: Engage to Learn */}
               <div 
                 className="absolute w-3 h-3 bg-sky-500 rounded-full top-[-4.5px] shadow-xl shadow-sky-500/80 border border-sky-300" 
                 style={{

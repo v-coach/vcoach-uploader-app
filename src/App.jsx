@@ -159,6 +159,13 @@ const Footer = () => {
     e.preventDefault();
     if (location.pathname !== '/') {
       navigate('/');
+      // Scroll to top after navigation to home page
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }, 100);
     } else {
       // If already on home page, scroll to top
       window.scrollTo({

@@ -547,7 +547,7 @@ function LandingPage() {
                     )}
                   </div>
                   
-                  <button className="w-full h-12 px-6 bg-green-500 text-white hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/50 rounded-xl text-lg font-bold mb-6 transition-all duration-300 hover:scale-105">
+                  <button className={`w-full h-12 px-6 ${colors.bg} text-white ${colors.hover} hover:shadow-lg hover:shadow-${plan.color}-500/50 rounded-xl text-lg font-bold mb-6 transition-all duration-300 hover:scale-105`}>
                     {plan.buttonText}
                   </button>
                   

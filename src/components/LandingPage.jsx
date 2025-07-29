@@ -227,49 +227,49 @@ function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8 relative z-10">
             <div className="flex flex-col items-center group cursor-pointer">
               <div 
-                className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
+                className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-green-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-green-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-green-500/60 border-2 border-green-300"
                 style={{
                   animation: 'flashDot 6s infinite linear',
                   animationDelay: '0s'
                 }}
               >1</div>
-              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Subscribe</h4>
+              <h4 className="font-semibold text-white mb-2 group-hover:text-green-300 transition-colors duration-300">Subscribe</h4>
               <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Select a plan that fits your needs</p>
             </div>
             
             <div className="flex flex-col items-center group cursor-pointer">
               <div 
-                className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
+                className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-orange-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-orange-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-orange-500/60 border-2 border-orange-300"
                 style={{
                   animation: 'flashDot 6s infinite linear',
                   animationDelay: '1.5s'
                 }}
               >2</div>
-              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Engage</h4>
+              <h4 className="font-semibold text-white mb-2 group-hover:text-orange-300 transition-colors duration-300">Engage</h4>
               <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Connect with the community</p>
             </div>
             
             <div className="flex flex-col items-center group cursor-pointer">
               <div 
-                className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
+                className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-pink-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-pink-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-pink-500/60 border-2 border-pink-300"
                 style={{
                   animation: 'flashDot 6s infinite linear',
                   animationDelay: '3s'
                 }}
               >3</div>
-              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Learn</h4>
+              <h4 className="font-semibold text-white mb-2 group-hover:text-pink-300 transition-colors duration-300">Learn</h4>
               <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Coaching sessions and documents</p>
             </div>
             
             <div className="flex flex-col items-center group cursor-pointer">
               <div 
-                className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
+                className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-red-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-red-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-red-500/60 border-2 border-red-300"
                 style={{
                   animation: 'flashDot 6s infinite linear',
                   animationDelay: '4.5s'
                 }}
               >4</div>
-              <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Improve</h4>
+              <h4 className="font-semibold text-white mb-2 group-hover:text-red-300 transition-colors duration-300">Improve</h4>
               <p className="text-white/70 text-sm group-hover:text-white/90 transition-colors duration-300">Apply insights to rank up</p>
             </div>
           </div>
@@ -279,14 +279,14 @@ function LandingPage() {
             {/* Background Line */}
             <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-white/20 top-0"></div>
             
-            {/* Animated Progress Line - Consistent Color */}
-            <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-sky-500 top-0 opacity-60"></div>
+            {/* Animated Progress Line - Updated with gradient colors */}
+            <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-green-500 via-orange-500 via-pink-500 to-red-500 top-0 opacity-60"></div>
             
-            {/* String of Flashing Dots - 2 dots per stage, same colors throughout */}
+            {/* String of Flashing Dots - 2 dots per stage, updated colors */}
             <div className="absolute left-[12.5%] right-[12.5%] top-0">
               {/* Stage 1-2: Subscribe to Engage */}
               <div 
-                className="absolute w-3 h-3 bg-sky-500 rounded-full top-[-4.5px] shadow-xl shadow-sky-500/80 border border-sky-300" 
+                className="absolute w-3 h-3 bg-green-500 rounded-full top-[-4.5px] shadow-xl shadow-green-500/80 border border-green-300" 
                 style={{
                   left: '11%',
                   animation: 'flashDot 6s infinite linear',
@@ -294,7 +294,7 @@ function LandingPage() {
                 }}
               ></div>
               <div 
-                className="absolute w-3 h-3 bg-blue-400 rounded-full top-[-4.5px] shadow-xl shadow-blue-400/80 border border-blue-200" 
+                className="absolute w-3 h-3 bg-orange-400 rounded-full top-[-4.5px] shadow-xl shadow-orange-400/80 border border-orange-200" 
                 style={{
                   left: '22%',
                   animation: 'flashDot 6s infinite linear',
@@ -304,7 +304,7 @@ function LandingPage() {
               
               {/* Stage 2-3: Engage to Learn */}
               <div 
-                className="absolute w-3 h-3 bg-sky-500 rounded-full top-[-4.5px] shadow-xl shadow-sky-500/80 border border-sky-300" 
+                className="absolute w-3 h-3 bg-orange-500 rounded-full top-[-4.5px] shadow-xl shadow-orange-500/80 border border-orange-300" 
                 style={{
                   left: '44.5%',
                   animation: 'flashDot 6s infinite linear',
@@ -312,7 +312,7 @@ function LandingPage() {
                 }}
               ></div>
               <div 
-                className="absolute w-3 h-3 bg-blue-400 rounded-full top-[-4.5px] shadow-xl shadow-blue-400/80 border border-blue-200" 
+                className="absolute w-3 h-3 bg-pink-400 rounded-full top-[-4.5px] shadow-xl shadow-pink-400/80 border border-pink-200" 
                 style={{
                   left: '55.5%',
                   animation: 'flashDot 6s infinite linear',
@@ -322,7 +322,7 @@ function LandingPage() {
               
               {/* Stage 3-4: Learn to Improve */}
               <div 
-                className="absolute w-3 h-3 bg-sky-500 rounded-full top-[-4.5px] shadow-xl shadow-sky-500/80 border border-sky-300" 
+                className="absolute w-3 h-3 bg-pink-500 rounded-full top-[-4.5px] shadow-xl shadow-pink-500/80 border border-pink-300" 
                 style={{
                   left: '78%',
                   animation: 'flashDot 6s infinite linear',
@@ -330,7 +330,7 @@ function LandingPage() {
                 }}
               ></div>
               <div 
-                className="absolute w-3 h-3 bg-blue-400 rounded-full top-[-4.5px] shadow-xl shadow-blue-400/80 border border-blue-200" 
+                className="absolute w-3 h-3 bg-red-400 rounded-full top-[-4.5px] shadow-xl shadow-red-400/80 border border-red-200" 
                 style={{
                   left: '89%',
                   animation: 'flashDot 6s infinite linear',
@@ -344,20 +344,20 @@ function LandingPage() {
           <div className="md:hidden flex flex-col items-center space-y-2 absolute left-1/2 transform -translate-x-1/2 top-16 pointer-events-none">
             {/* Stage 1-2 */}
             <div className="w-1 h-5 bg-white/20 relative flex flex-col justify-center space-y-1">
-              <div className="w-3 h-3 bg-sky-500 rounded-full absolute left-[-5px] shadow-lg shadow-sky-500/60 border border-sky-300" style={{animation: 'flashDot 6s infinite', animationDelay: '0.45s', top: '0px'}}></div>
-              <div className="w-3 h-3 bg-blue-400 rounded-full absolute left-[-5px] shadow-lg shadow-blue-400/60 border border-blue-200" style={{animation: 'flashDot 6s infinite', animationDelay: '0.9s', top: '12px'}}></div>
+              <div className="w-3 h-3 bg-green-500 rounded-full absolute left-[-5px] shadow-lg shadow-green-500/60 border border-green-300" style={{animation: 'flashDot 6s infinite', animationDelay: '0.45s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-orange-400 rounded-full absolute left-[-5px] shadow-lg shadow-orange-400/60 border border-orange-200" style={{animation: 'flashDot 6s infinite', animationDelay: '0.9s', top: '12px'}}></div>
             </div>
             
             {/* Stage 2-3 */}
             <div className="w-1 h-5 bg-white/20 relative flex flex-col justify-center space-y-1">
-              <div className="w-3 h-3 bg-sky-500 rounded-full absolute left-[-5px] shadow-lg shadow-sky-500/60 border border-sky-300" style={{animation: 'flashDot 6s infinite', animationDelay: '1.95s', top: '0px'}}></div>
-              <div className="w-3 h-3 bg-blue-400 rounded-full absolute left-[-5px] shadow-lg shadow-blue-400/60 border border-blue-200" style={{animation: 'flashDot 6s infinite', animationDelay: '2.4s', top: '12px'}}></div>
+              <div className="w-3 h-3 bg-orange-500 rounded-full absolute left-[-5px] shadow-lg shadow-orange-500/60 border border-orange-300" style={{animation: 'flashDot 6s infinite', animationDelay: '1.95s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-pink-400 rounded-full absolute left-[-5px] shadow-lg shadow-pink-400/60 border border-pink-200" style={{animation: 'flashDot 6s infinite', animationDelay: '2.4s', top: '12px'}}></div>
             </div>
             
             {/* Stage 3-4 */}
             <div className="w-1 h-5 bg-white/20 relative flex flex-col justify-center space-y-1">
-              <div className="w-3 h-3 bg-sky-500 rounded-full absolute left-[-5px] shadow-lg shadow-sky-500/60 border border-sky-300" style={{animation: 'flashDot 6s infinite', animationDelay: '3.45s', top: '0px'}}></div>
-              <div className="w-3 h-3 bg-blue-400 rounded-full absolute left-[-5px] shadow-lg shadow-blue-400/60 border border-blue-200" style={{animation: 'flashDot 6s infinite', animationDelay: '3.9s', top: '12px'}}></div>
+              <div className="w-3 h-3 bg-pink-500 rounded-full absolute left-[-5px] shadow-lg shadow-pink-500/60 border border-pink-300" style={{animation: 'flashDot 6s infinite', animationDelay: '3.45s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-red-400 rounded-full absolute left-[-5px] shadow-lg shadow-red-400/60 border border-red-200" style={{animation: 'flashDot 6s infinite', animationDelay: '3.9s', top: '12px'}}></div>
             </div>
           </div>
         </div>

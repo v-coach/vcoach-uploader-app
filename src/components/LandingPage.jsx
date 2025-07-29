@@ -146,7 +146,7 @@ function LandingPage() {
               <div 
                 className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
                 style={{
-                  animation: 'flashDot 4s infinite linear',
+                  animation: 'flashDot 6s infinite linear',
                   animationDelay: '0s'
                 }}
               >1</div>
@@ -158,8 +158,8 @@ function LandingPage() {
               <div 
                 className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
                 style={{
-                  animation: 'flashDot 4s infinite linear',
-                  animationDelay: '1s'
+                  animation: 'flashDot 6s infinite linear',
+                  animationDelay: '1.5s'
                 }}
               >2</div>
               <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Review</h4>
@@ -170,8 +170,8 @@ function LandingPage() {
               <div 
                 className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
                 style={{
-                  animation: 'flashDot 4s infinite linear',
-                  animationDelay: '2s'
+                  animation: 'flashDot 6s infinite linear',
+                  animationDelay: '3s'
                 }}
               >3</div>
               <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Learn</h4>
@@ -182,8 +182,8 @@ function LandingPage() {
               <div 
                 className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:bg-sky-400 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 relative z-10 shadow-xl shadow-sky-500/60 border-2 border-sky-300"
                 style={{
-                  animation: 'flashDot 4s infinite linear',
-                  animationDelay: '3s'
+                  animation: 'flashDot 6s infinite linear',
+                  animationDelay: '4.5s'
                 }}
               >4</div>
               <h4 className="font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Improve</h4>
@@ -199,23 +199,23 @@ function LandingPage() {
             {/* Animated Progress Line with Gradient */}
             <div className="absolute left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-sky-400 via-blue-500 to-purple-500 top-0 opacity-60"></div>
             
-            {/* String of Flashing Dots - 2 dots per stage */}
+            {/* String of Flashing Dots - 2 dots per stage, better centered */}
             <div className="absolute left-[12.5%] right-[12.5%] top-0">
               {/* Stage 1-2: Upload to Review */}
               <div 
                 className="absolute w-3 h-3 bg-sky-500 rounded-full top-[-4.5px] shadow-xl shadow-sky-500/80 border border-sky-300" 
                 style={{
-                  left: '16.5%',
-                  animation: 'flashDot 4s infinite linear',
-                  animationDelay: '0.3s'
+                  left: '11%',
+                  animation: 'flashDot 6s infinite linear',
+                  animationDelay: '0.45s'
                 }}
               ></div>
               <div 
                 className="absolute w-3 h-3 bg-blue-400 rounded-full top-[-4.5px] shadow-xl shadow-blue-400/80 border border-blue-200" 
                 style={{
-                  left: '27.5%',
-                  animation: 'flashDot 4s infinite linear',
-                  animationDelay: '0.6s'
+                  left: '22%',
+                  animation: 'flashDot 6s infinite linear',
+                  animationDelay: '0.9s'
                 }}
               ></div>
               
@@ -223,17 +223,17 @@ function LandingPage() {
               <div 
                 className="absolute w-3 h-3 bg-indigo-400 rounded-full top-[-4.5px] shadow-xl shadow-indigo-400/80 border border-indigo-200" 
                 style={{
-                  left: '50%',
-                  animation: 'flashDot 4s infinite linear',
-                  animationDelay: '1.3s'
+                  left: '44%',
+                  animation: 'flashDot 6s infinite linear',
+                  animationDelay: '1.95s'
                 }}
               ></div>
               <div 
                 className="absolute w-3 h-3 bg-purple-500 rounded-full top-[-4.5px] shadow-xl shadow-purple-500/80 border border-purple-300" 
                 style={{
-                  left: '61%',
-                  animation: 'flashDot 4s infinite linear',
-                  animationDelay: '1.6s'
+                  left: '55%',
+                  animation: 'flashDot 6s infinite linear',
+                  animationDelay: '2.4s'
                 }}
               ></div>
               
@@ -241,17 +241,17 @@ function LandingPage() {
               <div 
                 className="absolute w-3 h-3 bg-violet-400 rounded-full top-[-4.5px] shadow-xl shadow-violet-400/80 border border-violet-200" 
                 style={{
-                  left: '72.5%',
-                  animation: 'flashDot 4s infinite linear',
-                  animationDelay: '2.3s'
+                  left: '77%',
+                  animation: 'flashDot 6s infinite linear',
+                  animationDelay: '3.45s'
                 }}
               ></div>
               <div 
                 className="absolute w-3 h-3 bg-pink-500 rounded-full top-[-4.5px] shadow-xl shadow-pink-500/80 border border-pink-300" 
                 style={{
-                  left: '83.5%',
-                  animation: 'flashDot 4s infinite linear',
-                  animationDelay: '2.6s'
+                  left: '88%',
+                  animation: 'flashDot 6s infinite linear',
+                  animationDelay: '3.9s'
                 }}
               ></div>
             </div>
@@ -261,20 +261,20 @@ function LandingPage() {
           <div className="md:hidden flex flex-col items-center space-y-2 absolute left-1/2 transform -translate-x-1/2 top-16 pointer-events-none">
             {/* Stage 1-2 */}
             <div className="w-1 h-5 bg-white/20 relative flex flex-col justify-center space-y-1">
-              <div className="w-3 h-3 bg-sky-400 rounded-full absolute left-[-5px] shadow-lg shadow-sky-400/60 border border-sky-200" style={{animation: 'flashDot 4s infinite', animationDelay: '0.3s', top: '0px'}}></div>
-              <div className="w-3 h-3 bg-blue-400 rounded-full absolute left-[-5px] shadow-lg shadow-blue-400/60 border border-blue-200" style={{animation: 'flashDot 4s infinite', animationDelay: '0.6s', top: '12px'}}></div>
+              <div className="w-3 h-3 bg-sky-400 rounded-full absolute left-[-5px] shadow-lg shadow-sky-400/60 border border-sky-200" style={{animation: 'flashDot 6s infinite', animationDelay: '0.45s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-blue-400 rounded-full absolute left-[-5px] shadow-lg shadow-blue-400/60 border border-blue-200" style={{animation: 'flashDot 6s infinite', animationDelay: '0.9s', top: '12px'}}></div>
             </div>
             
             {/* Stage 2-3 */}
             <div className="w-1 h-5 bg-white/20 relative flex flex-col justify-center space-y-1">
-              <div className="w-3 h-3 bg-indigo-400 rounded-full absolute left-[-5px] shadow-lg shadow-indigo-400/60 border border-indigo-200" style={{animation: 'flashDot 4s infinite', animationDelay: '1.3s', top: '0px'}}></div>
-              <div className="w-3 h-3 bg-purple-500 rounded-full absolute left-[-5px] shadow-lg shadow-purple-500/60 border border-purple-300" style={{animation: 'flashDot 4s infinite', animationDelay: '1.6s', top: '12px'}}></div>
+              <div className="w-3 h-3 bg-indigo-400 rounded-full absolute left-[-5px] shadow-lg shadow-indigo-400/60 border border-indigo-200" style={{animation: 'flashDot 6s infinite', animationDelay: '1.95s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-purple-500 rounded-full absolute left-[-5px] shadow-lg shadow-purple-500/60 border border-purple-300" style={{animation: 'flashDot 6s infinite', animationDelay: '2.4s', top: '12px'}}></div>
             </div>
             
             {/* Stage 3-4 */}
             <div className="w-1 h-5 bg-white/20 relative flex flex-col justify-center space-y-1">
-              <div className="w-3 h-3 bg-violet-400 rounded-full absolute left-[-5px] shadow-lg shadow-violet-400/60 border border-violet-200" style={{animation: 'flashDot 4s infinite', animationDelay: '2.3s', top: '0px'}}></div>
-              <div className="w-3 h-3 bg-pink-400 rounded-full absolute left-[-5px] shadow-lg shadow-pink-400/60 border border-pink-200" style={{animation: 'flashDot 4s infinite', animationDelay: '2.6s', top: '12px'}}></div>
+              <div className="w-3 h-3 bg-violet-400 rounded-full absolute left-[-5px] shadow-lg shadow-violet-400/60 border border-violet-200" style={{animation: 'flashDot 6s infinite', animationDelay: '3.45s', top: '0px'}}></div>
+              <div className="w-3 h-3 bg-pink-400 rounded-full absolute left-[-5px] shadow-lg shadow-pink-400/60 border border-pink-200" style={{animation: 'flashDot 6s infinite', animationDelay: '3.9s', top: '12px'}}></div>
             </div>
           </div>
         </div>
@@ -282,17 +282,17 @@ function LandingPage() {
         {/* Custom CSS for flashing dots animation */}
         <style jsx>{`
           @keyframes flashDot {
-            0%, 80% { 
+            0%, 85% { 
               opacity: 0.2; 
               transform: scale(0.6); 
               box-shadow: 0 0 5px currentColor;
             }
-            10%, 25% { 
+            7%, 20% { 
               opacity: 1; 
               transform: scale(1.4); 
               box-shadow: 0 0 20px currentColor, 0 0 35px currentColor, 0 0 50px currentColor;
             }
-            35%, 100% { 
+            30%, 100% { 
               opacity: 0.2; 
               transform: scale(0.6); 
               box-shadow: 0 0 5px currentColor;

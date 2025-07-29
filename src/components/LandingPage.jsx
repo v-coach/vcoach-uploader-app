@@ -6,7 +6,9 @@ import axios from 'axios';
 function LandingPage() {
   const { user } = useAuth();
   const [coaches, setCoaches] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [pricingPlans, setPricingPlans] = useState([]);
+  const [loadingCoaches, setLoadingCoaches] = useState(true);
+  const [loadingPricing, setLoadingPricing] = useState(true);
 
   useEffect(() => {
     const fetchCoaches = async () => {
@@ -46,11 +48,76 @@ function LandingPage() {
           }
         ]);
       } finally {
-        setLoading(false);
+        setLoadingCoaches(false);
+      }
+    };
+
+    const fetchPricingPlans = async () => {
+      try {
+        const res = await axios.get('/.netlify/functions/manage-pricing');
+        setPricingPlans(res.data || []);
+      } catch (err) {
+        console.error('Failed to fetch pricing plans:', err);
+        // Show default pricing plans if API fails
+        setPricingPlans([
+          {
+            id: 'free',
+            name: 'Free Plan',
+            price: 0.00,
+            currency: 'USD',
+            interval: 'month',
+            features: [
+              'Basic VoD Upload',
+              'Community Access',
+              'Basic Analytics'
+            ],
+            color: 'green',
+            popular: false,
+            description: 'Get started with basic features',
+            buttonText: 'Subscribe'
+          },
+          {
+            id: 'individual',
+            name: 'Individual Plan',
+            price: 26.99,
+            currency: 'USD',
+            interval: 'month',
+            features: [
+              'Priority VoD Review',
+              '1-on-1 Coaching Sessions',
+              'Detailed Analytics',
+              'Custom Training Plans'
+            ],
+            color: 'sky',
+            popular: true,
+            description: 'Perfect for individual players',
+            buttonText: 'Subscribe'
+          },
+          {
+            id: 'team',
+            name: 'Team Plan',
+            price: 100.99,
+            currency: 'USD',
+            interval: 'month',
+            features: [
+              'Team VoD Analysis',
+              'Group Coaching Sessions',
+              'Strategy Development',
+              'Tournament Preparation'
+            ],
+            color: 'blue',
+            popular: false,
+            description: 'Designed for competitive teams',
+            buttonText: 'Subscribe'
+          }
+        ]);
+      } finally {
+        setLoadingPricing(false);
       }
     };
 
     fetchCoaches();
+    fetchPricingPlans();
   }, []);
 
   const getSkillColor = (avatarColor) => {
@@ -61,6 +128,22 @@ function LandingPage() {
     if (avatarColor.includes('orange') || avatarColor.includes('amber')) return 'bg-orange-500/20 text-orange-300';
     if (avatarColor.includes('pink') || avatarColor.includes('fuchsia')) return 'bg-pink-500/20 text-pink-300';
     return 'bg-gray-500/20 text-gray-300';
+  };
+
+  const getPlanColorClasses = (color) => {
+    const colorMap = {
+      gray: { border: 'hover:border-gray-400/50', shadow: 'hover:shadow-gray-500/20', text: 'group-hover:text-gray-300', bg: 'bg-gray-500' },
+      red: { border: 'hover:border-red-400/50', shadow: 'hover:shadow-red-500/20', text: 'group-hover:text-red-300', bg: 'bg-red-500' },
+      orange: { border: 'hover:border-orange-400/50', shadow: 'hover:shadow-orange-500/20', text: 'group-hover:text-orange-300', bg: 'bg-orange-500' },
+      yellow: { border: 'hover:border-yellow-400/50', shadow: 'hover:shadow-yellow-500/20', text: 'group-hover:text-yellow-300', bg: 'bg-yellow-500' },
+      green: { border: 'hover:border-green-400/50', shadow: 'hover:shadow-green-500/20', text: 'group-hover:text-green-300', bg: 'bg-green-500' },
+      blue: { border: 'hover:border-blue-400/50', shadow: 'hover:shadow-blue-500/20', text: 'group-hover:text-blue-300', bg: 'bg-blue-500' },
+      indigo: { border: 'hover:border-indigo-400/50', shadow: 'hover:shadow-indigo-500/20', text: 'group-hover:text-indigo-300', bg: 'bg-indigo-500' },
+      purple: { border: 'hover:border-purple-400/50', shadow: 'hover:shadow-purple-500/20', text: 'group-hover:text-purple-300', bg: 'bg-purple-500' },
+      pink: { border: 'hover:border-pink-400/50', shadow: 'hover:shadow-pink-500/20', text: 'group-hover:text-pink-300', bg: 'bg-pink-500' },
+      sky: { border: 'hover:border-sky-400/50', shadow: 'hover:shadow-sky-500/20', text: 'group-hover:text-sky-300', bg: 'bg-sky-500' }
+    };
+    return colorMap[color] || colorMap.gray;
   };
 
   return (
@@ -308,7 +391,7 @@ function LandingPage() {
           Learn from professional players and experienced coaches who have helped hundreds of players reach their competitive goals.
         </p>
         
-        {loading ? (
+        {loadingCoaches ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-6 text-center">
@@ -411,164 +494,97 @@ function LandingPage() {
         )}
       </div>
 
-      {/* Subscription Plans Section */}
+      {/* Dynamic Subscription Plans Section */}
       <div id="pricing" className="text-center mb-16">
         <h2 className="text-4xl font-bold text-white mb-4 hover:text-sky-300 transition-colors duration-300">Choose Your Plan</h2>
         <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto hover:text-white/90 transition-colors duration-300">
           Select the perfect plan for your gaming journey. Upgrade your skills with professional coaching and exclusive features.
         </p>
         
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {/* Free Plan */}
-          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center relative hover:bg-black/40 hover:border-green-400/50 hover:scale-105 hover:-translate-y-3 hover:shadow-green-500/20 transition-all duration-300 group cursor-pointer">
-            <div className="mb-6">
-              <img src="/vcoachlg.jpg" alt="V-Coach Logo" className="w-16 h-16 mx-auto mb-4 rounded-lg group-hover:scale-110 transition-transform duration-300" />
-              <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-green-300 transition-colors duration-300">Free Plan</h3>
-              <div className="text-4xl font-bold text-white mb-2 group-hover:text-green-300 transition-colors duration-300">$0.00</div>
-              <div className="text-white/60 text-sm group-hover:text-white/80 transition-colors duration-300">USD / month</div>
-            </div>
-            
-            <button className="w-full h-12 px-6 bg-green-500 text-white hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/50 rounded-xl text-lg font-bold mb-6 transition-all duration-300 hover:scale-105">
-              Subscribe
-            </button>
-            
-            <div className="space-y-4 text-left">
-              <div className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3 group-hover:text-white/80 transition-colors duration-300">Exclusive Roles</div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
+        {loadingPricing ? (
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center">
+                <div className="w-16 h-16 bg-white/10 rounded-lg mx-auto mb-4 animate-pulse"></div>
+                <div className="h-6 bg-white/10 rounded mb-2 animate-pulse"></div>
+                <div className="h-8 bg-white/10 rounded mb-2 animate-pulse"></div>
+                <div className="h-4 bg-white/10 rounded mb-6 animate-pulse"></div>
+                <div className="h-12 bg-white/10 rounded mb-6 animate-pulse"></div>
+                <div className="space-y-3">
+                  {[1, 2, 3, 4].map((j) => (
+                    <div key={j} className="h-4 bg-white/10 rounded animate-pulse"></div>
+                  ))}
                 </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">Basic VoD Upload</span>
               </div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">Community Access</span>
-              </div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">Basic Analytics</span>
-              </div>
-            </div>
+            ))}
           </div>
+        ) : pricingPlans.length > 0 ? (
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {pricingPlans.map((plan) => {
+              const colors = getPlanColorClasses(plan.color);
+              
+              return (
+                <div key={plan.id} className={`rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center relative hover:bg-black/40 ${colors.border} hover:scale-105 hover:-translate-y-3 ${colors.shadow} transition-all duration-300 group cursor-pointer`}>
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 group-hover:scale-110 transition-transform duration-300">
+                      <div className="bg-sky-500 text-white px-4 py-1 rounded-full text-xs font-bold group-hover:bg-sky-400 transition-colors duration-300">MOST POPULAR</div>
+                    </div>
+                  )}
+                  
+                  <div className="mb-6">
+                    <img src="/vcoachlg.jpg" alt="V-Coach Logo" className="w-16 h-16 mx-auto mb-4 rounded-lg group-hover:scale-110 transition-transform duration-300" />
+                    <h3 className={`text-2xl font-bold text-white mb-2 ${colors.text} transition-colors duration-300`}>{plan.name}</h3>
+                    <div className={`text-4xl font-bold text-white mb-2 ${colors.text} transition-colors duration-300`}>
+                      ${plan.price.toFixed(2)}
+                    </div>
+                    <div className="text-white/60 text-sm group-hover:text-white/80 transition-colors duration-300">
+                      {plan.currency} / {plan.interval}
+                    </div>
+                    {plan.description && (
+                      <p className="text-white/70 text-sm mt-2 group-hover:text-white/90 transition-colors duration-300">
+                        {plan.description}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <button className="w-full h-12 px-6 bg-green-500 text-white hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/50 rounded-xl text-lg font-bold mb-6 transition-all duration-300 hover:scale-105">
+                    {plan.buttonText}
+                  </button>
+                  
+                  <div className="space-y-4 text-left">
+                    <div className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3 group-hover:text-white/80 transition-colors duration-300">Features</div>
+                    {plan.features.map((feature, index) => (
+                      <div key={index} className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
+                        <div className={`w-6 h-6 ${colors.bg} rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center text-white/60 py-8">
+            <p>Pricing plans will be available soon.</p>
+          </div>
+        )}
 
-          {/* Individual Plan */}
-          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center relative hover:bg-black/40 hover:border-sky-400/50 hover:scale-110 hover:-translate-y-4 hover:shadow-sky-500/30 transition-all duration-300 group cursor-pointer">
-            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 group-hover:scale-110 transition-transform duration-300">
-              <div className="bg-sky-500 text-white px-4 py-1 rounded-full text-xs font-bold group-hover:bg-sky-400 transition-colors duration-300">MOST POPULAR</div>
-            </div>
-            
-            <div className="mb-6">
-              <img src="/vcoachlg.jpg" alt="V-Coach Logo" className="w-16 h-16 mx-auto mb-4 rounded-lg group-hover:scale-110 transition-transform duration-300" />
-              <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">Individual Plan</h3>
-              <div className="text-4xl font-bold text-white mb-2 group-hover:text-sky-300 transition-colors duration-300">$26.99</div>
-              <div className="text-white/60 text-sm group-hover:text-white/80 transition-colors duration-300">USD / month</div>
-            </div>
-            
-            <button className="w-full h-12 px-6 bg-green-500 text-white hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/50 rounded-xl text-lg font-bold mb-6 transition-all duration-300 hover:scale-105">
-              Subscribe
-            </button>
-            
-            <div className="space-y-4 text-left">
-              <div className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3 group-hover:text-white/80 transition-colors duration-300">Exclusive Roles</div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="3"/>
-                    <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">Priority VoD Review</span>
-              </div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="3"/>
-                    <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">1-on-1 Coaching Sessions</span>
-              </div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="3"/>
-                    <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">Detailed Analytics</span>
-              </div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="3"/>
-                    <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">Custom Training Plans</span>
-              </div>
-            </div>
+        {/* Manage Pricing Button - Only visible to admins */}
+        {user && user.roles?.includes('Founders') && (
+          <div className="text-center mt-8">
+            <Link 
+              to="/admin"
+              className="h-12 px-6 bg-white/10 text-white hover:bg-white/20 hover:border-sky-400 border border-white/20 inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium backdrop-blur-lg transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+            >
+              + Manage Pricing
+            </Link>
           </div>
-
-          {/* Team Plan */}
-          <div className="rounded-xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-2xl p-8 text-center relative hover:bg-black/40 hover:border-blue-400/50 hover:scale-105 hover:-translate-y-3 hover:shadow-blue-500/20 transition-all duration-300 group cursor-pointer">
-            <div className="mb-6">
-              <img src="/vcoachlg.jpg" alt="V-Coach Logo" className="w-16 h-16 mx-auto mb-4 rounded-lg group-hover:scale-110 transition-transform duration-300" />
-              <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors duration-300">Team Plan</h3>
-              <div className="text-4xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors duration-300">$100.99</div>
-              <div className="text-white/60 text-sm group-hover:text-white/80 transition-colors duration-300">USD / month</div>
-            </div>
-            
-            <button className="w-full h-12 px-6 bg-green-500 text-white hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/50 rounded-xl text-lg font-bold mb-6 transition-all duration-300 hover:scale-105">
-              Subscribe
-            </button>
-            
-            <div className="space-y-4 text-left">
-              <div className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3 group-hover:text-white/80 transition-colors duration-300">Exclusive Roles</div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                  </svg>
-                </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">Team VoD Analysis</span>
-              </div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                  </svg>
-                </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">Group Coaching Sessions</span>
-              </div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                  </svg>
-                </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">Strategy Development</span>
-              </div>
-              <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform duration-200">
-                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                  </svg>
-                </div>
-                <span className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">Tournament Preparation</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -171,6 +171,13 @@ const Footer = () => {
   const handleUploadClick = (e) => {
     e.preventDefault();
     navigate('/upload');
+    // Scroll to top after navigation
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 100);
   };
 
   return (
